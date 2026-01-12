@@ -3,7 +3,8 @@ import React from 'react';
 export function Skeleton({ className, ...props }) {
     return (
         <div
-            className={`animate-pulse rounded-md bg-gray-200 dark:bg-gray-700 ${className}`}
+            className={`animate-pulse rounded-md ${className}`}
+            style={{ backgroundColor: 'var(--skeleton-bg, #e5e7eb)' }}
             {...props}
         />
     );

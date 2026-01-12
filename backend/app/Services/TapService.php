@@ -70,9 +70,14 @@ class TapService
             ];
         }
 
-        // Determine tap type (in/out)
+        // Determine tap type (in/out) - only based on TODAY's last tap
+        $todayLastTap = AttendanceLog::where('student_id', $student->id)
+            ->whereDate('tapped_at', $now->toDateString())
+            ->latest('tapped_at')
+            ->first();
+        
         $tapType = 'in';
-        if ($lastTap && $lastTap->tap_type === 'in') {
+        if ($todayLastTap && $todayLastTap->tap_type === 'in') {
             $tapType = 'out';
         }
 
@@ -174,9 +179,14 @@ class TapService
             ];
         }
 
-        // Determine tap type
+        // Determine tap type - only based on TODAY's last tap
+        $todayLastTap = TeacherAttendanceLog::where('teacher_id', $teacher->id)
+            ->whereDate('tapped_at', $now->toDateString())
+            ->latest('tapped_at')
+            ->first();
+        
         $tapType = 'in';
-        if ($lastTap && $lastTap->tap_type === 'in') {
+        if ($todayLastTap && $todayLastTap->tap_type === 'in') {
             $tapType = 'out';
         }
 

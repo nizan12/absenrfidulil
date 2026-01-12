@@ -59,18 +59,21 @@ class EspDeviceController extends Controller
         ], 201);
     }
 
-    public function show(EspDevice $espDevice)
+    public function show($id)
     {
+        $device = EspDevice::findOrFail($id);
         return response()->json([
             'success' => true,
-            'data' => $espDevice->load('location'),
+            'data' => $device->load('location'),
         ]);
     }
 
-    public function update(Request $request, EspDevice $espDevice)
+    public function update(Request $request, $id)
     {
+        $device = EspDevice::findOrFail($id);
+        
         $request->validate([
-            'device_code' => 'sometimes|string|unique:esp_devices,device_code,' . $espDevice->id,
+            'device_code' => 'sometimes|string|unique:esp_devices,device_code,' . $device->id,
             'name' => 'sometimes|string|max:255',
             'location_id' => 'nullable|exists:locations,id',
             'type' => 'sometimes|in:gate_in,gate_out,classroom',
@@ -78,18 +81,19 @@ class EspDeviceController extends Controller
             'tap_delay_seconds' => 'nullable|integer|min:0',
         ]);
 
-        $espDevice->update($request->only(['device_code', 'name', 'location_id', 'type', 'is_active', 'tap_delay_seconds']));
+        $device->update($request->only(['device_code', 'name', 'location_id', 'type', 'is_active', 'tap_delay_seconds']));
 
         return response()->json([
             'success' => true,
             'message' => 'Device berhasil diperbarui',
-            'data' => $espDevice->load('location'),
+            'data' => $device->fresh()->load('location'),
         ]);
     }
 
-    public function destroy(EspDevice $espDevice)
+    public function destroy($id)
     {
-        $espDevice->delete();
+        $device = EspDevice::findOrFail($id);
+        $device->delete();
 
         return response()->json([
             'success' => true,

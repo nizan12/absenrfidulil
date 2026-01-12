@@ -4,13 +4,14 @@ import Modal from '../components/ui/Modal';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import { CardSkeleton, TableSkeleton } from '../components/ui/Skeleton';
 import CustomSelect from '../components/ui/CustomSelect';
+import Pagination from '../components/ui/Pagination';
 import { Plus, Edit2, Trash2, Loader2, FolderTree, Users, LayoutGrid, List, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Categories() {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [pagination, setPagination] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [viewMode, setViewMode] = useState('table');
     const [showModal, setShowModal] = useState(false);
@@ -48,18 +49,20 @@ export default function Categories() {
         }
     }, [selectedItems, showFloatingBar]);
 
-    const fetchCategories = async (page = 1) => {
+    const fetchCategories = async () => {
         setLoading(true);
         try {
-            const params = { page, per_page: perPage };
-            const response = await categoryService.getAll(params);
+            const response = await categoryService.getAll();
             if (response.success) {
-                setCategories(response.data.data || response.data || []);
-                if (response.data.current_page) setPagination({ currentPage: response.data.current_page, lastPage: response.data.last_page, total: response.data.total });
+                setCategories(response.data || []);
             }
         } catch (error) { toast.error('Gagal memuat data'); }
         finally { setLoading(false); }
     };
+
+    // Client-side pagination
+    const totalItems = categories.length;
+    const paginatedCategories = categories.slice((currentPage - 1) * perPage, currentPage * perPage);
 
     const toggleSelectItem = (id) => {
         setSelectedItems(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
@@ -141,46 +144,59 @@ export default function Categories() {
             {loading ? (
                 viewMode === 'grid' ? <CardSkeleton /> : <TableSkeleton columns={5} />
             ) : viewMode === 'grid' ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {categories.length > 0 ? categories.map((cat) => (
-                        <div key={cat.id} className="card p-4 hover:shadow-lg transition-shadow">
-                            <div className="flex items-start justify-between">
-                                <div className="flex items-center gap-3">
-                                    <input type="checkbox" className="checkbox" checked={selectedItems.includes(cat.id)} onChange={() => toggleSelectItem(cat.id)} />
-                                    <div>
-                                        <h3 className="font-semibold text-lg" style={{ color: 'var(--text-primary)' }}>{cat.name}</h3>
-                                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{cat.description || 'Tidak ada deskripsi'}</p>
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {paginatedCategories.length > 0 ? paginatedCategories.map((cat) => (
+                            <div key={cat.id} className="card p-4 hover:shadow-lg transition-shadow">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <input type="checkbox" className="checkbox" checked={selectedItems.includes(cat.id)} onChange={() => toggleSelectItem(cat.id)} />
+                                        <div>
+                                            <h3 className="font-semibold text-lg" style={{ color: 'var(--text-primary)' }}>{cat.name}</h3>
+                                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{cat.description || 'Tidak ada deskripsi'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="inline-flex flex-row items-center p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                        <button onClick={() => openModal(cat)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
+                                        <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                        <button onClick={() => handleDelete(cat)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-1 p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
-                                    <button onClick={() => openModal(cat)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                    <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
-                                    <button onClick={() => handleDelete(cat)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
+                                <div className="mt-4 pt-4 border-t flex items-center gap-2" style={{ borderColor: 'var(--border-color)' }}>
+                                    <Users size={18} style={{ color: 'var(--text-muted)' }} />
+                                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{cat.students_count || 0} siswa</span>
                                 </div>
                             </div>
-                            <div className="mt-4 pt-4 border-t flex items-center gap-2" style={{ borderColor: 'var(--border-color)' }}>
-                                <Users size={18} style={{ color: 'var(--text-muted)' }} />
-                                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{cat.students_count || 0} siswa</span>
-                            </div>
+                        )) : (
+                            <div className="col-span-full text-center py-12" style={{ color: 'var(--text-secondary)' }}><FolderTree size={48} className="mx-auto mb-3 opacity-30" /><p>Belum ada kategori</p></div>
+                        )}
+                    </div>
+                    {totalItems > 0 && (
+                        <div className="card mt-4">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalItems={totalItems}
+                                perPage={perPage}
+                                onPageChange={setCurrentPage}
+                                onPerPageChange={setPerPage}
+                            />
                         </div>
-                    )) : (
-                        <div className="col-span-full text-center py-12" style={{ color: 'var(--text-secondary)' }}><FolderTree size={48} className="mx-auto mb-3 opacity-30" /><p>Belum ada kategori</p></div>
                     )}
-                </div>
+                </>
             ) : (
                 <div className="card">
                     <div className="table-container">
                         <table className="table">
                             <thead><tr><th><input type="checkbox" className="checkbox" checked={categories.length > 0 && selectedItems.length === categories.length} onChange={toggleSelectAll} /></th><th>Nama Kategori</th><th>Deskripsi</th><th>Jumlah Siswa</th><th>Aksi</th></tr></thead>
                             <tbody>
-                                {categories.length > 0 ? categories.map((cat) => (
+                                {paginatedCategories.length > 0 ? paginatedCategories.map((cat) => (
                                     <tr key={cat.id}>
                                         <td><input type="checkbox" className="checkbox" checked={selectedItems.includes(cat.id)} onChange={() => toggleSelectItem(cat.id)} /></td>
                                         <td><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--accent-color-light)' }}><FolderTree size={16} style={{ color: 'var(--accent-color)' }} /></div><span className="font-medium">{cat.name}</span></div></td>
                                         <td style={{ color: 'var(--text-secondary)' }}>{cat.description || '-'}</td>
-                                        <td><span className="badge badge-info flex items-center gap-1 w-fit"><Users size={14} /> {cat.students_count || 0} siswa</span></td>
+                                        <td><span className="badge badge-info w-fit"><Users size={14} /> {cat.students_count || 0} siswa</span></td>
                                         <td>
-                                            <div className="flex items-center gap-1 p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                            <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                                 <button onClick={() => openModal(cat)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
                                                 <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
                                                 <button onClick={() => handleDelete(cat)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
@@ -191,48 +207,14 @@ export default function Categories() {
                             </tbody>
                         </table>
                     </div>
-                    {pagination && pagination.lastPage > 1 && (
-                        <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-gray-200 gap-4">
-                            <div className="flex items-center gap-4">
-                                <p className="text-sm text-gray-500">
-                                    Total: {pagination.total} kategori
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-500">Tampilkan:</span>
-                                    <CustomSelect
-                                        options={[
-                                            { value: 10, label: '10' },
-                                            { value: 25, label: '25' },
-                                            { value: 50, label: '50' },
-                                            { value: 100, label: '100' },
-                                            { value: 9999, label: 'Semua' },
-                                        ]}
-                                        value={perPage}
-                                        onChange={setPerPage}
-                                        className="w-24"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => fetchCategories(pagination.currentPage - 1)}
-                                    disabled={pagination.currentPage === 1}
-                                    className="btn btn-secondary text-sm disabled:opacity-50"
-                                >
-                                    Prev
-                                </button>
-                                <span className="px-3 py-2 text-sm flex items-center">
-                                    {pagination.currentPage} / {pagination.lastPage}
-                                </span>
-                                <button
-                                    onClick={() => fetchCategories(pagination.currentPage + 1)}
-                                    disabled={pagination.currentPage === pagination.lastPage}
-                                    className="btn btn-secondary text-sm disabled:opacity-50"
-                                >
-                                    Next
-                                </button>
-                            </div>
-                        </div>
+                    {totalItems > 0 && (
+                        <Pagination
+                            currentPage={currentPage}
+                            totalItems={totalItems}
+                            perPage={perPage}
+                            onPageChange={setCurrentPage}
+                            onPerPageChange={setPerPage}
+                        />
                     )}
                 </div>
             )}
@@ -259,18 +241,18 @@ export default function Categories() {
             {/* Floating Action Bar */}
             {showFloatingBar && (
                 <div className="fixed bottom-6 inset-x-0 flex justify-center z-40 pointer-events-none">
-                    <div className={`rounded-full shadow-2xl border px-6 py-3 flex items-center gap-4 pointer-events-auto ${isClosingBar ? 'animate-float-down-center' : 'animate-float-up-center'}`} style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
-                        <div className="flex items-center gap-2 pr-4 border-r" style={{ borderColor: 'var(--border-color)' }}>
+                    <div className={`floating-bar pointer-events-auto ${isClosingBar ? 'animate-float-down-center' : 'animate-float-up-center'}`}>
+                        <div className="floating-bar-count">
                             <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--accent-color-light)' }}>
                                 <span className="font-semibold text-sm" style={{ color: 'var(--accent-color)' }}>{selectedItems.length}</span>
                             </div>
-                            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>dipilih</span>
+                            <span className="count-text text-sm" style={{ color: 'var(--text-secondary)' }}>dipilih</span>
                         </div>
-                        <button onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-full transition-colors">
-                            <Trash2 size={18} /><span className="text-sm font-medium">Hapus</span>
+                        <button onClick={handleBulkDelete} className="floating-bar-btn delete">
+                            <Trash2 size={18} /><span className="btn-text">Hapus</span>
                         </button>
-                        <button onClick={clearSelection} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-full transition-colors" style={{ color: 'var(--text-secondary)' }}>
-                            <X size={18} /><span className="text-sm font-medium">Batal</span>
+                        <button onClick={clearSelection} className="floating-bar-btn cancel">
+                            <X size={18} /><span className="btn-text">Batal</span>
                         </button>
                     </div>
                 </div>

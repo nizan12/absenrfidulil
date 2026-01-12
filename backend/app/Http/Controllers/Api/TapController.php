@@ -147,4 +147,48 @@ class TapController extends Controller
         
         return response()->json($result, $statusCode);
     }
+
+    // Public manual tap - for USB RFID readers (no authentication)
+    public function publicManualTap(Request $request)
+    {
+        $request->validate([
+            'rfid_uid' => 'required|string',
+        ]);
+
+        // Get default USB reader device from settings, or use first active device
+        $defaultDeviceId = AppSetting::get('default_usb_reader_device_id');
+        
+        if ($defaultDeviceId) {
+            $device = \App\Models\EspDevice::find($defaultDeviceId);
+        } else {
+            // Fallback: use first active device
+            $device = \App\Models\EspDevice::where('is_active', true)->first();
+        }
+        
+        if (!$device) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada device aktif yang tersedia',
+                'code' => 'NO_ACTIVE_DEVICE'
+            ], 400);
+        }
+
+        // Try student first
+        $result = $this->tapService->processStudentTap(
+            $device->device_code,
+            $request->rfid_uid
+        );
+
+        // If student not found, try teacher
+        if (!$result['success'] && ($result['code'] ?? '') === 'STUDENT_NOT_FOUND') {
+            $result = $this->tapService->processTeacherTap(
+                $device->device_code,
+                $request->rfid_uid
+            );
+        }
+
+        $statusCode = $result['success'] ? 200 : 400;
+        
+        return response()->json($result, $statusCode);
+    }
 }

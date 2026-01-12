@@ -87,7 +87,6 @@ export default function Modal({
                     borderRadius: '1.5rem',
                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
                     maxHeight: '90vh',
-                    overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
                 }}

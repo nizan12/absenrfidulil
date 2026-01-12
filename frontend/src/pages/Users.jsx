@@ -4,7 +4,8 @@ import Modal from '../components/ui/Modal';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import { CardSkeleton, TableSkeleton } from '../components/ui/Skeleton';
 import CustomSelect from '../components/ui/CustomSelect';
-import { Plus, Search, Edit2, Trash2, Loader2, Users, Mail, Phone, LayoutGrid, List, X, Camera } from 'lucide-react';
+import Pagination from '../components/ui/Pagination';
+import { Plus, Search, Edit2, Trash2, Loader2, Users, Mail, Phone, LayoutGrid, List, X, Camera, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const roles = [
@@ -187,7 +188,7 @@ export default function UsersPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Manajemen Admin</h1>
+                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><Users className="text-primary-600" />Manajemen Admin</h1>
                     <p style={{ color: 'var(--text-secondary)' }}>Kelola akses personil dan notifikasi pimpinan.</p>
                 </div>
                 <button onClick={() => openModal()} className="btn btn-primary"><Plus size={20} /><span>Registrasi Baru</span></button>
@@ -201,7 +202,7 @@ export default function UsersPage() {
                     </div>
                     <div className="flex rounded-xl overflow-hidden border" style={{ borderColor: 'var(--border-color)' }}>
                         <button onClick={() => setViewMode('grid')} className={`p-3 transition-colors ${viewMode === 'grid' ? 'text-white' : ''}`} style={{ background: viewMode === 'grid' ? 'var(--accent-color)' : 'var(--bg-card)' }}><LayoutGrid size={20} /></button>
-                        <button onClick={() => setViewMode('list')} className={`p-3 transition-colors ${viewMode === 'list' ? 'text-white' : ''}`} style={{ background: viewMode === 'list' ? 'var(--accent-color)' : 'var(--bg-card)' }}><List size={20} /></button>
+                        <button onClick={() => setViewMode('table')} className={`p-3 transition-colors ${viewMode === 'table' ? 'text-white' : ''}`} style={{ background: viewMode === 'table' ? 'var(--accent-color)' : 'var(--bg-card)' }}><List size={20} /></button>
                     </div>
                 </div>
             </div>
@@ -209,37 +210,50 @@ export default function UsersPage() {
             {loading ? (
                 viewMode === 'grid' ? <CardSkeleton /> : <TableSkeleton columns={5} />
             ) : viewMode === 'grid' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {users.length > 0 ? users.map((user) => {
-                        const roleInfo = getRoleInfo(user.role);
-                        return (
-                            <div key={user.id} className="card p-5 hover:shadow-lg transition-shadow">
-                                <div className="flex items-start gap-4">
-                                    <input type="checkbox" className="checkbox mt-1" checked={selectedItems.includes(user.id)} onChange={() => toggleSelectItem(user.id)} />
-                                    {user.photo ? (
-                                        <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${user.photo}`} alt={user.name} className="w-12 h-12 rounded-full object-cover" />
-                                    ) : (
-                                        <div className="w-12 h-12 rounded-full flex items-center justify-center font-semibold text-sm" style={getAvatarColor(user.role)}>{getInitials(user.name)}</div>
-                                    )}
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</h3>
-                                        <p className={`text-xs font-medium ${roleInfo.color}`}>{roleInfo.label}</p>
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {users.length > 0 ? users.map((user) => {
+                            const roleInfo = getRoleInfo(user.role);
+                            return (
+                                <div key={user.id} className="card p-5 hover:shadow-lg transition-shadow">
+                                    <div className="flex items-start gap-4">
+                                        <input type="checkbox" className="checkbox mt-1" checked={selectedItems.includes(user.id)} onChange={() => toggleSelectItem(user.id)} />
+                                        {user.photo ? (
+                                            <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${user.photo}`} alt={user.name} className="w-12 h-12 rounded-full object-cover" />
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-semibold text-sm" style={getAvatarColor(user.role)}>{getInitials(user.name)}</div>
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</h3>
+                                            <p className={`text-xs font-medium ${roleInfo.color}`}>{roleInfo.label}</p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 space-y-2">
+                                        <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}><Mail size={14} className="flex-shrink-0" style={{ color: 'var(--text-muted)' }} /><span className="truncate">{user.email}</span></div>
+                                        {user.phone && <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--accent-color)' }}><Phone size={14} className="flex-shrink-0" /><span>{user.phone}</span></div>}
+                                    </div>
+                                    <div className="mt-4 flex items-center gap-2">
+                                        <button onClick={() => openModal(user)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-colors" style={{ background: 'var(--bg-page)', color: 'var(--text-secondary)' }}><Edit2 size={14} /><span>Edit</span></button>
+                                        <button onClick={() => handleDelete(user)} className="p-2.5 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"><Trash2 size={16} className="text-red-500" /></button>
                                     </div>
                                 </div>
-                                <div className="mt-4 space-y-2">
-                                    <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}><Mail size={14} className="flex-shrink-0" style={{ color: 'var(--text-muted)' }} /><span className="truncate">{user.email}</span></div>
-                                    {user.phone && <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--accent-color)' }}><Phone size={14} className="flex-shrink-0" /><span>{user.phone}</span></div>}
-                                </div>
-                                <div className="mt-4 flex items-center gap-2">
-                                    <button onClick={() => openModal(user)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-colors" style={{ background: 'var(--bg-page)', color: 'var(--text-secondary)' }}><Edit2 size={14} /><span>Edit</span></button>
-                                    <button onClick={() => handleDelete(user)} className="p-2.5 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"><Trash2 size={16} className="text-red-500" /></button>
-                                </div>
-                            </div>
-                        );
-                    }) : (
-                        <div className="col-span-full text-center py-12" style={{ color: 'var(--text-secondary)' }}><Users size={48} className="mx-auto mb-3 opacity-30" /><p>Tidak ada data user</p></div>
+                            );
+                        }) : (
+                            <div className="col-span-full text-center py-12" style={{ color: 'var(--text-secondary)' }}><Users size={48} className="mx-auto mb-3 opacity-30" /><p>Tidak ada data user</p></div>
+                        )}
+                    </div>
+                    {pagination && (
+                        <div className="card mt-4">
+                            <Pagination
+                                currentPage={pagination.currentPage}
+                                totalItems={pagination.total}
+                                perPage={perPage}
+                                onPageChange={(page) => fetchUsers(page)}
+                                onPerPageChange={(newPerPage) => setPerPage(newPerPage)}
+                            />
+                        </div>
                     )}
-                </div>
+                </>
             ) : (
                 <div className="card">
                     <div className="table-container">
@@ -251,11 +265,11 @@ export default function UsersPage() {
                                     return (
                                         <tr key={user.id}>
                                             <td><input type="checkbox" className="checkbox" checked={selectedItems.includes(user.id)} onChange={() => toggleSelectItem(user.id)} /></td>
-                                            <td><div className="flex items-center gap-3">{user.photo ? <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${user.photo}`} alt={user.name} className="w-10 h-10 rounded-full object-cover" /> : <div className="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm" style={getAvatarColor(user.role)}>{getInitials(user.name)}</div>}<span className="font-medium">{user.name}</span></div></td>
-                                            <td>{user.email}</td>
-                                            <td><span className={`text-xs font-medium ${roleInfo.color}`}>{roleInfo.label}</span></td>
+                                            <td><div className="flex items-center gap-3 whitespace-nowrap">{user.photo ? <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${user.photo}`} alt={user.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" /> : <div className="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0" style={getAvatarColor(user.role)}>{getInitials(user.name)}</div>}<span className="font-medium">{user.name}</span></div></td>
+                                            <td className="whitespace-nowrap">{user.email}</td>
+                                            <td><span className={`text-xs font-medium whitespace-nowrap ${roleInfo.color}`}>{roleInfo.label}</span></td>
                                             <td>
-                                                <div className="flex items-center gap-1 p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                                <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                                     <button onClick={() => openModal(user)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
                                                     <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
                                                     <button onClick={() => handleDelete(user)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
@@ -267,48 +281,14 @@ export default function UsersPage() {
                             </tbody>
                         </table>
                     </div>
-                    {pagination && pagination.lastPage > 1 && (
-                        <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-gray-200 gap-4">
-                            <div className="flex items-center gap-4">
-                                <p className="text-sm text-gray-500">
-                                    Total: {pagination.total} user
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-500">Tampilkan:</span>
-                                    <CustomSelect
-                                        options={[
-                                            { value: 10, label: '10' },
-                                            { value: 25, label: '25' },
-                                            { value: 50, label: '50' },
-                                            { value: 100, label: '100' },
-                                            { value: 9999, label: 'Semua' },
-                                        ]}
-                                        value={perPage}
-                                        onChange={setPerPage}
-                                        className="w-24"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => fetchUsers(pagination.currentPage - 1)}
-                                    disabled={pagination.currentPage === 1}
-                                    className="btn btn-secondary text-sm disabled:opacity-50"
-                                >
-                                    Prev
-                                </button>
-                                <span className="px-3 py-2 text-sm flex items-center">
-                                    {pagination.currentPage} / {pagination.lastPage}
-                                </span>
-                                <button
-                                    onClick={() => fetchUsers(pagination.currentPage + 1)}
-                                    disabled={pagination.currentPage === pagination.lastPage}
-                                    className="btn btn-secondary text-sm disabled:opacity-50"
-                                >
-                                    Next
-                                </button>
-                            </div>
-                        </div>
+                    {pagination && (
+                        <Pagination
+                            currentPage={pagination.currentPage}
+                            totalItems={pagination.total}
+                            perPage={perPage}
+                            onPageChange={(page) => fetchUsers(page)}
+                            onPerPageChange={(newPerPage) => setPerPage(newPerPage)}
+                        />
                     )}
                 </div>
             )}
@@ -368,18 +348,37 @@ export default function UsersPage() {
             {/* Floating Action Bar */}
             {showFloatingBar && (
                 <div className="fixed bottom-6 inset-x-0 flex justify-center z-40 pointer-events-none">
-                    <div className={`rounded-full shadow-2xl border px-6 py-3 flex items-center gap-4 pointer-events-auto ${isClosingBar ? 'animate-float-down-center' : 'animate-float-up-center'}`} style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
-                        <div className="flex items-center gap-2 pr-4 border-r" style={{ borderColor: 'var(--border-color)' }}>
+                    <div className={`floating-bar pointer-events-auto ${isClosingBar ? 'animate-float-down-center' : 'animate-float-up-center'}`}>
+                        <div className="floating-bar-count">
                             <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--accent-color-light)' }}>
                                 <span className="font-semibold text-sm" style={{ color: 'var(--accent-color)' }}>{selectedItems.length}</span>
                             </div>
-                            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>dipilih</span>
+                            <span className="count-text text-sm" style={{ color: 'var(--text-secondary)' }}>dipilih</span>
                         </div>
-                        <button onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-full transition-colors">
-                            <Trash2 size={18} /><span className="text-sm font-medium">Hapus</span>
+                        <button onClick={() => {
+                            const selectedData = users.filter(u => selectedItems.includes(u.id));
+                            const csvContent = [
+                                ['Nama', 'Email', 'Role'],
+                                ...selectedData.map(u => [u.name, u.email, u.role])
+                            ].map(row => row.join(',')).join('\n');
+                            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `user_export_${new Date().toISOString().slice(0, 10)}.csv`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                            toast.success(`${selectedData.length} user berhasil diexport`);
+                        }} className="floating-bar-btn export">
+                            <Download size={18} /><span className="btn-text">Export</span>
                         </button>
-                        <button onClick={clearSelection} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-full transition-colors" style={{ color: 'var(--text-secondary)' }}>
-                            <X size={18} /><span className="text-sm font-medium">Batal</span>
+                        <button onClick={handleBulkDelete} className="floating-bar-btn delete">
+                            <Trash2 size={18} /><span className="btn-text">Hapus</span>
+                        </button>
+                        <button onClick={clearSelection} className="floating-bar-btn cancel">
+                            <X size={18} /><span className="btn-text">Batal</span>
                         </button>
                     </div>
                 </div>

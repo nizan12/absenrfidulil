@@ -34,14 +34,24 @@ export default function CustomSelect({
         return label.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
-    // Calculate dropdown position
+    // Calculate dropdown position with auto-flip
     const updateDropdownPosition = () => {
         if (triggerRef.current) {
             const rect = triggerRef.current.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const dropdownHeight = 250; // Approximate max height of dropdown
+            const spaceBelow = viewportHeight - rect.bottom;
+            const spaceAbove = rect.top;
+
+            // Flip to top if not enough space below and more space above
+            const shouldFlipUp = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
+
             setDropdownPosition({
-                top: rect.bottom + 8,
+                top: shouldFlipUp ? null : rect.bottom + 8,
+                bottom: shouldFlipUp ? viewportHeight - rect.top + 8 : null,
                 left: rect.left,
                 width: rect.width,
+                flipUp: shouldFlipUp,
             });
         }
     };
@@ -118,12 +128,16 @@ export default function CustomSelect({
     const dropdown = isOpen && createPortal(
         <div
             ref={dropdownRef}
-            className="custom-select-dropdown"
+            className={`custom-select-dropdown ${dropdownPosition.flipUp ? 'flip-up' : ''}`}
             style={{
                 position: 'fixed',
-                top: dropdownPosition.top,
+                ...(dropdownPosition.flipUp
+                    ? { bottom: dropdownPosition.bottom }
+                    : { top: dropdownPosition.top }
+                ),
                 left: dropdownPosition.left,
                 width: dropdownPosition.width,
+                maxHeight: 250,
                 zIndex: 9999,
             }}
         >

@@ -33,6 +33,7 @@ Route::get('/public/settings', [\App\Http\Controllers\Api\PublicController::clas
 Route::get('/public/search', [\App\Http\Controllers\Api\PublicController::class, 'searchStudents']);
 Route::get('/public/student/{studentId}', [\App\Http\Controllers\Api\PublicController::class, 'getStudentLog']);
 Route::get('/public/live', [\App\Http\Controllers\Api\PublicController::class, 'getLiveFeed']);
+Route::post('/public/tap/manual', [TapController::class, 'publicManualTap']);
 
 // Auth routes
 Route::post('/login', [AuthController::class, 'login']);

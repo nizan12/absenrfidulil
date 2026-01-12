@@ -53,9 +53,9 @@ export default function MainLayout() {
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                                className="flex items-center gap-3 p-1.5 rounded-lg transition-colors hover:opacity-80"
+                                className="flex items-center gap-2 p-1.5 rounded-lg transition-colors hover:opacity-80"
                             >
-                                <div className="text-right hidden sm:block">
+                                <div className="text-right">
                                     <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                                         {user?.name || 'Super Admin'}
                                     </p>
@@ -75,60 +75,62 @@ export default function MainLayout() {
                                 <ChevronDown size={16} className={`transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--text-muted)' }} />
                             </button>
 
-                            {/* Dropdown Menu */}
-                            {dropdownOpen && (
-                                <div
-                                    className="absolute right-0 mt-2 w-56 rounded-lg border shadow-lg py-1 z-50"
-                                    style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}
-                                >
-                                    {/* User Info */}
-                                    <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--border-color)' }}>
-                                        <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                                            {user?.name || 'Super Admin'}
-                                        </p>
-                                        <p className="text-xs truncate" style={{ color: 'var(--text-secondary)' }}>
-                                            {user?.email || 'admin@sekolah.sch.id'}
-                                        </p>
-                                    </div>
-
-                                    {/* Menu Items */}
-                                    <div className="py-1">
-                                        <button
-                                            onClick={() => {
-                                                setDropdownOpen(false);
-                                                navigate('/profile');
-                                            }}
-                                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:opacity-70"
-                                            style={{ color: 'var(--text-primary)' }}
-                                        >
-                                            <User size={16} />
-                                            <span>Profil Saya</span>
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setDropdownOpen(false);
-                                                navigate('/settings');
-                                            }}
-                                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:opacity-70"
-                                            style={{ color: 'var(--text-primary)' }}
-                                        >
-                                            <Settings size={16} />
-                                            <span>Pengaturan</span>
-                                        </button>
-                                    </div>
-
-                                    {/* Logout */}
-                                    <div className="border-t py-1" style={{ borderColor: 'var(--border-color)' }}>
-                                        <button
-                                            onClick={handleLogout}
-                                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                                        >
-                                            <LogOut size={16} />
-                                            <span>Keluar</span>
-                                        </button>
-                                    </div>
+                            {/* Dropdown Menu with Animation */}
+                            <div
+                                className={`absolute right-0 mt-2 w-56 rounded-2xl border shadow-lg py-2 z-50 transition-all duration-200 ease-out origin-top-right
+                                    ${dropdownOpen
+                                        ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+                                        : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+                                    }`}
+                                style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}
+                            >
+                                {/* User Info */}
+                                <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--border-color)' }}>
+                                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                                        {user?.name || 'Super Admin'}
+                                    </p>
+                                    <p className="text-xs truncate" style={{ color: 'var(--text-secondary)' }}>
+                                        {user?.email || 'admin@sekolah.sch.id'}
+                                    </p>
                                 </div>
-                            )}
+
+                                {/* Menu Items */}
+                                <div className="py-1">
+                                    <button
+                                        onClick={() => {
+                                            setDropdownOpen(false);
+                                            navigate('/profile');
+                                        }}
+                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:opacity-70"
+                                        style={{ color: 'var(--text-primary)' }}
+                                    >
+                                        <User size={16} />
+                                        <span>Profil Saya</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setDropdownOpen(false);
+                                            navigate('/settings');
+                                        }}
+                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:opacity-70"
+                                        style={{ color: 'var(--text-primary)' }}
+                                    >
+                                        <Settings size={16} />
+                                        <span>Pengaturan</span>
+                                    </button>
+                                </div>
+
+                                {/* Logout */}
+                                <div className="border-t py-1" style={{ borderColor: 'var(--border-color)' }}>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                    >
+                                        <LogOut size={16} />
+                                        <span>Keluar</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -137,7 +139,7 @@ export default function MainLayout() {
                 <main className="p-4 lg:p-6">
                     <Outlet />
                 </main>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

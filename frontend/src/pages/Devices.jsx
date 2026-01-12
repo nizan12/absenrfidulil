@@ -3,8 +3,9 @@ import { deviceService, locationService } from '../services/dataService';
 import Modal from '../components/ui/Modal';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import CustomSelect from '../components/ui/CustomSelect';
+import Pagination from '../components/ui/Pagination';
 import { CardSkeleton, TableSkeleton } from '../components/ui/Skeleton';
-import { Plus, Search, Edit2, Trash2, X, Loader2, Cpu, MapPin, Wifi, WifiOff, Clock, LayoutGrid, List } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, X, Loader2, Cpu, MapPin, Wifi, WifiOff, Clock, LayoutGrid, List, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Devices() {
@@ -13,6 +14,8 @@ export default function Devices() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [viewMode, setViewMode] = useState('table');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
     const [showModal, setShowModal] = useState(false);
     const [editingDevice, setEditingDevice] = useState(null);
     const [formData, setFormData] = useState({ device_code: '', name: '', location_id: '', type: 'gate_in', tap_delay_seconds: 300 });
@@ -59,6 +62,17 @@ export default function Devices() {
         } catch (error) { console.error('Error fetching locations:', error); }
     };
 
+    // Client-side filtering and pagination
+    const filteredDevices = devices.filter(d =>
+        !search || d.name?.toLowerCase().includes(search.toLowerCase()) ||
+        d.device_code?.toLowerCase().includes(search.toLowerCase())
+    );
+    const totalItems = filteredDevices.length;
+    const paginatedDevices = filteredDevices.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+    // Reset to page 1 when search changes
+    useEffect(() => { setCurrentPage(1); }, [search]);
+
     const toggleSelectItem = (id) => {
         setSelectedItems(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
     };
@@ -103,8 +117,9 @@ export default function Devices() {
         e.preventDefault();
         setSubmitting(true);
         try {
-            if (editingDevice) { await deviceService.update(editingDevice.id, formData); toast.success('Perangkat berhasil diperbarui'); }
-            else { await deviceService.create(formData); toast.success('Perangkat berhasil ditambahkan'); }
+            const submitData = { ...formData, location_id: formData.location_id || null };
+            if (editingDevice) { await deviceService.update(editingDevice.id, submitData); toast.success('Perangkat berhasil diperbarui'); }
+            else { await deviceService.create(submitData); toast.success('Perangkat berhasil ditambahkan'); }
             closeModal();
             fetchDevices();
         } catch (error) { toast.error(error.response?.data?.message || 'Terjadi kesalahan'); }
@@ -157,53 +172,66 @@ export default function Devices() {
             {loading ? (
                 viewMode === 'grid' ? <CardSkeleton /> : <TableSkeleton columns={8} />
             ) : viewMode === 'grid' ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {devices.length > 0 ? devices.map((device) => (
-                        <div key={device.id} className="card p-4 hover:shadow-lg transition-shadow">
-                            <div className="flex items-start justify-between">
-                                <div className="flex items-center gap-3">
-                                    <input type="checkbox" className="checkbox" checked={selectedItems.includes(device.id)} onChange={() => toggleSelectItem(device.id)} />
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${device.is_active ? 'bg-green-100' : 'bg-gray-100'}`}>
-                                        {device.is_active ? <Wifi className="text-green-600" size={20} /> : <WifiOff className="text-gray-400" size={20} />}
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {paginatedDevices.length > 0 ? paginatedDevices.map((device) => (
+                            <div key={device.id} className="card p-4 hover:shadow-lg transition-shadow">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <input type="checkbox" className="checkbox" checked={selectedItems.includes(device.id)} onChange={() => toggleSelectItem(device.id)} />
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${device.is_active ? 'bg-green-100' : 'bg-gray-100'}`}>
+                                            {device.is_active ? <Wifi className="text-green-600" size={20} /> : <WifiOff className="text-gray-400" size={20} />}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{device.name}</h3>
+                                            <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>{device.device_code}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{device.name}</h3>
-                                        <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>{device.device_code}</p>
+                                    <div className="inline-flex flex-row items-center p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                        <button onClick={() => openModal(device)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
+                                        <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                        <button onClick={() => handleDelete(device)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-1 p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
-                                    <button onClick={() => openModal(device)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                    <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
-                                    <button onClick={() => handleDelete(device)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
+                                <div className="mt-4 space-y-2">
+                                    <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}><MapPin size={16} style={{ color: 'var(--text-muted)' }} /><span>{device.location?.name || 'Tidak ada lokasi'}</span></div>
+                                    <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}><Clock size={16} style={{ color: 'var(--text-muted)' }} /><span>Delay: {device.tap_delay_seconds || 300} detik</span></div>
                                 </div>
+                                <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border-color)' }}><span className={`badge ${getTypeColor(device.type)}`}>{getTypeLabel(device.type)}</span></div>
                             </div>
-                            <div className="mt-4 space-y-2">
-                                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}><MapPin size={16} style={{ color: 'var(--text-muted)' }} /><span>{device.location?.name || 'Tidak ada lokasi'}</span></div>
-                                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}><Clock size={16} style={{ color: 'var(--text-muted)' }} /><span>Delay: {device.tap_delay_seconds || 300} detik</span></div>
-                            </div>
-                            <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border-color)' }}><span className={`badge ${getTypeColor(device.type)}`}>{getTypeLabel(device.type)}</span></div>
+                        )) : (
+                            <div className="col-span-full text-center py-12" style={{ color: 'var(--text-secondary)' }}><Cpu size={48} className="mx-auto mb-3 opacity-30" /><p>Belum ada perangkat terdaftar</p></div>
+                        )}
+                    </div>
+                    {totalItems > 0 && (
+                        <div className="card mt-4">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalItems={totalItems}
+                                perPage={perPage}
+                                onPageChange={setCurrentPage}
+                                onPerPageChange={setPerPage}
+                            />
                         </div>
-                    )) : (
-                        <div className="col-span-full text-center py-12" style={{ color: 'var(--text-secondary)' }}><Cpu size={48} className="mx-auto mb-3 opacity-30" /><p>Belum ada perangkat terdaftar</p></div>
                     )}
-                </div>
+                </>
             ) : (
                 <div className="card">
                     <div className="table-container">
                         <table className="table">
-                            <thead><tr><th><input type="checkbox" className="checkbox" checked={devices.length > 0 && selectedItems.length === devices.length} onChange={toggleSelectAll} /></th><th>Status</th><th>Nama</th><th>Kode</th><th>Lokasi</th><th>Tipe</th><th>Delay</th><th>Aksi</th></tr></thead>
+                            <thead><tr><th><input type="checkbox" className="checkbox" checked={filteredDevices.length > 0 && selectedItems.length === filteredDevices.length} onChange={toggleSelectAll} /></th><th>Status</th><th>Nama</th><th>Kode</th><th>Lokasi</th><th>Tipe</th><th>Delay</th><th>Aksi</th></tr></thead>
                             <tbody>
-                                {devices.length > 0 ? devices.map((device) => (
+                                {paginatedDevices.length > 0 ? paginatedDevices.map((device) => (
                                     <tr key={device.id}>
                                         <td><input type="checkbox" className="checkbox" checked={selectedItems.includes(device.id)} onChange={() => toggleSelectItem(device.id)} /></td>
-                                        <td>{device.is_active ? <span className="badge badge-success flex items-center gap-1 w-fit"><Wifi size={14} /> Online</span> : <span className="badge badge-secondary flex items-center gap-1 w-fit"><WifiOff size={14} /> Offline</span>}</td>
-                                        <td className="font-medium">{device.name}</td>
-                                        <td className="font-mono text-sm" style={{ color: 'var(--text-muted)' }}>{device.device_code}</td>
-                                        <td>{device.location?.name || '-'}</td>
-                                        <td><span className={`badge ${getTypeColor(device.type)}`}>{getTypeLabel(device.type)}</span></td>
-                                        <td>{device.tap_delay_seconds || 300}s</td>
+                                        <td>{device.is_active ? <span className="badge badge-success w-fit whitespace-nowrap"><Wifi size={14} /> Online</span> : <span className="badge badge-secondary w-fit whitespace-nowrap"><WifiOff size={14} /> Offline</span>}</td>
+                                        <td className="font-medium whitespace-nowrap">{device.name}</td>
+                                        <td className="font-mono text-sm whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>{device.device_code}</td>
+                                        <td className="whitespace-nowrap">{device.location?.name || '-'}</td>
+                                        <td><span className={`badge whitespace-nowrap ${getTypeColor(device.type)}`}>{getTypeLabel(device.type)}</span></td>
+                                        <td className="whitespace-nowrap">{device.tap_delay_seconds || 300}s</td>
                                         <td>
-                                            <div className="flex items-center gap-1 p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                            <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                                 <button onClick={() => openModal(device)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
                                                 <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
                                                 <button onClick={() => handleDelete(device)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
@@ -214,6 +242,15 @@ export default function Devices() {
                             </tbody>
                         </table>
                     </div>
+                    {totalItems > 0 && (
+                        <Pagination
+                            currentPage={currentPage}
+                            totalItems={totalItems}
+                            perPage={perPage}
+                            onPageChange={setCurrentPage}
+                            onPerPageChange={setPerPage}
+                        />
+                    )}
                 </div>
             )}
 
@@ -258,24 +295,45 @@ export default function Devices() {
             />
 
             {/* Floating Action Bar */}
-            {showFloatingBar && (
-                <div className="fixed bottom-6 inset-x-0 flex justify-center z-40 pointer-events-none">
-                    <div className={`rounded-full shadow-2xl border px-6 py-3 flex items-center gap-4 pointer-events-auto ${isClosingBar ? 'animate-float-down-center' : 'animate-float-up-center'}`} style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
-                        <div className="flex items-center gap-2 pr-4 border-r" style={{ borderColor: 'var(--border-color)' }}>
-                            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--accent-color-light)' }}>
-                                <span className="font-semibold text-sm" style={{ color: 'var(--accent-color)' }}>{selectedItems.length}</span>
+            {
+                showFloatingBar && (
+                    <div className="fixed bottom-6 inset-x-0 flex justify-center z-40 pointer-events-none">
+                        <div className={`floating-bar pointer-events-auto ${isClosingBar ? 'animate-float-down-center' : 'animate-float-up-center'}`}>
+                            <div className="floating-bar-count">
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--accent-color-light)' }}>
+                                    <span className="font-semibold text-sm" style={{ color: 'var(--accent-color)' }}>{selectedItems.length}</span>
+                                </div>
+                                <span className="count-text text-sm" style={{ color: 'var(--text-secondary)' }}>dipilih</span>
                             </div>
-                            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>dipilih</span>
+                            <button onClick={() => {
+                                const selectedData = devices.filter(d => selectedItems.includes(d.id));
+                                const csvContent = [
+                                    ['Kode Perangkat', 'Nama', 'Lokasi', 'Tipe', 'Status', 'Delay'],
+                                    ...selectedData.map(d => [d.device_code, d.name, d.location?.name || '', d.type, d.is_active ? 'Online' : 'Offline', d.tap_delay_seconds || 300])
+                                ].map(row => row.join(',')).join('\n');
+                                const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                                const url = URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.download = `perangkat_export_${new Date().toISOString().slice(0, 10)}.csv`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                URL.revokeObjectURL(url);
+                                toast.success(`${selectedData.length} perangkat berhasil diexport`);
+                            }} className="floating-bar-btn export">
+                                <Download size={18} /><span className="btn-text">Export</span>
+                            </button>
+                            <button onClick={handleBulkDelete} className="floating-bar-btn delete">
+                                <Trash2 size={18} /><span className="btn-text">Hapus</span>
+                            </button>
+                            <button onClick={clearSelection} className="floating-bar-btn cancel">
+                                <X size={18} /><span className="btn-text">Batal</span>
+                            </button>
                         </div>
-                        <button onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-full transition-colors">
-                            <Trash2 size={18} /><span className="text-sm font-medium">Hapus</span>
-                        </button>
-                        <button onClick={clearSelection} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-full transition-colors" style={{ color: 'var(--text-secondary)' }}>
-                            <X size={18} /><span className="text-sm font-medium">Batal</span>
-                        </button>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

@@ -27,19 +27,35 @@ import {
 const API_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000';
 
 // Role permissions: define which menus each role can access
+// Roles: super_admin, kepala_sekolah, staff_admin, guru_piket, operator
 const menuItems = [
+    // Dashboard - everyone
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
-    { path: '/students', icon: GraduationCap, label: 'Data Siswa', roles: ['super_admin', 'kepala_sekolah', 'staff_admin'] },
-    { path: '/teachers', icon: UserCog, label: 'Data Guru', roles: ['super_admin', 'kepala_sekolah', 'staff_admin'] },
-    { path: '/classes', icon: BookOpen, label: 'Manajemen Kelas', roles: ['super_admin', 'kepala_sekolah', 'staff_admin'] },
-    { path: '/categories', icon: FolderTree, label: 'Kategori', roles: ['super_admin', 'kepala_sekolah', 'staff_admin'] },
-    { path: '/parents', icon: UserCircle, label: 'Orang Tua', roles: ['super_admin', 'kepala_sekolah', 'staff_admin'] },
+
+    // Data Management - staff_admin and above
+    { path: '/students', icon: GraduationCap, label: 'Data Siswa', roles: ['super_admin', 'staff_admin', 'operator'] },
+    { path: '/teachers', icon: UserCog, label: 'Data Guru', roles: ['super_admin', 'staff_admin', 'operator'] },
+    { path: '/classes', icon: BookOpen, label: 'Manajemen Kelas', roles: ['super_admin', 'staff_admin', 'operator'] },
+    { path: '/categories', icon: FolderTree, label: 'Kategori', roles: ['super_admin', 'staff_admin'] },
+    { path: '/parents', icon: UserCircle, label: 'Orang Tua', roles: ['super_admin', 'staff_admin', 'operator'] },
+
+    // Admin Only - super_admin only
     { path: '/users', icon: Users, label: 'Data Admin', roles: ['super_admin'] },
-    { path: '/devices', icon: Cpu, label: 'Manajemen Alat', roles: ['super_admin', 'staff_admin', 'operator'] },
-    { path: '/locations', icon: MapPin, label: 'Lokasi', roles: ['super_admin', 'staff_admin', 'operator'] },
+
+    // Device & Location Management
+    { path: '/devices', icon: Cpu, label: 'Manajemen Alat', roles: ['super_admin', 'staff_admin'] },
+    { path: '/locations', icon: MapPin, label: 'Lokasi', roles: ['super_admin', 'staff_admin'] },
+
+    // Monitoring
     { path: '/live-monitor', icon: Eye, label: 'Live Monitor', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
-    { path: '/recap', icon: FileSpreadsheet, label: 'Rekapitulasi', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket'] },
+
+    // Reports
+    { path: '/recap', icon: FileSpreadsheet, label: 'Rekapitulasi', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
+
+    // Notifications - admin level
     { path: '/notifications', icon: Bell, label: 'Notifikasi WA', roles: ['super_admin', 'staff_admin'] },
+
+    // Settings - super_admin only
     { path: '/settings', icon: Settings, label: 'Pengaturan', roles: ['super_admin'] },
 ];
 
@@ -112,9 +128,10 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     </div>
                     <button
                         onClick={() => setIsOpen(false)}
-                        className="lg:hidden p-1 hover:opacity-70 rounded"
+                        className="lg:hidden ml-auto p-2 rounded-xl hover:opacity-80 transition-all duration-200 group"
+                        style={{ background: 'color-mix(in srgb, var(--accent-color) 15%, transparent)' }}
                     >
-                        <X size={18} style={{ color: 'var(--text-secondary)' }} />
+                        <X size={18} className="group-hover:rotate-90 transition-transform duration-200" style={{ color: 'var(--accent-color)' }} />
                     </button>
                 </div>
 

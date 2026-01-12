@@ -85,9 +85,9 @@ export default function Settings() {
         return (
             <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div className="space-y-2">
-                        <Skeleton className="h-8 w-48" />
-                        <Skeleton className="h-4 w-64" />
+                    <div>
+                        <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><SettingsIcon className="text-primary-600" />Pengaturan</h1>
+                        <p style={{ color: 'var(--text-secondary)' }}>Konfigurasi sistem absensi RFID</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

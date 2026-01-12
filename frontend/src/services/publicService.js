@@ -15,6 +15,12 @@ export const publicService = {
     const response = await api.get('/public/live');
     return response.data;
   },
+
+  // Manual tap for USB RFID readers
+  manualTap: async (rfidUid) => {
+    const response = await api.post('/public/tap/manual', { rfid_uid: rfidUid });
+    return response.data;
+  },
 };
 
 export default publicService;

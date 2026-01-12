@@ -155,11 +155,20 @@ export default function LiveMonitor() {
         return (
             <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div className="space-y-2">
-                        <Skeleton className="h-8 w-48" />
-                        <Skeleton className="h-4 w-64" />
+                    <div>
+                        <h1 className="text-2xl font-bold flex items-center gap-3" style={{ color: 'var(--text-primary)' }}>
+                            <Eye className="text-primary-600" />
+                            Live Monitor
+                        </h1>
+                        <p style={{ color: 'var(--text-secondary)' }}>
+                            Pantau kehadiran siswa dan guru secara real-time
+                        </p>
                     </div>
-                    <Skeleton className="h-10 w-32 rounded-full" />
+                    <div className="flex items-center gap-3">
+                        <Skeleton className="h-10 w-32 rounded-full" />
+                        <Skeleton className="h-5 w-32" />
+                        <Skeleton className="h-10 w-10 rounded-lg" />
+                    </div>
                 </div>
 
                 {/* Manual Input Skeleton */}

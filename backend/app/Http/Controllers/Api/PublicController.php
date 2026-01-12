@@ -95,6 +95,48 @@ class PublicController extends Controller
                 ];
             });
 
+        // Get today's status
+        $todayLogs = AttendanceLog::where('student_id', $studentId)
+            ->whereDate('tapped_at', Carbon::today())
+            ->orderBy('tapped_at', 'asc')
+            ->get();
+        
+        $todayStatus = [
+            'has_attendance' => $todayLogs->count() > 0,
+            'first_tap' => $todayLogs->first() ? [
+                'type' => $todayLogs->first()->tap_type,
+                'time' => $todayLogs->first()->tapped_at->format('H:i:s'),
+            ] : null,
+            'last_tap' => $todayLogs->last() ? [
+                'type' => $todayLogs->last()->tap_type,
+                'time' => $todayLogs->last()->tapped_at->format('H:i:s'),
+            ] : null,
+            'total_taps' => $todayLogs->count(),
+        ];
+
+        // Get monthly stats
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $monthlyLogs = AttendanceLog::where('student_id', $studentId)
+            ->whereBetween('tapped_at', [$startOfMonth, Carbon::now()])
+            ->get();
+        
+        $daysPresent = $monthlyLogs->groupBy(fn($log) => $log->tapped_at->format('Y-m-d'))->count();
+        
+        // Count working days passed
+        $workingDays = 0;
+        $current = $startOfMonth->copy();
+        while ($current <= Carbon::now()) {
+            if (!$current->isWeekend()) $workingDays++;
+            $current->addDay();
+        }
+        
+        $monthlyStats = [
+            'days_present' => $daysPresent,
+            'working_days' => $workingDays,
+            'percentage' => $workingDays > 0 ? round(($daysPresent / $workingDays) * 100) : 0,
+            'month_name' => Carbon::now()->locale('id')->monthName,
+        ];
+
         return response()->json([
             'success' => true,
             'student' => [
@@ -110,6 +152,8 @@ class PublicController extends Controller
                 ]),
             ],
             'logs' => $logs,
+            'today_status' => $todayStatus,
+            'monthly_stats' => $monthlyStats,
         ]);
     }
 

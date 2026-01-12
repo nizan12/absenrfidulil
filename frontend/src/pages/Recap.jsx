@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { attendanceService, classService } from '../services/dataService';
 import CustomSelect from '../components/ui/CustomSelect';
+import Pagination from '../components/ui/Pagination';
 import { TableSkeleton } from '../components/ui/Skeleton';
 import {
     Download,
@@ -10,6 +11,7 @@ import {
     Search,
     ArrowUpRight,
     ArrowDownRight,
+    ClipboardList,
     RefreshCw,
     Users,
     GraduationCap,
@@ -23,6 +25,7 @@ export default function Recap() {
     const [logs, setLogs] = useState([]);
     const [classes, setClasses] = useState([]);
     const [pagination, setPagination] = useState(null);
+    const [perPage, setPerPage] = useState(10);
     const [filters, setFilters] = useState({
         date_from: '',
         date_to: '',
@@ -52,7 +55,7 @@ export default function Recap() {
             const params = {
                 ...filters,
                 page,
-                per_page: 20,
+                per_page: perPage,
             };
 
             const response = activeTab === 'students'
@@ -80,7 +83,7 @@ export default function Recap() {
 
     const handleExport = async () => {
         try {
-            const baseUrl = 'http://localhost:8000/api';
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
             const token = localStorage.getItem('token');
 
             let url = activeTab === 'students'
@@ -127,7 +130,7 @@ export default function Recap() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Rekapitulasi Kehadiran</h1>
+                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><FileSpreadsheet className="text-primary-600" />Rekapitulasi Kehadiran</h1>
                     <p className="text-gray-500 dark:text-gray-400">Export data kehadiran dalam format Excel</p>
                 </div>
                 <button
@@ -250,14 +253,14 @@ export default function Recap() {
                                     {logs.length > 0 ? (
                                         logs.map((log, index) => (
                                             <tr key={log.id}>
-                                                <td>{index + 1 + ((pagination?.currentPage - 1) * 20)}</td>
-                                                <td className="font-medium">
+                                                <td className="whitespace-nowrap">{index + 1 + ((pagination?.currentPage - 1) * 20)}</td>
+                                                <td className="font-medium whitespace-nowrap">
                                                     {activeTab === 'students' ? log.student?.nis : log.teacher?.nip}
                                                 </td>
-                                                <td>{activeTab === 'students' ? log.student?.name : log.teacher?.name}</td>
-                                                {activeTab === 'students' && <td>{log.student?.class?.name || '-'}</td>}
+                                                <td className="whitespace-nowrap">{activeTab === 'students' ? log.student?.name : log.teacher?.name}</td>
+                                                {activeTab === 'students' && <td className="whitespace-nowrap">{log.student?.class?.name || '-'}</td>}
                                                 <td>
-                                                    <span className={`badge ${log.tap_type === 'in' ? 'badge-success' : 'badge-danger'}`}>
+                                                    <span className={`badge whitespace-nowrap ${log.tap_type === 'in' ? 'badge-success' : 'badge-danger'}`}>
                                                         {log.tap_type === 'in' ? (
                                                             <><ArrowUpRight size={14} /> Masuk</>
                                                         ) : (
@@ -265,8 +268,8 @@ export default function Recap() {
                                                         )}
                                                     </span>
                                                 </td>
-                                                <td>{log.esp_device?.location?.name || log.esp_device?.name || '-'}</td>
-                                                <td>{new Date(log.tapped_at).toLocaleString('id-ID')}</td>
+                                                <td className="whitespace-nowrap">{log.esp_device?.location?.name || log.esp_device?.name || '-'}</td>
+                                                <td className="whitespace-nowrap">{new Date(log.tapped_at).toLocaleString('id-ID')}</td>
                                             </tr>
                                         ))
                                     ) : (
@@ -281,31 +284,14 @@ export default function Recap() {
                         </div>
 
                         {/* Pagination */}
-                        {pagination && pagination.lastPage > 1 && (
-                            <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700">
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    Menampilkan {logs.length} dari {pagination.total} data
-                                </p>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => fetchLogs(pagination.currentPage - 1)}
-                                        disabled={pagination.currentPage === 1}
-                                        className="btn btn-secondary text-sm disabled:opacity-50"
-                                    >
-                                        Prev
-                                    </button>
-                                    <span className="px-3 py-2 text-sm">
-                                        {pagination.currentPage} / {pagination.lastPage}
-                                    </span>
-                                    <button
-                                        onClick={() => fetchLogs(pagination.currentPage + 1)}
-                                        disabled={pagination.currentPage === pagination.lastPage}
-                                        className="btn btn-secondary text-sm disabled:opacity-50"
-                                    >
-                                        Next
-                                    </button>
-                                </div>
-                            </div>
+                        {pagination && pagination.total > 0 && (
+                            <Pagination
+                                currentPage={pagination.currentPage}
+                                totalItems={pagination.total}
+                                perPage={perPage}
+                                onPageChange={(page) => fetchLogs(page)}
+                                onPerPageChange={(newPerPage) => setPerPage(newPerPage)}
+                            />
                         )}
                     </>
                 )}

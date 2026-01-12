@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { notificationService } from '../services/dataService';
 import CustomSelect from '../components/ui/CustomSelect';
+import Pagination from '../components/ui/Pagination';
 import { Skeleton, TableSkeleton } from '../components/ui/Skeleton';
 import { Search, Loader2, Bell, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -10,6 +11,7 @@ export default function Notifications() {
     const [stats, setStats] = useState({ total: 0, success: 0, failed: 0, today: 0 });
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState(null);
+    const [perPage, setPerPage] = useState(10);
     const [filter, setFilter] = useState('');
 
     useEffect(() => { fetchLogs(); fetchStats(); }, []);
@@ -22,12 +24,12 @@ export default function Notifications() {
     const fetchLogs = async (page = 1) => {
         setLoading(true);
         try {
-            const params = { page, per_page: 20 };
+            const params = { page, per_page: perPage };
             if (filter) params.status = filter;
             const response = await notificationService.getAll(params);
             if (response.success) {
                 setLogs(response.data.data || response.data || []);
-                if (response.data.current_page) setPagination({ currentPage: response.data.current_page, lastPage: response.data.last_page, total: response.data.total });
+                if (response.data.current_page) setPagination({ currentPage: response.data.current_page, lastPage: response.data.last_page, total: response.data.total, perPage: response.data.per_page || perPage });
             }
         } catch (error) { toast.error('Gagal memuat data'); }
         finally { setLoading(false); }
@@ -101,16 +103,15 @@ export default function Notifications() {
             {/* Table */}
             <div className="card">
                 {loading ? (
-                    <TableSkeleton columns={6} />
+                    <TableSkeleton columns={5} />
                 ) : (
                     <div className="table-container">
                         <table className="table">
-                            <thead><tr><th>Waktu</th><th>Penerima</th><th>Telepon</th><th>Tipe</th><th>Status</th><th>Pesan</th></tr></thead>
+                            <thead><tr><th>Waktu</th><th>Telepon</th><th>Tipe</th><th>Status</th><th>Pesan</th></tr></thead>
                             <tbody>
                                 {logs.length > 0 ? logs.map((log) => (
                                     <tr key={log.id}>
                                         <td className="text-sm">{new Date(log.created_at).toLocaleString('id-ID')}</td>
-                                        <td className="font-medium">{log.recipient_name}</td>
                                         <td>{log.phone}</td>
                                         <td><span className="badge badge-info">{log.type}</span></td>
                                         <td>
@@ -122,21 +123,20 @@ export default function Notifications() {
                                         </td>
                                         <td className="max-w-xs truncate text-sm text-gray-500" title={log.message}>{log.message}</td>
                                     </tr>
-                                )) : <tr><td colSpan={6} className="text-center py-8 text-gray-500">Tidak ada data</td></tr>}
+                                )) : <tr><td colSpan={5} className="text-center py-8 text-gray-500">Tidak ada data</td></tr>}
                             </tbody>
                         </table>
                     </div>
                 )}
 
-                {pagination && pagination.lastPage > 1 && (
-                    <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700">
-                        <p className="text-sm text-gray-500">Total: {pagination.total}</p>
-                        <div className="flex gap-2">
-                            <button onClick={() => fetchLogs(pagination.currentPage - 1)} disabled={pagination.currentPage === 1} className="btn btn-secondary text-sm disabled:opacity-50">Prev</button>
-                            <span className="px-3 py-2 text-sm">{pagination.currentPage} / {pagination.lastPage}</span>
-                            <button onClick={() => fetchLogs(pagination.currentPage + 1)} disabled={pagination.currentPage === pagination.lastPage} className="btn btn-secondary text-sm disabled:opacity-50">Next</button>
-                        </div>
-                    </div>
+                {pagination && pagination.total > 0 && (
+                    <Pagination
+                        currentPage={pagination.currentPage}
+                        totalItems={pagination.total}
+                        perPage={perPage}
+                        onPageChange={(page) => fetchLogs(page)}
+                        onPerPageChange={(newPerPage) => setPerPage(newPerPage)}
+                    />
                 )}
             </div>
         </div>

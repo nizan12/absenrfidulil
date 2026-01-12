@@ -4,6 +4,7 @@ import Modal from '../components/ui/Modal';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import { CardSkeleton, TableSkeleton } from '../components/ui/Skeleton';
 import CustomSelect from '../components/ui/CustomSelect';
+import Pagination from '../components/ui/Pagination';
 import {
     Plus,
     Search,
@@ -19,6 +20,7 @@ import {
     LayoutGrid,
     List,
     Camera,
+    GraduationCap,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -373,7 +375,7 @@ export default function Students() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Data Siswa</h1>
+                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><GraduationCap className="text-primary-600" />Data Siswa</h1>
                     <p className="text-gray-500 text-sm">Kelola informasi lengkap seluruh siswa.</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -470,14 +472,15 @@ export default function Students() {
                             <div className="col-span-full text-center py-12 text-gray-500">Tidak ada data siswa</div>
                         )}
                     </div>
-                    {pagination && pagination.lastPage > 1 && (
-                        <div className="card p-4 flex items-center justify-between">
-                            <p className="text-sm text-gray-500">Total: {pagination.total} siswa</p>
-                            <div className="flex gap-2">
-                                <button onClick={() => fetchStudents(pagination.currentPage - 1)} disabled={pagination.currentPage === 1} className="btn btn-secondary text-sm disabled:opacity-50">Prev</button>
-                                <span className="px-3 py-2 text-sm">{pagination.currentPage} / {pagination.lastPage}</span>
-                                <button onClick={() => fetchStudents(pagination.currentPage + 1)} disabled={pagination.currentPage === pagination.lastPage} className="btn btn-secondary text-sm disabled:opacity-50">Next</button>
-                            </div>
+                    {pagination && (
+                        <div className="card">
+                            <Pagination
+                                currentPage={pagination.currentPage}
+                                totalItems={pagination.total}
+                                perPage={perPage}
+                                onPageChange={(page) => fetchStudents(page)}
+                                onPerPageChange={(newPerPage) => setPerPage(newPerPage)}
+                            />
                         </div>
                     )}
                 </>
@@ -497,8 +500,10 @@ export default function Students() {
                                         />
                                     </th>
                                     <th>Siswa</th>
+                                    <th>NIS</th>
                                     <th>RFID</th>
-                                    <th>Kelas & Kategori</th>
+                                    <th>Kelas</th>
+                                    <th>Kategori</th>
                                     <th className="text-right">Aksi</th>
                                 </tr>
                             </thead>
@@ -519,51 +524,39 @@ export default function Students() {
                                                     {student.photo ? (
                                                         <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${student.photo}`} alt={student.name} className="w-10 h-10 rounded-full object-cover" />
                                                     ) : (
-                                                        <div className="avatar" style={getAvatarColor()}>
-                                                            {getInitials(student.name)}
+                                                        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'var(--accent-color-light)' }}>
+                                                            <span className="font-semibold" style={{ color: 'var(--accent-color)' }}>
+                                                                {student.name?.charAt(0)?.toUpperCase()}
+                                                            </span>
                                                         </div>
                                                     )}
-                                                    <div>
-                                                        <p className="font-medium text-gray-900">
-                                                            {student.name}
-                                                        </p>
-                                                        <p className="text-sm text-gray-500">
-                                                            ID: {student.nis}
-                                                        </p>
-                                                    </div>
+                                                    <span className="font-medium whitespace-nowrap">{student.name}</span>
                                                 </div>
                                             </td>
+                                            <td className="font-mono text-sm whitespace-nowrap">{student.nis}</td>
                                             <td>
-                                                <code className="text-sm bg-gray-100 px-2 py-0.5 rounded">
+                                                <code className="text-sm bg-gray-100 px-2 py-0.5 rounded whitespace-nowrap">
                                                     {student.rfid_uid}
                                                 </code>
                                             </td>
                                             <td>
-                                                <div className="space-y-1">
-                                                    <span className="badge badge-primary">
-                                                        ★ {student.class?.name || '-'}
-                                                    </span>
-                                                    <p className="text-sm text-gray-500">
-                                                        ◇ {student.category?.name || 'FULL DAY'}
-                                                    </p>
-                                                </div>
+                                                <span className="badge badge-primary whitespace-nowrap">
+                                                    {student.class?.name || '-'}
+                                                </span>
                                             </td>
                                             <td>
-                                                <div className="flex items-center justify-center gap-1">
-                                                    <div className="flex items-center gap-1 p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
-                                                        <button
-                                                            onClick={() => openModal(student)}
-                                                            className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"
-                                                            title="Edit"
-                                                        >
+                                                <span className="text-sm whitespace-nowrap" style={{ color: 'var(--text-secondary)' }}>
+                                                    {student.category?.name || 'Full Day'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div className="flex items-center justify-center">
+                                                    <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                                        <button onClick={() => openModal(student)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm" title="Edit">
                                                             <Edit2 size={14} className="text-blue-600" />
                                                         </button>
                                                         <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
-                                                        <button
-                                                            onClick={() => handleDelete(student)}
-                                                            className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"
-                                                            title="Hapus"
-                                                        >
+                                                        <button onClick={() => handleDelete(student)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600" title="Hapus">
                                                             <Trash2 size={14} className="text-red-500" />
                                                         </button>
                                                     </div>
@@ -573,7 +566,7 @@ export default function Students() {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={5} className="text-center py-12 text-gray-500">
+                                        <td colSpan={7} className="text-center py-12 text-gray-500">
                                             Tidak ada data siswa
                                         </td>
                                     </tr>
@@ -583,48 +576,14 @@ export default function Students() {
                     </div>
 
                     {/* Pagination */}
-                    {pagination && pagination.lastPage > 1 && (
-                        <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-gray-200 gap-4">
-                            <div className="flex items-center gap-4">
-                                <p className="text-sm text-gray-500">
-                                    Total: {pagination.total} siswa
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-500">Tampilkan:</span>
-                                    <CustomSelect
-                                        options={[
-                                            { value: 10, label: '10' },
-                                            { value: 25, label: '25' },
-                                            { value: 50, label: '50' },
-                                            { value: 100, label: '100' },
-                                            { value: 9999, label: 'Semua' },
-                                        ]}
-                                        value={perPage}
-                                        onChange={setPerPage}
-                                        className="w-24"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => fetchStudents(pagination.currentPage - 1)}
-                                    disabled={pagination.currentPage === 1}
-                                    className="btn btn-secondary text-sm disabled:opacity-50"
-                                >
-                                    Prev
-                                </button>
-                                <span className="px-3 py-2 text-sm flex items-center">
-                                    {pagination.currentPage} / {pagination.lastPage}
-                                </span>
-                                <button
-                                    onClick={() => fetchStudents(pagination.currentPage + 1)}
-                                    disabled={pagination.currentPage === pagination.lastPage}
-                                    className="btn btn-secondary text-sm disabled:opacity-50"
-                                >
-                                    Next
-                                </button>
-                            </div>
-                        </div>
+                    {pagination && (
+                        <Pagination
+                            currentPage={pagination.currentPage}
+                            totalItems={pagination.total}
+                            perPage={perPage}
+                            onPageChange={(page) => fetchStudents(page)}
+                            onPerPageChange={(newPerPage) => setPerPage(newPerPage)}
+                        />
                     )}
                 </div>
             )}
@@ -817,12 +776,12 @@ export default function Students() {
             {/* Floating Action Bar */}
             {showFloatingBar && (
                 <div className="fixed bottom-6 inset-x-0 flex justify-center z-40 pointer-events-none">
-                    <div className={`rounded-full shadow-2xl border px-6 py-3 flex items-center gap-4 pointer-events-auto ${isClosingBar ? 'animate-float-down-center' : 'animate-float-up-center'}`} style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
-                        <div className="flex items-center gap-2 pr-4 border-r" style={{ borderColor: 'var(--border-color)' }}>
+                    <div className={`floating-bar pointer-events-auto ${isClosingBar ? 'animate-float-down-center' : 'animate-float-up-center'}`}>
+                        <div className="floating-bar-count">
                             <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--accent-color-light)' }}>
                                 <span className="font-semibold text-sm" style={{ color: 'var(--accent-color)' }}>{selectedStudents.length}</span>
                             </div>
-                            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>dipilih</span>
+                            <span className="count-text text-sm" style={{ color: 'var(--text-secondary)' }}>dipilih</span>
                         </div>
 
                         <button
@@ -851,26 +810,20 @@ export default function Students() {
                                 URL.revokeObjectURL(url);
                                 toast.success(`${selectedData.length} siswa berhasil diexport`);
                             }}
-                            className="flex items-center gap-2 px-4 py-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-full transition-colors"
+                            className="floating-bar-btn export"
                         >
                             <Download size={18} />
-                            <span className="text-sm font-medium">Export</span>
+                            <span className="btn-text">Export</span>
                         </button>
 
-                        <button
-                            onClick={handleBulkDelete}
-                            className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
-                        >
+                        <button onClick={handleBulkDelete} className="floating-bar-btn delete">
                             <Trash2 size={18} />
-                            <span className="text-sm font-medium">Hapus</span>
+                            <span className="btn-text">Hapus</span>
                         </button>
 
-                        <button
-                            onClick={clearSelection}
-                            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full transition-colors"
-                        >
+                        <button onClick={clearSelection} className="floating-bar-btn cancel">
                             <X size={18} />
-                            <span className="text-sm font-medium">Batal</span>
+                            <span className="btn-text">Batal</span>
                         </button>
                     </div>
                 </div>

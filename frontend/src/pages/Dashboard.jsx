@@ -11,6 +11,7 @@ import {
     ArrowDownRight,
     Clock,
     Activity,
+    LayoutDashboard,
 } from 'lucide-react';
 import { Line, Bar } from 'react-chartjs-2';
 import {
@@ -123,9 +124,10 @@ export default function Dashboard() {
     if (loading) {
         return (
             <div className="space-y-6">
-                <div className="space-y-2">
-                    <Skeleton className="h-8 w-48" />
-                    <Skeleton className="h-5 w-64" />
+                {/* Header */}
+                <div>
+                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><LayoutDashboard className="text-primary-600" />Dashboard</h1>
+                    <p style={{ color: 'var(--text-secondary)' }}>Selamat datang di Sistem Absensi RFID</p>
                 </div>
 
                 {/* Stats Grid Skeleton */}
@@ -199,7 +201,7 @@ export default function Dashboard() {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Dashboard</h1>
+                <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><LayoutDashboard className="text-primary-600" />Dashboard</h1>
                 <p style={{ color: 'var(--text-secondary)' }}>Selamat datang di Sistem Absensi RFID</p>
             </div>
 
