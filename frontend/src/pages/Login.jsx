@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Loader2, Fingerprint } from 'lucide-react';
 import api from '../services/api';
@@ -103,6 +103,15 @@ export default function Login() {
                                 placeholder="••••••••"
                                 required
                             />
+                        </div>
+
+                        <div className="text-right">
+                            <Link
+                                to="/forgot-password"
+                                className="text-sm text-indigo-600 hover:text-indigo-700"
+                            >
+                                Lupa Password?
+                            </Link>
                         </div>
 
                         <button

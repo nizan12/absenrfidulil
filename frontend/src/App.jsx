@@ -19,6 +19,8 @@ import Locations from './pages/Locations';
 import Notifications from './pages/Notifications';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -51,6 +53,10 @@ function AppRoutes() {
         path="/login"
         element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
       />
+
+      {/* Password Reset Routes */}
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route
         element={

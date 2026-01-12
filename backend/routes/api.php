@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\TapController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PasswordResetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,10 @@ Route::get('/public/search', [\App\Http\Controllers\Api\PublicController::class,
 Route::get('/public/student/{studentId}', [\App\Http\Controllers\Api\PublicController::class, 'getStudentLog']);
 Route::get('/public/live', [\App\Http\Controllers\Api\PublicController::class, 'getLiveFeed']);
 Route::post('/public/tap/manual', [TapController::class, 'publicManualTap']);
+
+// Password Reset routes
+Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
 
 // Auth routes
 Route::post('/login', [AuthController::class, 'login']);
