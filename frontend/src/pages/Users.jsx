@@ -215,26 +215,32 @@ export default function UsersPage() {
                         {users.length > 0 ? users.map((user) => {
                             const roleInfo = getRoleInfo(user.role);
                             return (
-                                <div key={user.id} className="card p-5 hover:shadow-lg transition-shadow">
-                                    <div className="flex items-start gap-4">
-                                        <input type="checkbox" className="checkbox mt-1" checked={selectedItems.includes(user.id)} onChange={() => toggleSelectItem(user.id)} />
+                                <div key={user.id} className="card p-4 hover:shadow-lg transition-shadow">
+                                    {/* Baris 1: Checkbox + Tombol Aksi */}
+                                    <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                                        <input type="checkbox" className="checkbox" checked={selectedItems.includes(user.id)} onChange={() => toggleSelectItem(user.id)} />
+                                        <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                            <button onClick={() => openModal(user)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
+                                            <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
+                                            <button onClick={() => handleDelete(user)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
+                                        </div>
+                                    </div>
+                                    {/* Baris 2: Foto + Nama */}
+                                    <div className="py-3 border-b border-gray-200 flex items-center gap-3">
                                         {user.photo ? (
-                                            <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${user.photo}`} alt={user.name} className="w-12 h-12 rounded-full object-cover" />
+                                            <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${user.photo}`} alt={user.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
                                         ) : (
-                                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-semibold text-sm" style={getAvatarColor(user.role)}>{getInitials(user.name)}</div>
+                                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0" style={getAvatarColor(user.role)}>{getInitials(user.name)}</div>
                                         )}
-                                        <div className="flex-1 min-w-0">
+                                        <div className="min-w-0">
                                             <h3 className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</h3>
                                             <p className={`text-xs font-medium ${roleInfo.color}`}>{roleInfo.label}</p>
                                         </div>
                                     </div>
-                                    <div className="mt-4 space-y-2">
+                                    {/* Baris 3: Detail */}
+                                    <div className="pt-3 space-y-2">
                                         <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}><Mail size={14} className="flex-shrink-0" style={{ color: 'var(--text-muted)' }} /><span className="truncate">{user.email}</span></div>
                                         {user.phone && <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--accent-color)' }}><Phone size={14} className="flex-shrink-0" /><span>{user.phone}</span></div>}
-                                    </div>
-                                    <div className="mt-4 flex items-center gap-2">
-                                        <button onClick={() => openModal(user)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-colors" style={{ background: 'var(--bg-page)', color: 'var(--text-secondary)' }}><Edit2 size={14} /><span>Edit</span></button>
-                                        <button onClick={() => handleDelete(user)} className="p-2.5 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"><Trash2 size={16} className="text-red-500" /></button>
                                     </div>
                                 </div>
                             );
@@ -271,7 +277,7 @@ export default function UsersPage() {
                                             <td>
                                                 <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                                     <button onClick={() => openModal(user)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                                    <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                                    <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                                     <button onClick={() => handleDelete(user)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                                 </div>
                                             </td>

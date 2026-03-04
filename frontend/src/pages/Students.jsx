@@ -5,6 +5,8 @@ import ConfirmModal from '../components/ui/ConfirmModal';
 import { CardSkeleton, TableSkeleton } from '../components/ui/Skeleton';
 import CustomSelect from '../components/ui/CustomSelect';
 import Pagination from '../components/ui/Pagination';
+import StudentIdCard from '../components/StudentIdCard';
+import api from '../services/api';
 import {
     Plus,
     Search,
@@ -21,6 +23,7 @@ import {
     List,
     Camera,
     GraduationCap,
+    CreditCard,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -60,6 +63,10 @@ export default function Students() {
         message: '',
         onConfirm: null
     });
+    // ID Card states
+    const [showIdCardModal, setShowIdCardModal] = useState(false);
+    const [selectedStudentForCard, setSelectedStudentForCard] = useState(null);
+    const [settings, setSettings] = useState({});
 
     // Handle floating bar visibility with animation
     useEffect(() => {
@@ -81,7 +88,20 @@ export default function Students() {
         fetchStudents();
         fetchClasses();
         fetchCategories();
+        fetchSettings();
     }, []);
+
+    // Fetch settings for ID card
+    const fetchSettings = async () => {
+        try {
+            const response = await api.get('/public/settings');
+            if (response.data.success) {
+                setSettings(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching settings:', error);
+        }
+    };
 
     // Auto-search with debounce
     useEffect(() => {
@@ -442,26 +462,38 @@ export default function Students() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {students.length > 0 ? students.map((student) => (
                             <div key={student.id} className="card p-4 hover:shadow-lg transition-shadow">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <input type="checkbox" className="checkbox" checked={selectedStudents.includes(student.id)} onChange={() => toggleSelectStudent(student.id)} />
-                                        {student.photo ? (
-                                            <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${student.photo}`} alt={student.name} className="w-12 h-12 rounded-full object-cover" />
-                                        ) : (
-                                            <div className="avatar" style={getAvatarColor()}>{getInitials(student.name)}</div>
-                                        )}
-                                        <div>
-                                            <h3 className="font-semibold text-gray-900">{student.name}</h3>
-                                            <p className="text-xs text-gray-500">NIS: {student.nis}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-1">
-                                        <button onClick={() => openModal(student)} className="p-2 hover:bg-gray-100 rounded-lg"><Edit2 size={16} className="text-blue-600" /></button>
-                                        <button onClick={() => handleDelete(student)} className="p-2 hover:bg-gray-100 rounded-lg"><Trash2 size={16} className="text-red-600" /></button>
+                                {/* Baris 1: Checkbox + Tombol Aksi */}
+                                <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                                    <input type="checkbox" className="checkbox" checked={selectedStudents.includes(student.id)} onChange={() => toggleSelectStudent(student.id)} />
+                                    <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                        <button onClick={() => { setSelectedStudentForCard(student); setShowIdCardModal(true); }} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm" title="Kartu ID">
+                                            <CreditCard size={14} className="text-purple-600" />
+                                        </button>
+                                        <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
+                                        <button onClick={() => openModal(student)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm" title="Edit">
+                                            <Edit2 size={14} className="text-blue-600" />
+                                        </button>
+                                        <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
+                                        <button onClick={() => handleDelete(student)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600" title="Hapus">
+                                            <Trash2 size={14} className="text-red-500" />
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
-                                    <code className="text-xs bg-gray-100 px-2 py-0.5 rounded block">{student.rfid_uid}</code>
+                                {/* Baris 2: Foto + Nama + NIS */}
+                                <div className="flex items-center gap-3 py-3 border-b border-gray-200">
+                                    {student.photo ? (
+                                        <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${student.photo}`} alt={student.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
+                                    ) : (
+                                        <div className="w-12 h-12 rounded-full flex items-center justify-center font-semibold flex-shrink-0" style={getAvatarColor()}>{getInitials(student.name)}</div>
+                                    )}
+                                    <div className="min-w-0">
+                                        <h3 className="font-semibold text-gray-900">{student.name}</h3>
+                                        <p className="text-sm text-gray-500">NIS: {student.nis}</p>
+                                    </div>
+                                </div>
+                                {/* Baris 3: RFID + Badge Kelas */}
+                                <div className="pt-3 space-y-2">
+                                    <code className="text-xs bg-gray-100 px-2 py-1 rounded block">{student.rfid_uid}</code>
                                     <div className="flex flex-wrap gap-2">
                                         <span className="badge badge-primary">★ {student.class?.name || '-'}</span>
                                         <span className="badge badge-secondary">◇ {student.category?.name || 'FULL DAY'}</span>
@@ -520,11 +552,11 @@ export default function Students() {
                                                 />
                                             </td>
                                             <td>
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex items-center gap-3 min-w-0">
                                                     {student.photo ? (
-                                                        <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${student.photo}`} alt={student.name} className="w-10 h-10 rounded-full object-cover" />
+                                                        <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${student.photo}`} alt={student.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
                                                     ) : (
-                                                        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'var(--accent-color-light)' }}>
+                                                        <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--accent-color-light)' }}>
                                                             <span className="font-semibold" style={{ color: 'var(--accent-color)' }}>
                                                                 {student.name?.charAt(0)?.toUpperCase()}
                                                             </span>
@@ -552,10 +584,14 @@ export default function Students() {
                                             <td>
                                                 <div className="flex items-center justify-center">
                                                     <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                                        <button onClick={() => { setSelectedStudentForCard(student); setShowIdCardModal(true); }} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm" title="Kartu ID">
+                                                            <CreditCard size={14} className="text-purple-600" />
+                                                        </button>
+                                                        <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                                         <button onClick={() => openModal(student)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm" title="Edit">
                                                             <Edit2 size={14} className="text-blue-600" />
                                                         </button>
-                                                        <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                                        <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                                         <button onClick={() => handleDelete(student)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600" title="Hapus">
                                                             <Trash2 size={14} className="text-red-500" />
                                                         </button>
@@ -835,6 +871,21 @@ export default function Students() {
                 message={confirmModal.message}
                 onConfirm={confirmModal.onConfirm}
             />
+
+            {/* ID Card Modal */}
+            <Modal
+                isOpen={showIdCardModal}
+                onClose={() => { setShowIdCardModal(false); setSelectedStudentForCard(null); }}
+                title="Kartu Identitas Siswa"
+            >
+                {selectedStudentForCard && (
+                    <StudentIdCard
+                        student={selectedStudentForCard}
+                        settings={settings}
+                        onDownload={() => toast.success('Kartu ID berhasil didownload!')}
+                    />
+                )}
+            </Modal>
         </div>
     );
 }

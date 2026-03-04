@@ -148,21 +148,22 @@ export default function Categories() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {paginatedCategories.length > 0 ? paginatedCategories.map((cat) => (
                             <div key={cat.id} className="card p-4 hover:shadow-lg transition-shadow">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <input type="checkbox" className="checkbox" checked={selectedItems.includes(cat.id)} onChange={() => toggleSelectItem(cat.id)} />
-                                        <div>
-                                            <h3 className="font-semibold text-lg" style={{ color: 'var(--text-primary)' }}>{cat.name}</h3>
-                                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{cat.description || 'Tidak ada deskripsi'}</p>
-                                        </div>
-                                    </div>
-                                    <div className="inline-flex flex-row items-center p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                {/* Baris 1: Checkbox + Tombol Aksi */}
+                                <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                                    <input type="checkbox" className="checkbox" checked={selectedItems.includes(cat.id)} onChange={() => toggleSelectItem(cat.id)} />
+                                    <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                         <button onClick={() => openModal(cat)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                        <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                        <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                         <button onClick={() => handleDelete(cat)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                     </div>
                                 </div>
-                                <div className="mt-4 pt-4 border-t flex items-center gap-2" style={{ borderColor: 'var(--border-color)' }}>
+                                {/* Baris 2: Info Kategori */}
+                                <div className="py-3 border-b border-gray-200">
+                                    <h3 className="font-semibold text-lg" style={{ color: 'var(--text-primary)' }}>{cat.name}</h3>
+                                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{cat.description || 'Tidak ada deskripsi'}</p>
+                                </div>
+                                {/* Baris 3: Jumlah Siswa */}
+                                <div className="pt-3 flex items-center gap-2">
                                     <Users size={18} style={{ color: 'var(--text-muted)' }} />
                                     <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{cat.students_count || 0} siswa</span>
                                 </div>
@@ -198,7 +199,7 @@ export default function Categories() {
                                         <td>
                                             <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                                 <button onClick={() => openModal(cat)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                                <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                                <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                                 <button onClick={() => handleDelete(cat)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                             </div>
                                         </td>

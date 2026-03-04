@@ -136,24 +136,27 @@ export default function Locations() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {paginatedLocations.length > 0 ? paginatedLocations.map((loc) => (
                             <div key={loc.id} className="card p-4 hover:shadow-lg transition-shadow">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <input type="checkbox" className="checkbox" checked={selectedItems.includes(loc.id)} onChange={() => toggleSelectItem(loc.id)} />
-                                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--accent-color-light)' }}>
-                                            <MapPin size={20} style={{ color: 'var(--accent-color)' }} />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{loc.name}</h3>
-                                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{loc.description || 'Tidak ada deskripsi'}</p>
-                                        </div>
-                                    </div>
-                                    <div className="inline-flex flex-row items-center p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                {/* Baris 1: Checkbox + Tombol Aksi */}
+                                <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                                    <input type="checkbox" className="checkbox" checked={selectedItems.includes(loc.id)} onChange={() => toggleSelectItem(loc.id)} />
+                                    <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                         <button onClick={() => openModal(loc)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                        <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                        <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                         <button onClick={() => handleDelete(loc)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                     </div>
                                 </div>
-                                <div className="mt-4 pt-4 border-t flex items-center gap-2" style={{ borderColor: 'var(--border-color)' }}>
+                                {/* Baris 2: Icon + Nama */}
+                                <div className="py-3 border-b border-gray-200 flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--accent-color-light)' }}>
+                                        <MapPin size={20} style={{ color: 'var(--accent-color)' }} />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{loc.name}</h3>
+                                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{loc.description || 'Tidak ada deskripsi'}</p>
+                                    </div>
+                                </div>
+                                {/* Baris 3: Jumlah Perangkat */}
+                                <div className="pt-3 flex items-center gap-2">
                                     <Cpu size={18} style={{ color: 'var(--text-muted)' }} />
                                     <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{loc.esp_devices_count || 0} perangkat</span>
                                 </div>
@@ -189,7 +192,7 @@ export default function Locations() {
                                         <td>
                                             <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                                 <button onClick={() => openModal(loc)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                                <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                                <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                                 <button onClick={() => handleDelete(loc)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                             </div>
                                         </td>

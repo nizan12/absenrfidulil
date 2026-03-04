@@ -219,28 +219,33 @@ export default function Teachers() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {teachers.length > 0 ? teachers.map((teacher) => (
                             <div key={teacher.id} className="card p-4 hover:shadow-lg transition-shadow">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <input type="checkbox" className="checkbox" checked={selectedItems.includes(teacher.id)} onChange={() => toggleSelectItem(teacher.id)} />
-                                        <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'color-mix(in srgb, var(--accent-color) 15%, transparent)' }}>
-                                            <span className="font-semibold" style={{ color: 'var(--accent-color)' }}>{getInitials(teacher.name)}</span>
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold text-gray-900">{teacher.name}</h3>
-                                            <p className="text-xs text-gray-500">NIP: {teacher.nip}</p>
-                                        </div>
-                                    </div>
+                                {/* Baris 1: Checkbox + Tombol Aksi */}
+                                <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                                    <input type="checkbox" className="checkbox" checked={selectedItems.includes(teacher.id)} onChange={() => toggleSelectItem(teacher.id)} />
                                     <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                         <button onClick={() => openModal(teacher)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                        <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                        <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                         <button onClick={() => handleDelete(teacher)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                     </div>
                                 </div>
-                                <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
+                                {/* Baris 2: Foto + Nama + NIP */}
+                                <div className="flex items-center gap-3 py-3 border-b border-gray-200">
+                                    {teacher.photo ? (
+                                        <img src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'}/storage/${teacher.photo}`} alt={teacher.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
+                                    ) : (
+                                        <div className="w-12 h-12 rounded-full flex items-center justify-center font-semibold flex-shrink-0" style={{ background: 'color-mix(in srgb, var(--accent-color) 15%, transparent)', color: 'var(--accent-color)' }}>{getInitials(teacher.name)}</div>
+                                    )}
+                                    <div className="min-w-0">
+                                        <h3 className="font-semibold text-gray-900">{teacher.name}</h3>
+                                        <p className="text-sm text-gray-500">NIP: {teacher.nip}</p>
+                                    </div>
+                                </div>
+                                {/* Baris 3: Detail */}
+                                <div className="pt-3 space-y-2">
                                     <div className="flex items-center gap-2 text-sm text-gray-500">
                                         <Phone size={14} /> {teacher.phone || '-'}
                                     </div>
-                                    <p className="text-xs text-gray-400 font-mono">RFID: {teacher.rfid_uid}</p>
+                                    <code className="text-xs bg-gray-100 px-2 py-1 rounded block">{teacher.rfid_uid}</code>
                                 </div>
                             </div>
                         )) : (
@@ -282,7 +287,7 @@ export default function Teachers() {
                                                         <span className="font-semibold text-sm" style={{ color: 'var(--accent-color)' }}>{getInitials(teacher.name)}</span>
                                                     </div>
                                                 )}
-                                                <span className="truncate max-w-[120px]">{teacher.name}</span>
+                                                <span className="max-w-[120px]">{teacher.name}</span>
                                             </div>
                                         </td>
                                         <td style={{ color: 'var(--text-secondary)' }}>{teacher.nip}</td>
@@ -291,7 +296,7 @@ export default function Teachers() {
                                         <td>
                                             <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                                 <button onClick={() => openModal(teacher)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                                <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                                <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                                 <button onClick={() => handleDelete(teacher)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                             </div>
                                         </td>

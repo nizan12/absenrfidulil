@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { attendanceService, deviceService } from '../services/dataService';
+import { attendanceService, deviceService, studentService } from '../services/dataService';
 import CustomSelect from '../components/ui/CustomSelect';
 import { Skeleton } from '../components/ui/Skeleton';
 import {
@@ -14,6 +14,8 @@ import {
     CreditCard,
     Send,
     Loader2,
+    User,
+    Building2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -29,7 +31,13 @@ export default function LiveMonitor() {
     const [rfidInput, setRfidInput] = useState('');
     const [devices, setDevices] = useState([]);
     const [selectedDevice, setSelectedDevice] = useState('');
+    const [forceTapType, setForceTapType] = useState(''); // Empty = auto, 'in' or 'out' = forced
     const [submitting, setSubmitting] = useState(false);
+
+    // RFID check states
+    const [rfidInfo, setRfidInfo] = useState(null); // Info about the RFID (boarding status etc)
+    const [checkingRfid, setCheckingRfid] = useState(false);
+    const rfidCheckTimeoutRef = useRef(null);
 
     useEffect(() => {
         fetchLogs();
@@ -47,6 +55,9 @@ export default function LiveMonitor() {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
             }
+            if (rfidCheckTimeoutRef.current) {
+                clearTimeout(rfidCheckTimeoutRef.current);
+            }
         };
     }, []);
 
@@ -62,6 +73,38 @@ export default function LiveMonitor() {
             }
         } catch (error) {
             console.error('Error loading devices:', error);
+        }
+    };
+
+    // Check RFID info with debounce
+    const handleRfidInputChange = (value) => {
+        setRfidInput(value);
+        setRfidInfo(null);
+        setForceTapType(''); // Reset force type when RFID changes
+
+        // Clear previous timeout
+        if (rfidCheckTimeoutRef.current) {
+            clearTimeout(rfidCheckTimeoutRef.current);
+        }
+
+        // Only check if RFID has enough characters
+        if (value.trim().length >= 4) {
+            rfidCheckTimeoutRef.current = setTimeout(async () => {
+                setCheckingRfid(true);
+                try {
+                    const response = await studentService.checkRfid(value.trim());
+                    if (response.success && response.found) {
+                        setRfidInfo(response);
+                    } else {
+                        setRfidInfo({ found: false });
+                    }
+                } catch (error) {
+                    console.error('Error checking RFID:', error);
+                    setRfidInfo(null);
+                } finally {
+                    setCheckingRfid(false);
+                }
+            }, 500); // 500ms debounce
         }
     };
 
@@ -129,10 +172,17 @@ export default function LiveMonitor() {
 
         setSubmitting(true);
         try {
-            const response = await attendanceService.manualTap(rfidInput.trim(), selectedDevice);
+            // Pass forceTapType if specified (for boarding manual override)
+            const response = await attendanceService.manualTap(
+                rfidInput.trim(),
+                selectedDevice,
+                forceTapType || null
+            );
             if (response.success) {
                 toast.success(response.message || 'Berhasil!');
                 setRfidInput('');
+                setForceTapType(''); // Reset forced type after submit
+                setRfidInfo(null); // Reset RFID info
                 // Refresh logs immediately
                 fetchLogs(false);
             } else {
@@ -275,22 +325,22 @@ export default function LiveMonitor() {
 
             {/* Manual Input Card */}
             <div className="card p-4" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
-                <form onSubmit={handleManualTap} className="flex flex-col sm:flex-row gap-4">
+                <form onSubmit={handleManualTap} className="flex flex-col sm:flex-row gap-4 flex-wrap items-end">
                     <div className="flex items-center gap-3 flex-shrink-0">
                         <CreditCard className="text-primary-600" size={24} />
-                        <span className="font-medium" style={{ color: 'var(--text-primary)' }}>Input Manual:</span>
+                        <span className="font-medium" style={{ color: 'var(--text-primary)' }}>Input Manual</span>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-[200px]">
                         <input
                             type="text"
                             value={rfidInput}
-                            onChange={(e) => setRfidInput(e.target.value)}
+                            onChange={(e) => handleRfidInputChange(e.target.value)}
                             placeholder="Masukkan nomor RFID (UID)"
                             className="input font-mono"
                             disabled={submitting}
                         />
                     </div>
-                    <div className="w-full sm:w-48">
+                    <div className="w-full sm:w-40">
                         <CustomSelect
                             options={devices.length === 0
                                 ? [{ value: '', label: 'Tidak ada device' }]
@@ -302,6 +352,19 @@ export default function LiveMonitor() {
                             disabled={submitting}
                         />
                     </div>
+                    <div className="w-full sm:w-36">
+                        <CustomSelect
+                            options={[
+                                { value: '', label: 'Auto' },
+                                { value: 'in', label: 'Masuk', disabled: rfidInfo?.found && !rfidInfo?.is_boarding },
+                                { value: 'out', label: 'Keluar', disabled: rfidInfo?.found && !rfidInfo?.is_boarding },
+                            ]}
+                            value={forceTapType}
+                            onChange={setForceTapType}
+                            placeholder="Tipe Tap"
+                            disabled={submitting || (rfidInfo?.found && !rfidInfo?.is_boarding)}
+                        />
+                    </div>
                     <button
                         type="submit"
                         disabled={submitting || !rfidInput.trim() || !selectedDevice}
@@ -311,9 +374,52 @@ export default function LiveMonitor() {
                         <span>Kirim</span>
                     </button>
                 </form>
-                <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
-                    Tidak perlu scan kartu - masukkan nomor UID RFID secara manual untuk mencatat kehadiran
-                </p>
+
+                {/* RFID Info Display */}
+                {checkingRfid && (
+                    <div className="mt-3 flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                        <Loader2 size={14} className="animate-spin" />
+                        <span>Memeriksa RFID...</span>
+                    </div>
+                )}
+                {rfidInfo && !checkingRfid && (
+                    <div className="mt-3 flex items-center gap-3 flex-wrap">
+                        {rfidInfo.found ? (
+                            <>
+                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm" style={{
+                                    background: rfidInfo.type === 'student' ? 'var(--accent-color-light)' : '#fef3c7',
+                                    color: rfidInfo.type === 'student' ? 'var(--accent-color)' : '#92400e'
+                                }}>
+                                    {rfidInfo.type === 'student' ? <GraduationCap size={16} /> : <User size={16} />}
+                                    <span className="font-medium">{rfidInfo.data?.name}</span>
+                                    {rfidInfo.type === 'student' && <span>• {rfidInfo.data?.class}</span>}
+                                </div>
+                                {rfidInfo.is_boarding && (
+                                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-purple-100 text-purple-700">
+                                        <Building2 size={14} />
+                                        <span className="font-medium">Boarding</span>
+                                    </div>
+                                )}
+                                {rfidInfo.found && !rfidInfo.is_boarding && rfidInfo.type === 'student' && (
+                                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                                        (Pilihan tipe tap tidak tersedia untuk siswa non-boarding)
+                                    </span>
+                                )}
+                            </>
+                        ) : (
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-red-100 text-red-700">
+                                <CreditCard size={14} />
+                                <span>RFID tidak terdaftar</span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {!rfidInfo && !checkingRfid && (
+                    <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
+                        Pilihan tipe tap (Masuk/Keluar) hanya tersedia untuk siswa Boarding
+                    </p>
+                )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

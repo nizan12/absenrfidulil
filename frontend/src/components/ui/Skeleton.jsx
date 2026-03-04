@@ -3,8 +3,10 @@ import React from 'react';
 export function Skeleton({ className, ...props }) {
     return (
         <div
-            className={`animate-pulse rounded-md ${className}`}
-            style={{ backgroundColor: 'var(--skeleton-bg, #e5e7eb)' }}
+            className={`animate-pulse rounded-xl ${className}`}
+            style={{
+                backgroundColor: 'color-mix(in srgb, var(--text-secondary) 15%, transparent)',
+            }}
             {...props}
         />
     );
@@ -34,26 +36,26 @@ export function CardSkeleton({ count = 8 }) {
 
 export function TableSkeleton({ columns = 5, rows = 5 }) {
     return (
-        <div className="card">
-            <div className="table-container">
-                <table className="table w-full">
-                    <thead>
-                        <tr>
-                            {Array(columns).fill(0).map((_, i) => (
-                                <th key={i}><Skeleton className="h-4 w-24" /></th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Array(rows).fill(0).map((_, i) => (
-                            <tr key={i}>
-                                {Array(columns).fill(0).map((_, j) => (
-                                    <td key={j}><Skeleton className="h-4 w-full" /></td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+        <div className="rounded-2xl p-4" style={{ backgroundColor: 'var(--bg-card)' }}>
+            {/* Header skeleton */}
+            <div className="flex gap-4 pb-4 mb-4" style={{ borderBottom: '1px solid color-mix(in srgb, var(--text-secondary) 15%, transparent)' }}>
+                {Array(columns).fill(0).map((_, i) => (
+                    <Skeleton key={i} className="h-4 flex-1" style={{ maxWidth: i === 0 ? '40px' : '120px' }} />
+                ))}
+            </div>
+            {/* Rows skeleton */}
+            <div className="space-y-3">
+                {Array(rows).fill(0).map((_, i) => (
+                    <div key={i} className="flex items-center gap-4 py-3 rounded-xl" style={{ backgroundColor: 'color-mix(in srgb, var(--text-secondary) 5%, transparent)' }}>
+                        <Skeleton className="h-10 w-10 rounded-xl ml-3" />
+                        <div className="flex-1 flex gap-4">
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-4 w-20" />
+                        </div>
+                        <Skeleton className="h-6 w-16 mr-3" />
+                    </div>
+                ))}
             </div>
         </div>
     );

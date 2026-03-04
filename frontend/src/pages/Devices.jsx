@@ -176,28 +176,31 @@ export default function Devices() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {paginatedDevices.length > 0 ? paginatedDevices.map((device) => (
                             <div key={device.id} className="card p-4 hover:shadow-lg transition-shadow">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <input type="checkbox" className="checkbox" checked={selectedItems.includes(device.id)} onChange={() => toggleSelectItem(device.id)} />
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${device.is_active ? 'bg-green-100' : 'bg-gray-100'}`}>
-                                            {device.is_active ? <Wifi className="text-green-600" size={20} /> : <WifiOff className="text-gray-400" size={20} />}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{device.name}</h3>
-                                            <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>{device.device_code}</p>
-                                        </div>
-                                    </div>
-                                    <div className="inline-flex flex-row items-center p-1 rounded-lg border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                                {/* Baris 1: Checkbox + Tombol Aksi */}
+                                <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                                    <input type="checkbox" className="checkbox" checked={selectedItems.includes(device.id)} onChange={() => toggleSelectItem(device.id)} />
+                                    <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                         <button onClick={() => openModal(device)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                        <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                        <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                         <button onClick={() => handleDelete(device)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                     </div>
                                 </div>
-                                <div className="mt-4 space-y-2">
+                                {/* Baris 2: Icon + Nama + Kode */}
+                                <div className="py-3 border-b border-gray-200 flex items-center gap-3">
+                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${device.is_active ? 'bg-green-100' : 'bg-gray-100'}`}>
+                                        {device.is_active ? <Wifi className="text-green-600" size={20} /> : <WifiOff className="text-gray-400" size={20} />}
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{device.name}</h3>
+                                        <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>{device.device_code}</p>
+                                    </div>
+                                </div>
+                                {/* Baris 3: Detail */}
+                                <div className="pt-3 space-y-2">
                                     <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}><MapPin size={16} style={{ color: 'var(--text-muted)' }} /><span>{device.location?.name || 'Tidak ada lokasi'}</span></div>
                                     <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}><Clock size={16} style={{ color: 'var(--text-muted)' }} /><span>Delay: {device.tap_delay_seconds || 300} detik</span></div>
+                                    <span className={`badge ${getTypeColor(device.type)}`}>{getTypeLabel(device.type)}</span>
                                 </div>
-                                <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border-color)' }}><span className={`badge ${getTypeColor(device.type)}`}>{getTypeLabel(device.type)}</span></div>
                             </div>
                         )) : (
                             <div className="col-span-full text-center py-12" style={{ color: 'var(--text-secondary)' }}><Cpu size={48} className="mx-auto mb-3 opacity-30" /><p>Belum ada perangkat terdaftar</p></div>
@@ -233,7 +236,7 @@ export default function Devices() {
                                         <td>
                                             <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                                 <button onClick={() => openModal(device)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm"><Edit2 size={14} className="text-blue-600" /></button>
-                                                <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+                                                <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                                 <button onClick={() => handleDelete(device)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm hover:text-red-600"><Trash2 size={14} className="text-red-500" /></button>
                                             </div>
                                         </td>

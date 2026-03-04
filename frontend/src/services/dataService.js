@@ -47,6 +47,10 @@ export const studentService = {
     });
     return response.data;
   },
+  checkRfid: async (rfid_uid) => {
+    const response = await api.post('/students/check-rfid', { rfid_uid });
+    return response.data;
+  },
 };
 export const classService = createCrudService('classes');
 export const categoryService = createCrudService('categories');
@@ -115,8 +119,12 @@ export const attendanceService = {
     return response.data;
   },
 
-  manualTap: async (rfid_uid, device_id) => {
-    const response = await api.post('/tap/manual', { rfid_uid, device_id });
+  manualTap: async (rfid_uid, device_id, force_tap_type = null) => {
+    const data = { rfid_uid, device_id };
+    if (force_tap_type) {
+      data.force_tap_type = force_tap_type;
+    }
+    const response = await api.post('/tap/manual', data);
     return response.data;
   },
 };
