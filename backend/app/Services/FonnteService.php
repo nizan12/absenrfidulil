@@ -65,19 +65,38 @@ class FonnteService
         }
     }
 
-    public function sendStudentNotification($student, $tapType, $location, $tappedAt)
+    public function sendStudentNotification($student, $tapType, $location, $tappedAt, $isBoarding = false)
     {
         $parents = $student->parents()->where('receive_notification', true)->get();
         $institutionName = AppSetting::get('institution_name', 'Sekolah');
         
-        $status = $tapType === 'in' ? 'MASUK' : 'KELUAR';
-        
-        $message = "📍 *Notifikasi Kehadiran*\n\n";
-        $message .= "Ananda *{$student->name}* telah *{$status}* sekolah pada:\n";
-        $message .= "📅 " . $tappedAt->format('d F Y') . "\n";
-        $message .= "⏰ " . $tappedAt->format('H:i') . " WIB\n";
-        $message .= "📍 {$location}\n\n";
-        $message .= "_{$institutionName}_";
+        if ($isBoarding) {
+            // BOARDING STUDENT MESSAGE - Different wording
+            if ($tapType === 'in') {
+                $status = 'MASUK ke area sekolah';
+                $emoji = '🏫';
+            } else {
+                $status = 'KELUAR dari area sekolah';
+                $emoji = '🏠';
+            }
+            
+            $message = "{$emoji} *Notifikasi Siswa Boarding*\n\n";
+            $message .= "Ananda *{$student->name}* telah *{$status}* pada:\n";
+            $message .= "📅 " . $tappedAt->format('d F Y') . "\n";
+            $message .= "⏰ " . $tappedAt->format('H:i') . " WIB\n";
+            $message .= "📍 {$location}\n\n";
+            $message .= "🏨 _Siswa Asrama - {$institutionName}_";
+        } else {
+            // REGULAR STUDENT MESSAGE
+            $status = $tapType === 'in' ? 'MASUK' : 'KELUAR';
+            
+            $message = "📍 *Notifikasi Kehadiran*\n\n";
+            $message .= "Ananda *{$student->name}* telah *{$status}* sekolah pada:\n";
+            $message .= "📅 " . $tappedAt->format('d F Y') . "\n";
+            $message .= "⏰ " . $tappedAt->format('H:i') . " WIB\n";
+            $message .= "📍 {$location}\n\n";
+            $message .= "_{$institutionName}_";
+        }
 
         $results = [];
         foreach ($parents as $parent) {

@@ -116,6 +116,7 @@ class TapController extends Controller
         $request->validate([
             'rfid_uid' => 'required|string',
             'device_id' => 'required|exists:esp_devices,id',
+            'force_tap_type' => 'nullable|in:in,out', // Optional: force IN or OUT for boarding students
         ]);
 
         // Get device code from device ID
@@ -129,10 +130,14 @@ class TapController extends Controller
             ], 400);
         }
 
+        // Get force_tap_type if provided (for boarding manual override)
+        $forceTapType = $request->force_tap_type;
+
         // Try student first
         $result = $this->tapService->processStudentTap(
             $device->device_code,
-            $request->rfid_uid
+            $request->rfid_uid,
+            $forceTapType
         );
 
         // If student not found, try teacher

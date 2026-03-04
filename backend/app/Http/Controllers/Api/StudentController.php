@@ -411,4 +411,73 @@ class StudentController extends Controller
         }
         return $phone;
     }
+
+    /**
+     * Check RFID info - returns student/teacher info and boarding status
+     */
+    public function checkRfid(Request $request)
+    {
+        $request->validate([
+            'rfid_uid' => 'required|string',
+        ]);
+
+        $rfidUid = $request->rfid_uid;
+
+        // Check student first
+        $student = Student::where('rfid_uid', $rfidUid)
+            ->with(['class', 'category'])
+            ->first();
+
+        if ($student) {
+            $isBoarding = false;
+            if ($student->category) {
+                $categoryName = strtolower(trim($student->category->name));
+                $isBoarding = str_contains($categoryName, 'boarding') || $categoryName === 'asrama';
+            }
+
+            return response()->json([
+                'success' => true,
+                'found' => true,
+                'type' => 'student',
+                'is_boarding' => $isBoarding,
+                'data' => [
+                    'id' => $student->id,
+                    'name' => $student->name,
+                    'nis' => $student->nis,
+                    'class' => $student->class->name ?? '-',
+                    'category' => $student->category->name ?? 'Reguler',
+                    'photo' => $student->photo,
+                    'is_active' => $student->is_active,
+                ],
+            ]);
+        }
+
+        // Check teacher
+        $teacher = \App\Models\Teacher::where('rfid_uid', $rfidUid)->first();
+
+        if ($teacher) {
+            return response()->json([
+                'success' => true,
+                'found' => true,
+                'type' => 'teacher',
+                'is_boarding' => false,
+                'data' => [
+                    'id' => $teacher->id,
+                    'name' => $teacher->name,
+                    'nip' => $teacher->nip,
+                    'photo' => $teacher->photo,
+                    'is_active' => $teacher->is_active,
+                ],
+            ]);
+        }
+
+        // Not found
+        return response()->json([
+            'success' => true,
+            'found' => false,
+            'type' => null,
+            'is_boarding' => false,
+            'data' => null,
+        ]);
+    }
 }

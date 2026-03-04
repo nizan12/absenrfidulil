@@ -18,7 +18,7 @@ class TapService
         $this->fonnteService = $fonnteService;
     }
 
-    public function processStudentTap($deviceCode, $rfidUid)
+    public function processStudentTap($deviceCode, $rfidUid, $forceTapType = null)
     {
         // Find the device
         $device = EspDevice::where('device_code', $deviceCode)
@@ -33,10 +33,10 @@ class TapService
             ];
         }
 
-        // Find the student
+        // Find the student with category
         $student = Student::where('rfid_uid', $rfidUid)
             ->where('is_active', true)
-            ->with('class')
+            ->with(['class', 'category'])
             ->first();
 
         if (!$student) {
@@ -47,7 +47,7 @@ class TapService
             ];
         }
 
-        // Check tap delay
+        // Check tap delay - use Carbon::parse to ensure consistent timezone
         $lastTap = AttendanceLog::where('student_id', $student->id)
             ->latest('tapped_at')
             ->first();
@@ -55,30 +55,63 @@ class TapService
         $now = Carbon::now();
         $delaySeconds = $device->tap_delay_seconds ?? 300; // Default 5 minutes
 
-        if ($lastTap && $now->diffInSeconds($lastTap->tapped_at) < $delaySeconds) {
-            $remainingSeconds = $delaySeconds - $now->diffInSeconds($lastTap->tapped_at);
-            $remainingMinutes = ceil($remainingSeconds / 60);
+        if ($lastTap) {
+            $lastTapTime = Carbon::parse($lastTap->tapped_at);
+            $secondsSinceLastTap = $now->diffInSeconds($lastTapTime, false);
             
-            return [
-                'success' => false,
-                'message' => "Tunggu {$remainingMinutes} menit lagi",
-                'code' => 'TAP_TOO_SOON',
-                'student' => [
-                    'name' => $student->name,
-                    'class' => $student->class->name ?? '-'
-                ]
-            ];
+            // Use absolute value for comparison (diffInSeconds can be negative)
+            if (abs($secondsSinceLastTap) < $delaySeconds) {
+                $remainingSeconds = $delaySeconds - abs($secondsSinceLastTap);
+                
+                // Format message based on remaining time
+                if ($remainingSeconds >= 60) {
+                    $remainingMinutes = ceil($remainingSeconds / 60);
+                    $waitMessage = "Tunggu {$remainingMinutes} menit lagi";
+                } else {
+                    $waitMessage = "Tunggu {$remainingSeconds} detik lagi";
+                }
+                
+                return [
+                    'success' => false,
+                    'message' => $waitMessage,
+                    'code' => 'TAP_TOO_SOON',
+                    'remaining_seconds' => $remainingSeconds,
+                    'student' => [
+                        'name' => $student->name,
+                        'class' => $student->class->name ?? '-'
+                    ]
+                ];
+            }
         }
 
-        // Determine tap type (in/out) - only based on TODAY's last tap
+        // Determine tap type based on student category and today's taps
+        // Count today's taps for boarding logic
+        $todayTapCount = AttendanceLog::where('student_id', $student->id)
+            ->whereDate('tapped_at', $now->toDateString())
+            ->count();
+        
         $todayLastTap = AttendanceLog::where('student_id', $student->id)
             ->whereDate('tapped_at', $now->toDateString())
             ->latest('tapped_at')
             ->first();
         
-        $tapType = 'in';
-        if ($todayLastTap && $todayLastTap->tap_type === 'in') {
-            $tapType = 'out';
+        // Check if student is boarding (case-insensitive check)
+        $isBoarding = false;
+        if ($student->category) {
+            $categoryName = strtolower(trim($student->category->name));
+            $isBoarding = str_contains($categoryName, 'boarding') || $categoryName === 'asrama';
+        }
+
+        // Determine tap type - ALTERNATING for all students (boarding and regular)
+        // For complex boarding cases, use manual tap with forced tap_type
+        $tapType = 'in'; // Default first tap is always IN
+        
+        // If forceTapType is provided (from manual tap), use it directly
+        if ($forceTapType !== null && in_array($forceTapType, ['in', 'out'])) {
+            $tapType = $forceTapType;
+        } else if ($todayTapCount > 0) {
+            // Simple alternating logic for everyone
+            $tapType = ($todayLastTap->tap_type === 'in') ? 'out' : 'in';
         }
 
         // Create attendance log
@@ -96,7 +129,8 @@ class TapService
             $student,
             $tapType,
             $locationName,
-            $now
+            $now,
+            $isBoarding
         );
 
         // Update wa_sent status
@@ -112,10 +146,12 @@ class TapService
             'message' => $message,
             'tap_type' => $tapType,
             'wa_sent' => $waSent,
+            'is_boarding' => $isBoarding,
             'student' => [
                 'id' => $student->id,
                 'name' => $student->name,
                 'class' => $student->class->name ?? '-',
+                'category' => $student->category->name ?? 'Full Day',
                 'photo' => $student->photo,
             ],
             'location' => $locationName,
@@ -151,7 +187,7 @@ class TapService
         if (!$teacher) {
             return [
                 'success' => false,
-                'message' => 'Kartu guru tidak terdaftar',
+                'message' => 'Kartu tidak terdaftar',
                 'code' => 'TEACHER_NOT_FOUND'
             ];
         }
@@ -164,19 +200,25 @@ class TapService
         $now = Carbon::now();
         $delaySeconds = $device->tap_delay_seconds ?? 300;
 
-        if ($lastTap && $now->diffInSeconds($lastTap->tapped_at) < $delaySeconds) {
-            $remainingSeconds = $delaySeconds - $now->diffInSeconds($lastTap->tapped_at);
-            $remainingMinutes = ceil($remainingSeconds / 60);
+        if ($lastTap) {
+            $lastTapTime = Carbon::parse($lastTap->tapped_at);
+            $secondsSinceLastTap = $now->diffInSeconds($lastTapTime, false);
             
-            return [
-                'success' => false,
-                'message' => "Tunggu {$remainingMinutes} menit lagi",
-                'code' => 'TAP_TOO_SOON',
-                'teacher' => [
-                    'name' => $teacher->name,
-                    'nip' => $teacher->nip
-                ]
-            ];
+            if (abs($secondsSinceLastTap) < $delaySeconds) {
+                $remainingSeconds = $delaySeconds - abs($secondsSinceLastTap);
+                $remainingMinutes = ceil($remainingSeconds / 60);
+                
+                return [
+                    'success' => false,
+                    'message' => "Tunggu {$remainingMinutes} menit lagi",
+                    'code' => 'TAP_TOO_SOON',
+                    'remaining_seconds' => $remainingSeconds,
+                    'teacher' => [
+                        'name' => $teacher->name,
+                        'nip' => $teacher->nip
+                    ]
+                ];
+            }
         }
 
         // Determine tap type - only based on TODAY's last tap

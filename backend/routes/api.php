@@ -60,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Students
     Route::get('/student-template', [StudentController::class, 'downloadTemplate']);
     Route::post('/students/import', [StudentController::class, 'import']);
+    Route::post('/students/check-rfid', [StudentController::class, 'checkRfid']);
     Route::apiResource('students', StudentController::class);
 
     // Classes
