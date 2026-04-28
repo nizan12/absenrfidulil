@@ -70,9 +70,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class);
 
     // Users (Admin management)
+    Route::get('/user-template', [UserController::class, 'downloadTemplate']);
+    Route::post('/users/import', [UserController::class, 'import']);
     Route::apiResource('users', UserController::class);
 
     // Teachers
+    Route::get('/teacher-template', [TeacherController::class, 'downloadTemplate']);
+    Route::post('/teachers/import', [TeacherController::class, 'import']);
     Route::apiResource('teachers', TeacherController::class);
 
     // Parents

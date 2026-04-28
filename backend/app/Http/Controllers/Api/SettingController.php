@@ -54,7 +54,21 @@ class SettingController extends Controller
         ]);
 
         if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            $oldLogo = AppSetting::get('institution_logo');
+            if ($oldLogo && \Storage::disk('public')->exists($oldLogo)) {
+                \Storage::disk('public')->delete($oldLogo);
+            }
+
             $path = $request->file('logo')->store('logos', 'public');
+            
+            if (!$path) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menyimpan file. Periksa permission folder storage.',
+                ], 500);
+            }
+
             AppSetting::set('institution_logo', $path);
 
             return response()->json([

@@ -72,6 +72,7 @@ class ParentController extends Controller
     public function update(Request $request, StudentParent $parent)
     {
         $request->validate([
+            'student_id' => 'sometimes|exists:students,id',
             'name' => 'sometimes|string|max:255',
             'phone' => 'sometimes|string|max:20',
             'relationship' => 'sometimes|in:ayah,ibu,wali',
@@ -79,7 +80,7 @@ class ParentController extends Controller
             'photo' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->only(['name', 'phone', 'relationship', 'receive_notification']);
+        $data = $request->only(['student_id', 'name', 'phone', 'relationship', 'receive_notification']);
 
         if ($request->hasFile('photo')) {
             $data['photo'] = $request->file('photo')->store('photos/parents', 'public');

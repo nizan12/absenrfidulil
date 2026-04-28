@@ -42,7 +42,15 @@ export default function Login() {
             await login(email, password);
             navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Login gagal. Periksa email dan password Anda.');
+            const errorData = err.response?.data;
+            const validationErrors = errorData?.errors;
+            if (validationErrors) {
+                // Get the first validation error message
+                const firstError = Object.values(validationErrors)[0];
+                setError(Array.isArray(firstError) ? firstError[0] : firstError);
+            } else {
+                setError(errorData?.message || 'Login gagal. Periksa email dan password Anda.');
+            }
         } finally {
             setLoading(false);
         }
@@ -57,7 +65,7 @@ export default function Login() {
                         <div className="w-16 h-16 rounded-2xl mb-4 bg-gray-200 animate-pulse"></div>
                     ) : settings.institution_logo ? (
                         <img
-                            src={`${API_URL}/storage/${settings.institution_logo}`}
+                            src={`${API_URL}/storage/${settings.institution_logo}?t=${Date.now()}`}
                             alt="Logo"
                             className="h-16 w-auto object-contain mb-4"
                             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}

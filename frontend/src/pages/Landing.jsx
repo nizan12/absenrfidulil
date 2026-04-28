@@ -229,7 +229,7 @@ export default function Landing() {
                                     <div className="w-10 h-10 bg-slate-200 rounded-xl animate-pulse"></div>
                                 ) : settings.institution_logo ? (
                                     <img
-                                        src={`${API_URL}/storage/${settings.institution_logo}`}
+                                        src={`${API_URL}/storage/${settings.institution_logo}?t=${Date.now()}`}
                                         alt="Logo"
                                         className="h-10 w-auto object-contain"
                                     />

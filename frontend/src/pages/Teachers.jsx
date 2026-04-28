@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { teacherService } from '../services/dataService';
 import CustomSelect from '../components/ui/CustomSelect';
 import Pagination from '../components/ui/Pagination';
@@ -18,6 +18,10 @@ import {
     X,
     Camera,
     Download,
+    Upload,
+    FileSpreadsheet,
+    AlertCircle,
+    CheckCircle,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -45,6 +49,12 @@ export default function Teachers() {
         message: '',
         onConfirm: null
     });
+
+    // Import states
+    const [showImportModal, setShowImportModal] = useState(false);
+    const [importing, setImporting] = useState(false);
+    const [importFile, setImportFile] = useState(null);
+    const fileInputRef = useRef(null);
 
     // Multi-select states
     const [selectedItems, setSelectedItems] = useState([]);
@@ -184,6 +194,83 @@ export default function Teachers() {
 
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '?';
 
+    // Import Excel Functions
+    const openImportModal = () => {
+        setShowImportModal(true);
+        setImportFile(null);
+    };
+
+    const closeImportModal = () => {
+        setShowImportModal(false);
+        setImportFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const validExtensions = ['.xlsx', '.xls', '.csv'];
+            const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+            if (!validExtensions.includes(fileExtension)) {
+                toast.error('File harus berformat Excel (.xlsx, .xls) atau CSV (.csv)');
+                return;
+            }
+            setImportFile(file);
+        }
+    };
+
+    const handleDownloadTemplate = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+            const response = await fetch(`${baseUrl}/teacher-template`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error('Gagal download template');
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `template_import_guru_${new Date().toISOString().split('T')[0]}.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            toast.success('Template berhasil diunduh');
+        } catch (error) {
+            toast.error('Gagal mengunduh template');
+        }
+    };
+
+    const handleImport = async () => {
+        if (!importFile) {
+            toast.error('Pilih file Excel terlebih dahulu');
+            return;
+        }
+
+        setImporting(true);
+        const formData = new FormData();
+        formData.append('file', importFile);
+
+        try {
+            const response = await teacherService.import(formData);
+            if (response.success) {
+                toast.success(`Berhasil mengimpor ${response.data?.imported || 0} guru`);
+                closeImportModal();
+                fetchTeachers();
+            } else {
+                toast.error(response.message || 'Gagal mengimpor data');
+            }
+        } catch (error) {
+            const message = error.response?.data?.message || 'Gagal mengimpor data';
+            toast.error(message);
+        } finally {
+            setImporting(false);
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -193,7 +280,13 @@ export default function Teachers() {
                     </h1>
                     <p className="text-gray-500">Kelola data guru dan kartu RFID</p>
                 </div>
-                <button onClick={() => openModal()} className="btn btn-primary"><Plus size={20} /><span>Tambah Guru</span></button>
+                <div className="flex items-center gap-3">
+                    <button onClick={openImportModal} className="btn btn-outline">
+                        <Upload size={18} />
+                        <span>Import Excel</span>
+                    </button>
+                    <button onClick={() => openModal()} className="btn btn-primary"><Plus size={20} /><span>Tambah Guru</span></button>
+                </div>
             </div>
 
             <div className="card p-4">
@@ -287,7 +380,7 @@ export default function Teachers() {
                                                         <span className="font-semibold text-sm" style={{ color: 'var(--accent-color)' }}>{getInitials(teacher.name)}</span>
                                                     </div>
                                                 )}
-                                                <span className="max-w-[120px]">{teacher.name}</span>
+                                                <span>{teacher.name}</span>
                                             </div>
                                         </td>
                                         <td style={{ color: 'var(--text-secondary)' }}>{teacher.nip}</td>
@@ -354,6 +447,30 @@ export default function Teachers() {
                 message={confirmModal.message}
                 onConfirm={confirmModal.onConfirm}
             />
+
+            {/* Import Excel Modal */}
+            <Modal
+                isOpen={showImportModal}
+                onClose={closeImportModal}
+                title="Import Data Guru"
+            >
+                <div className="p-4 space-y-4">
+                    <div className="p-4 rounded-xl border-2 border-dashed text-center" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                        <FileSpreadsheet size={48} className="mx-auto mb-3" style={{ color: 'var(--accent-color)' }} />
+                        <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Upload File Excel</p>
+                        <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>Format: .xlsx, .xls</p>
+                        <input type="file" accept=".xlsx,.xls" onChange={(e) => setImportFile(e.target.files[0])} className="input" />
+                        {importFile && <p className="text-sm mt-2" style={{ color: 'var(--accent-color)' }}>📎 {importFile.name}</p>}
+                    </div>
+                    <button onClick={handleDownloadTemplate} className="btn btn-secondary w-full"><Download size={18} />Download Template</button>
+                    <div className="flex gap-3">
+                        <button onClick={closeImportModal} className="btn btn-secondary flex-1">Batal</button>
+                        <button onClick={handleImport} disabled={!importFile || importing} className="btn btn-primary flex-1">
+                            {importing ? <Loader2 className="animate-spin" size={20} /> : <><Upload size={18} />Import</>}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
 
             {/* Floating Action Bar */}
             {showFloatingBar && (

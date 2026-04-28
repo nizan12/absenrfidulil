@@ -53,7 +53,7 @@ export default function ForgotPassword() {
                         <div className="w-16 h-16 rounded-2xl mb-4 bg-gray-200 animate-pulse"></div>
                     ) : settings.institution_logo ? (
                         <img
-                            src={`${API_URL}/storage/${settings.institution_logo}`}
+                            src={`${API_URL}/storage/${settings.institution_logo}?t=${Date.now()}`}
                             alt="Logo"
                             className="h-16 w-auto object-contain mb-4"
                             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}

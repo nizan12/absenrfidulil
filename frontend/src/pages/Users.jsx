@@ -5,7 +5,7 @@ import ConfirmModal from '../components/ui/ConfirmModal';
 import { CardSkeleton, TableSkeleton } from '../components/ui/Skeleton';
 import CustomSelect from '../components/ui/CustomSelect';
 import Pagination from '../components/ui/Pagination';
-import { Plus, Search, Edit2, Trash2, Loader2, Users, Mail, Phone, LayoutGrid, List, X, Camera, Download } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Loader2, Users, Mail, Phone, LayoutGrid, List, X, Camera, Download, Upload, FileSpreadsheet } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const roles = [
@@ -29,6 +29,11 @@ export default function UsersPage() {
     const [photoPreview, setPhotoPreview] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [viewMode, setViewMode] = useState('table');
+
+    // Import states
+    const [showImportModal, setShowImportModal] = useState(false);
+    const [importFile, setImportFile] = useState(null);
+    const [importing, setImporting] = useState(false);
 
     // Multi-select states
     const [selectedItems, setSelectedItems] = useState([]);
@@ -176,6 +181,58 @@ export default function UsersPage() {
 
     const getRoleInfo = (role) => roles.find(r => r.value === role) || { label: role, color: 'text-gray-500' };
     const getInitials = (name) => name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U';
+
+    // Import functions
+    const openImportModal = () => { setImportFile(null); setShowImportModal(true); };
+    const closeImportModal = () => { setShowImportModal(false); setImportFile(null); };
+
+    const handleDownloadTemplate = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+            const response = await fetch(`${baseUrl}/user-template`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error('Gagal download template');
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `template_import_user_${new Date().toISOString().split('T')[0]}.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            toast.success('Template berhasil diunduh');
+        } catch (error) {
+            toast.error('Gagal mengunduh template');
+        }
+    };
+
+    const handleImport = async () => {
+        if (!importFile) {
+            toast.error('Pilih file Excel terlebih dahulu');
+            return;
+        }
+        setImporting(true);
+        const formData = new FormData();
+        formData.append('file', importFile);
+        try {
+            const response = await userService.import(formData);
+            if (response.success) {
+                toast.success(`Berhasil mengimpor ${response.data?.imported || 0} user`);
+                closeImportModal();
+                fetchUsers();
+            } else {
+                toast.error(response.message || 'Gagal mengimpor data');
+            }
+        } catch (error) {
+            const message = error.response?.data?.message || 'Gagal mengimpor data';
+            toast.error(message);
+        } finally {
+            setImporting(false);
+        }
+    };
     const getAvatarColor = () => {
         // Use theme accent color for all avatars
         return {
@@ -191,7 +248,10 @@ export default function UsersPage() {
                     <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><Users className="text-primary-600" />Manajemen Admin</h1>
                     <p style={{ color: 'var(--text-secondary)' }}>Kelola akses personil dan notifikasi pimpinan.</p>
                 </div>
-                <button onClick={() => openModal()} className="btn btn-primary"><Plus size={20} /><span>Registrasi Baru</span></button>
+                <div className="flex gap-2">
+                    <button onClick={openImportModal} className="btn btn-secondary"><Upload size={20} /><span>Import</span></button>
+                    <button onClick={() => openModal()} className="btn btn-primary"><Plus size={20} /><span>Registrasi Baru</span></button>
+                </div>
             </div>
 
             <div className="card p-4">
@@ -341,6 +401,26 @@ export default function UsersPage() {
                         <button type="submit" disabled={submitting} className="btn btn-primary flex-1">{submitting ? <Loader2 className="animate-spin" size={20} /> : 'Simpan'}</button>
                     </div>
                 </form>
+            </Modal>
+
+            {/* Import Modal */}
+            <Modal isOpen={showImportModal} onClose={closeImportModal} title="Import Data User">
+                <div className="p-4 space-y-4">
+                    <div className="p-4 rounded-xl border-2 border-dashed text-center" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                        <FileSpreadsheet size={48} className="mx-auto mb-3" style={{ color: 'var(--accent-color)' }} />
+                        <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Upload File Excel</p>
+                        <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>Format: .xlsx, .xls</p>
+                        <input type="file" accept=".xlsx,.xls" onChange={(e) => setImportFile(e.target.files[0])} className="input" />
+                        {importFile && <p className="text-sm mt-2" style={{ color: 'var(--accent-color)' }}>📎 {importFile.name}</p>}
+                    </div>
+                    <button onClick={handleDownloadTemplate} className="btn btn-secondary w-full"><Download size={18} />Download Template</button>
+                    <div className="flex gap-3">
+                        <button onClick={closeImportModal} className="btn btn-secondary flex-1">Batal</button>
+                        <button onClick={handleImport} disabled={!importFile || importing} className="btn btn-primary flex-1">
+                            {importing ? <Loader2 className="animate-spin" size={20} /> : <><Upload size={18} />Import</>}
+                        </button>
+                    </div>
+                </div>
             </Modal>
 
             <ConfirmModal

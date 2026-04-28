@@ -68,13 +68,24 @@ export default function Settings() {
 
         setUploadingLogo(true);
         try {
+            console.log('Uploading logo...', file.name, file.size);
             const response = await settingService.uploadLogo(file);
-            if (response.success) {
-                setSettings(prev => ({ ...prev, institution_logo: response.data.path }));
+            console.log('Upload response:', response);
+            if (response.success && response.data?.path) {
+                const newPath = response.data.path;
+                setSettings(prev => ({ ...prev, institution_logo: newPath }));
                 setLogoPreview(URL.createObjectURL(file));
                 toast.success('Logo berhasil diupload');
+                // Notify other components (Sidebar) about the logo change
+                window.dispatchEvent(new CustomEvent('settings-updated', {
+                    detail: { institution_logo: newPath }
+                }));
+            } else {
+                console.error('Upload response tidak valid:', response);
+                toast.error(response.message || 'Upload gagal - response tidak valid');
             }
         } catch (error) {
+            console.error('Upload error:', error.response || error);
             toast.error(error.response?.data?.message || 'Gagal upload logo');
         } finally {
             setUploadingLogo(false);
@@ -135,7 +146,7 @@ export default function Settings() {
                             <div className="flex items-center gap-4">
                                 <div className="w-20 h-20 rounded-xl border-2 border-dashed flex items-center justify-center overflow-hidden" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
                                     {logoPreview || settings.institution_logo ? (
-                                        <img src={logoPreview || `${apiBase}/storage/${settings.institution_logo}`} alt="Logo" className="w-full h-full object-contain" />
+                                        <img src={logoPreview || `${apiBase}/storage/${settings.institution_logo}?t=${Date.now()}`} alt="Logo" className="w-full h-full object-contain" />
                                     ) : (
                                         <ImageIcon size={32} style={{ color: 'var(--text-muted)' }} />
                                     )}

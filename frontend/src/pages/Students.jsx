@@ -5,8 +5,6 @@ import ConfirmModal from '../components/ui/ConfirmModal';
 import { CardSkeleton, TableSkeleton } from '../components/ui/Skeleton';
 import CustomSelect from '../components/ui/CustomSelect';
 import Pagination from '../components/ui/Pagination';
-import StudentIdCard from '../components/StudentIdCard';
-import api from '../services/api';
 import {
     Plus,
     Search,
@@ -23,7 +21,6 @@ import {
     List,
     Camera,
     GraduationCap,
-    CreditCard,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -63,10 +60,7 @@ export default function Students() {
         message: '',
         onConfirm: null
     });
-    // ID Card states
-    const [showIdCardModal, setShowIdCardModal] = useState(false);
-    const [selectedStudentForCard, setSelectedStudentForCard] = useState(null);
-    const [settings, setSettings] = useState({});
+
 
     // Handle floating bar visibility with animation
     useEffect(() => {
@@ -88,20 +82,7 @@ export default function Students() {
         fetchStudents();
         fetchClasses();
         fetchCategories();
-        fetchSettings();
     }, []);
-
-    // Fetch settings for ID card
-    const fetchSettings = async () => {
-        try {
-            const response = await api.get('/public/settings');
-            if (response.data.success) {
-                setSettings(response.data.data);
-            }
-        } catch (error) {
-            console.error('Error fetching settings:', error);
-        }
-    };
 
     // Auto-search with debounce
     useEffect(() => {
@@ -328,39 +309,27 @@ export default function Students() {
         }
     };
 
-    const handleDownloadTemplate = () => {
-        // Generate CSV with reference data included
-        const templateData = [
-            ['=== TEMPLATE IMPORT SISWA ===', '', '', '', '', '', '', ''],
-            ['RFID UID', 'NIS', 'Nama Siswa', 'Kelas', 'Kategori', 'Nama Ortu', 'No HP Ortu', 'Hubungan'],
-            ['A1B2C3D4', '12345', 'Ahmad Rizki', 'X RPL 1', 'Reguler', 'Budi Santoso', '08123456789', 'ayah'],
-            ['E5F6G7H8', '12346', 'Siti Nurhaliza', 'X RPL 2', 'Full Day', 'Dewi Rahayu', '08987654321', 'ibu'],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['=== DAFTAR KELAS ===', '', '', '', '', '', '', ''],
-            ...classes.map(c => [c.name, '', '', '', '', '', '', '']),
-            ['', '', '', '', '', '', '', ''],
-            ['=== DAFTAR KATEGORI ===', '', '', '', '', '', '', ''],
-            ...categories.map(c => [c.name, '', '', '', '', '', '', '']),
-            ['', '', '', '', '', '', '', ''],
-            ['=== DAFTAR HUBUNGAN ===', '', '', '', '', '', '', ''],
-            ['ayah', 'Ayah kandung siswa', '', '', '', '', '', ''],
-            ['ibu', 'Ibu kandung siswa', '', '', '', '', '', ''],
-            ['wali', 'Wali atau pengasuh siswa', '', '', '', '', '', ''],
-        ];
-
-        const csvContent = templateData.map(row => row.join(',')).join('\n');
-        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `template_import_siswa_${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-
-        toast.success('Template CSV berhasil diunduh');
+    const handleDownloadTemplate = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+            const response = await fetch(`${baseUrl}/student-template`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (!response.ok) throw new Error('Gagal download template');
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `template_import_siswa_${new Date().toISOString().split('T')[0]}.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            toast.success('Template berhasil diunduh');
+        } catch (error) {
+            toast.error('Gagal mengunduh template');
+        }
     };
 
     const handleImport = async () => {
@@ -466,10 +435,6 @@ export default function Students() {
                                 <div className="flex items-center justify-between pb-3 border-b border-gray-200">
                                     <input type="checkbox" className="checkbox" checked={selectedStudents.includes(student.id)} onChange={() => toggleSelectStudent(student.id)} />
                                     <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
-                                        <button onClick={() => { setSelectedStudentForCard(student); setShowIdCardModal(true); }} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm" title="Kartu ID">
-                                            <CreditCard size={14} className="text-purple-600" />
-                                        </button>
-                                        <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                         <button onClick={() => openModal(student)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm" title="Edit">
                                             <Edit2 size={14} className="text-blue-600" />
                                         </button>
@@ -584,10 +549,6 @@ export default function Students() {
                                             <td>
                                                 <div className="flex items-center justify-center">
                                                     <div className="inline-flex flex-row items-center p-1 rounded-lg border w-fit" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
-                                                        <button onClick={() => { setSelectedStudentForCard(student); setShowIdCardModal(true); }} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm" title="Kartu ID">
-                                                            <CreditCard size={14} className="text-purple-600" />
-                                                        </button>
-                                                        <div className="w-px h-4 mx-0.5" style={{ background: 'var(--border-color)' }}></div>
                                                         <button onClick={() => openModal(student)} className="p-1.5 hover:bg-white rounded-md transition-all shadow-sm" title="Edit">
                                                             <Edit2 size={14} className="text-blue-600" />
                                                         </button>
@@ -716,96 +677,22 @@ export default function Students() {
                 isOpen={showImportModal}
                 onClose={closeImportModal}
                 title="Import Data Siswa"
-                size="lg"
             >
                 <div className="p-4 space-y-4">
-                    {/* Download Template */}
-                    <div className="rounded-lg p-4" style={{ background: 'var(--accent-color-light, #eff6ff)' }}>
-                        <div className="flex items-start gap-3">
-                            <AlertCircle size={20} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--accent-color)' }} />
-                            <div className="flex-1">
-                                <p className="text-sm font-medium" style={{ color: 'var(--accent-color)' }}>
-                                    Download template terlebih dahulu
-                                </p>
-                                <p className="text-sm mt-1" style={{ color: 'var(--accent-color)', opacity: 0.8 }}>
-                                    Template sudah termasuk kolom data orang tua (Ayah & Ibu) untuk memudahkan input sekaligus.
-                                </p>
-                                <button
-                                    onClick={handleDownloadTemplate}
-                                    className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 text-white text-sm rounded-lg transition-colors"
-                                    style={{ background: 'var(--accent-color)' }}
-                                >
-                                    <Download size={16} />
-                                    Download Template
-                                </button>
-                            </div>
-                        </div>
+                    <div className="p-4 rounded-xl border-2 border-dashed text-center" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-page)' }}>
+                        <FileSpreadsheet size={48} className="mx-auto mb-3" style={{ color: 'var(--accent-color)' }} />
+                        <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Upload File Excel</p>
+                        <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>Format: .xlsx, .xls</p>
+                        <input type="file" accept=".xlsx,.xls" onChange={(e) => setImportFile(e.target.files[0])} className="input" />
+                        {importFile && <p className="text-sm mt-2" style={{ color: 'var(--accent-color)' }}>📎 {importFile.name}</p>}
                     </div>
-
-                    {/* File Upload */}
-                    <div>
-                        <label className="form-label">Pilih File Excel</label>
-                        <div
-                            className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${importFile
-                                ? 'border-green-300 bg-green-50'
-                                : ''
-                                }`}
-                            style={!importFile ? { borderColor: 'var(--border-color)' } : undefined}
-                            onClick={() => fileInputRef.current?.click()}
-                            onMouseEnter={(e) => { if (!importFile) e.currentTarget.style.borderColor = 'var(--accent-color)'; }}
-                            onMouseLeave={(e) => { if (!importFile) e.currentTarget.style.borderColor = 'var(--border-color)'; }}
-                        >
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept=".xlsx,.xls,.csv"
-                                onChange={handleFileChange}
-                                className="hidden"
-                            />
-                            {importFile ? (
-                                <div className="flex flex-col items-center gap-2">
-                                    <CheckCircle size={32} className="text-green-600" />
-                                    <p className="font-medium text-gray-900 dark:text-white">{importFile.name}</p>
-                                    <p className="text-sm text-gray-500">
-                                        {(importFile.size / 1024).toFixed(1)} KB
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="flex flex-col items-center gap-2">
-                                    <Upload size={32} className="text-gray-400" />
-                                    <p className="text-gray-600 dark:text-gray-400">
-                                        Klik untuk pilih file atau drag & drop
-                                    </p>
-                                    <p className="text-sm text-gray-400">
-                                        Format: .xlsx, .xls, .csv
-                                    </p>
-                                </div>
-                            )}
-                        </div>
+                    <button onClick={handleDownloadTemplate} className="btn btn-secondary w-full"><Download size={18} />Download Template</button>
+                    <div className="flex gap-3">
+                        <button onClick={closeImportModal} className="btn btn-secondary flex-1">Batal</button>
+                        <button onClick={handleImport} disabled={!importFile || importing} className="btn btn-primary flex-1">
+                            {importing ? <Loader2 className="animate-spin" size={20} /> : <><Upload size={18} />Import</>}
+                        </button>
                     </div>
-                </div>
-
-                <div className="flex gap-3 p-4 border-t border-gray-200 dark:border-slate-700">
-                    <button type="button" onClick={closeImportModal} className="btn btn-secondary flex-1">
-                        Batal
-                    </button>
-                    <button
-                        onClick={handleImport}
-                        disabled={importing || !importFile}
-                        className="btn btn-primary flex-1 disabled:opacity-50"
-                    >
-                        {importing ? (
-                            <>
-                                <Loader2 className="animate-spin" size={18} />
-                                <span>Mengimpor...</span>
-                            </>
-                        ) : (
-                            <>
-                                <Upload size={18} />
-                                <span>Import Data</span>
-                            </>
-                        )}
-                    </button>
                 </div>
             </Modal>
 
@@ -872,20 +759,7 @@ export default function Students() {
                 onConfirm={confirmModal.onConfirm}
             />
 
-            {/* ID Card Modal */}
-            <Modal
-                isOpen={showIdCardModal}
-                onClose={() => { setShowIdCardModal(false); setSelectedStudentForCard(null); }}
-                title="Kartu Identitas Siswa"
-            >
-                {selectedStudentForCard && (
-                    <StudentIdCard
-                        student={selectedStudentForCard}
-                        settings={settings}
-                        onDownload={() => toast.success('Kartu ID berhasil didownload!')}
-                    />
-                )}
-            </Modal>
+
         </div>
     );
 }

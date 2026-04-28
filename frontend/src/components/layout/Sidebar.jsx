@@ -28,35 +28,50 @@ const API_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://loc
 
 // Role permissions: define which menus each role can access
 // Roles: super_admin, kepala_sekolah, staff_admin, guru_piket, operator
-const menuItems = [
-    // Dashboard - everyone
-    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
-
-    // Data Management - staff_admin and above
-    { path: '/students', icon: GraduationCap, label: 'Data Siswa', roles: ['super_admin', 'staff_admin', 'operator'] },
-    { path: '/teachers', icon: UserCog, label: 'Data Guru', roles: ['super_admin', 'staff_admin', 'operator'] },
-    { path: '/classes', icon: BookOpen, label: 'Manajemen Kelas', roles: ['super_admin', 'staff_admin', 'operator'] },
-    { path: '/categories', icon: FolderTree, label: 'Kategori', roles: ['super_admin', 'staff_admin'] },
-    { path: '/parents', icon: UserCircle, label: 'Orang Tua', roles: ['super_admin', 'staff_admin', 'operator'] },
-
-    // Admin Only - super_admin only
-    { path: '/users', icon: Users, label: 'Data Admin', roles: ['super_admin'] },
-
-    // Device & Location Management
-    { path: '/devices', icon: Cpu, label: 'Manajemen Alat', roles: ['super_admin', 'staff_admin'] },
-    { path: '/locations', icon: MapPin, label: 'Lokasi', roles: ['super_admin', 'staff_admin'] },
-
-    // Monitoring
-    { path: '/live-monitor', icon: Eye, label: 'Live Monitor', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
-
-    // Reports
-    { path: '/recap', icon: FileSpreadsheet, label: 'Rekapitulasi', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
-
-    // Notifications - admin level
-    { path: '/notifications', icon: Bell, label: 'Notifikasi WA', roles: ['super_admin', 'staff_admin'] },
-
-    // Settings - super_admin only
-    { path: '/settings', icon: Settings, label: 'Pengaturan', roles: ['super_admin'] },
+const menuGroups = [
+    {
+        category: 'Utama',
+        items: [
+            { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
+        ],
+    },
+    {
+        category: 'Manajemen Data',
+        items: [
+            { path: '/students', icon: GraduationCap, label: 'Data Siswa', roles: ['super_admin', 'staff_admin', 'operator'] },
+            { path: '/teachers', icon: UserCog, label: 'Data Guru', roles: ['super_admin', 'staff_admin', 'operator'] },
+            { path: '/classes', icon: BookOpen, label: 'Manajemen Kelas', roles: ['super_admin', 'staff_admin', 'operator'] },
+            { path: '/categories', icon: FolderTree, label: 'Kategori', roles: ['super_admin', 'staff_admin'] },
+            { path: '/parents', icon: UserCircle, label: 'Orang Tua', roles: ['super_admin', 'staff_admin', 'operator'] },
+        ],
+    },
+    {
+        category: 'Pengguna',
+        items: [
+            { path: '/users', icon: Users, label: 'Data Admin', roles: ['super_admin'] },
+        ],
+    },
+    {
+        category: 'Perangkat',
+        items: [
+            { path: '/devices', icon: Cpu, label: 'Manajemen Alat', roles: ['super_admin', 'staff_admin'] },
+            { path: '/locations', icon: MapPin, label: 'Lokasi', roles: ['super_admin', 'staff_admin'] },
+        ],
+    },
+    {
+        category: 'Monitoring & Laporan',
+        items: [
+            { path: '/live-monitor', icon: Eye, label: 'Live Monitor', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
+            { path: '/recap', icon: FileSpreadsheet, label: 'Rekapitulasi', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
+        ],
+    },
+    {
+        category: 'Sistem',
+        items: [
+            { path: '/notifications', icon: Bell, label: 'Notifikasi WA', roles: ['super_admin', 'staff_admin'] },
+            { path: '/settings', icon: Settings, label: 'Pengaturan', roles: ['super_admin'] },
+        ],
+    },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -64,12 +79,15 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     const { user } = useAuth();
     const [showStylePanel, setShowStylePanel] = useState(false);
     const [appSettings, setAppSettings] = useState({});
+    const [settingsLoaded, setSettingsLoaded] = useState(false);
 
-    // Filter menu items based on user role
-    const filteredMenuItems = menuItems.filter(item => {
-        if (!user?.role) return false;
-        return item.roles.includes(user.role);
-    });
+    // Filter menu groups based on user role - hide empty groups
+    const filteredGroups = menuGroups
+        .map(group => ({
+            ...group,
+            items: group.items.filter(item => user?.role && item.roles.includes(user.role)),
+        }))
+        .filter(group => group.items.length > 0);
 
     useEffect(() => {
         const fetchSettings = async () => {
@@ -77,14 +95,32 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 const response = await settingService.getAll();
                 if (response.success) setAppSettings(response.data || {});
             } catch (error) { console.error('Error fetching settings:', error); }
+            finally { setSettingsLoaded(true); }
         };
         fetchSettings();
+
+        // Listen for logo/settings updates from Settings page
+        const handleSettingsUpdate = (e) => {
+            if (e.detail) setAppSettings(prev => ({ ...prev, ...e.detail }));
+        };
+        window.addEventListener('settings-updated', handleSettingsUpdate);
+        return () => window.removeEventListener('settings-updated', handleSettingsUpdate);
     }, []);
+
+    // Lock body scroll when sidebar is open on mobile
+    useEffect(() => {
+        if (isOpen && window.innerWidth < 1024) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [isOpen]);
 
     const getLogoUrl = (path) => {
         if (!path) return null;
         if (path.startsWith('http')) return path;
-        return `${API_URL}/storage/${path}`;
+        return `${API_URL}/storage/${path}?t=${Date.now()}`;
     };
 
     return (
@@ -98,7 +134,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
             {/* Sidebar */}
             <aside
-                className={`fixed top-0 left-0 z-50 h-screen w-64
+                className={`fixed top-0 left-0 z-50 h-screen w-64 flex flex-col
                     border-r transform transition-transform duration-200 ease-out
                     ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
                 style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}
@@ -107,7 +143,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 {/* Header */}
                 <div className="flex items-center gap-3 p-4 border-b" style={{ borderColor: 'var(--border-color)' }}>
                     <div className="h-10 flex-shrink-0">
-                        {appSettings.institution_logo ? (
+                        {!settingsLoaded ? (
+                            <div className="w-10 h-10 rounded-lg animate-pulse" style={{ background: 'var(--border-color)' }}></div>
+                        ) : appSettings.institution_logo ? (
                             <img
                                 src={getLogoUrl(appSettings.institution_logo)}
                                 alt="Logo"
@@ -136,28 +174,40 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 p-3 space-y-1 overflow-y-auto h-[calc(100vh-180px)]">
-                    {filteredMenuItems.map((item) => (
-                        <NavLink
-                            key={item.path}
-                            to={item.path}
-                            onClick={() => {
-                                if (window.innerWidth < 1024) {
-                                    setIsOpen(false);
-                                }
-                            }}
-                            className={({ isActive }) =>
-                                `sidebar-link ${isActive ? 'active' : ''}`
-                            }
-                        >
-                            <item.icon size={18} />
-                            <span>{item.label}</span>
-                        </NavLink>
+                <nav className="flex-1 p-3 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
+                    {filteredGroups.map((group, idx) => (
+                        <div key={group.category} className={idx > 0 ? 'mt-4' : ''}>
+                            <p
+                                className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest"
+                                style={{ color: 'var(--text-secondary)', opacity: 0.6 }}
+                            >
+                                {group.category}
+                            </p>
+                            <div className="space-y-1">
+                                {group.items.map((item) => (
+                                    <NavLink
+                                        key={item.path}
+                                        to={item.path}
+                                        onClick={() => {
+                                            if (window.innerWidth < 1024) {
+                                                setIsOpen(false);
+                                            }
+                                        }}
+                                        className={({ isActive }) =>
+                                            `sidebar-link ${isActive ? 'active' : ''}`
+                                        }
+                                    >
+                                        <item.icon size={18} />
+                                        <span>{item.label}</span>
+                                    </NavLink>
+                                ))}
+                            </div>
+                        </div>
                     ))}
                 </nav>
 
                 {/* Footer - Personalize Style Button */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 border-t" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-card)' }}>
+                <div className="px-3 py-1.5 border-t" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-card)' }}>
                     <button
                         onClick={() => setShowStylePanel(true)}
                         className="w-full flex items-center gap-3 px-3 py-2.5 hover:opacity-80 rounded-lg transition-colors text-sm"

@@ -69,6 +69,12 @@ export const userService = {
       : await api.put(`/users/${id}`, data, config);
     return response.data;
   },
+  import: async (formData) => {
+    const response = await api.post('/users/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
 };
 export const teacherService = {
   ...createCrudService('teachers'),
@@ -82,6 +88,12 @@ export const teacherService = {
     const response = isFormData 
       ? await api.post(`/teachers/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
       : await api.put(`/teachers/${id}`, data, config);
+    return response.data;
+  },
+  import: async (formData) => {
+    const response = await api.post('/teachers/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
   },
 };
