@@ -75,8 +75,8 @@ export default function Profile() {
     return (
         <div className="space-y-6 max-w-2xl">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><User className="text-primary-600" />Profil Saya</h1>
-                <p className="text-gray-500 dark:text-gray-400">Kelola informasi akun Anda</p>
+                <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><User className="text-primary-600" />Profil Saya</h1>
+                <p style={{ color: 'var(--text-secondary)' }}>Kelola informasi akun Anda</p>
             </div>
 
             {/* Profile Card */}

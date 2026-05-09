@@ -46,8 +46,8 @@ export default function Notifications() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2"><Bell className="text-primary-600" />Log Notifikasi WhatsApp</h1>
-                    <p className="text-gray-500 dark:text-gray-400">Riwayat pengiriman notifikasi via Fonnte</p>
+                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><Bell className="text-primary-600" />Log Notifikasi WhatsApp</h1>
+                    <p style={{ color: 'var(--text-secondary)' }}>Riwayat pengiriman notifikasi WhatsApp</p>
                 </div>
                 <button onClick={() => { fetchLogs(); fetchStats(); }} className="btn btn-secondary"><RefreshCw size={20} /><span>Refresh</span></button>
             </div>

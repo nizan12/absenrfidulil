@@ -131,7 +131,7 @@ export default function Recap() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><FileSpreadsheet className="text-primary-600" />Rekapitulasi Kehadiran</h1>
-                    <p className="text-gray-500 dark:text-gray-400">Export data kehadiran dalam format Excel</p>
+                    <p style={{ color: 'var(--text-secondary)' }}>Export data kehadiran dalam format Excel</p>
                 </div>
                 <button
                     onClick={handleExport}

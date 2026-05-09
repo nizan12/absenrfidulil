@@ -16,6 +16,11 @@ export const publicService = {
     return response.data;
   },
 
+  getSettings: async () => {
+    const response = await api.get('/public/settings');
+    return response.data;
+  },
+
   // Manual tap for USB RFID readers
   manualTap: async (rfidUid) => {
     const response = await api.post('/public/tap/manual', { rfid_uid: rfidUid });

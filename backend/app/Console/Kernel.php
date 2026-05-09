@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Auto backup — runs daily, command checks if today is backup day
+        $schedule->command('backup:auto')->dailyAt('02:00');
     }
 
     /**

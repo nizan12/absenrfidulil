@@ -20,7 +20,23 @@ export const AuthProvider = ({ children }) => {
         const storedUser = localStorage.getItem('user');
 
         if (token && storedUser) {
+            // Show stored data immediately (no loading delay)
             setUser(JSON.parse(storedUser));
+
+            // Silently refresh user data from server in background
+            authService.me()
+                .then((response) => {
+                    if (response.success && response.user) {
+                        localStorage.setItem('user', JSON.stringify(response.user));
+                        setUser(response.user);
+                    }
+                })
+                .catch(() => {
+                    // Token expired or invalid — force logout
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    setUser(null);
+                });
         }
         setLoading(false);
     }, []);

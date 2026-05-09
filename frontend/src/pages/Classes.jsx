@@ -43,7 +43,7 @@ export default function Classes() {
     const [showFloatingBar, setShowFloatingBar] = useState(false);
     const [isClosingBar, setIsClosingBar] = useState(false);
 
-    useEffect(() => { fetchClasses(); }, []);
+    // Debounce useEffect handles both initial load and search changes
 
     useEffect(() => {
         const timer = setTimeout(() => {

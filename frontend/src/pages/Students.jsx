@@ -79,12 +79,11 @@ export default function Students() {
     }, [selectedStudents.length]);
 
     useEffect(() => {
-        fetchStudents();
         fetchClasses();
         fetchCategories();
     }, []);
 
-    // Auto-search with debounce
+    // Auto-search with debounce — also handles initial load on mount
     useEffect(() => {
         const timer = setTimeout(() => {
             fetchStudents(1);
@@ -365,7 +364,7 @@ export default function Students() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}><GraduationCap className="text-primary-600" />Data Siswa</h1>
-                    <p className="text-gray-500 text-sm">Kelola informasi lengkap seluruh siswa.</p>
+                    <p style={{ color: 'var(--text-secondary)' }}>Kelola informasi lengkap seluruh siswa.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <button onClick={openImportModal} className="btn btn-outline">

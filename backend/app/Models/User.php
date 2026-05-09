@@ -18,6 +18,7 @@ class User extends Authenticatable
         'password',
         'photo',
         'role',
+        'phone',
     ];
 
     protected $hidden = [
@@ -37,6 +38,11 @@ class User extends Authenticatable
     public function attendanceLogs()
     {
         return $this->hasMany(AttendanceLog::class, 'recorded_by');
+    }
+
+    public function isMaster()
+    {
+        return $this->role === 'master';
     }
 
     public function isSuperAdmin()

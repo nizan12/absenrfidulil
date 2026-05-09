@@ -61,7 +61,7 @@ export default function Teachers() {
     const [showFloatingBar, setShowFloatingBar] = useState(false);
     const [isClosingBar, setIsClosingBar] = useState(false);
 
-    useEffect(() => { fetchTeachers(); }, []);
+    // Debounce useEffect handles both initial load and search changes
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -275,10 +275,10 @@ export default function Teachers() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                         <UserCog className="text-primary-600" />Data Guru
                     </h1>
-                    <p className="text-gray-500">Kelola data guru dan kartu RFID</p>
+                    <p style={{ color: 'var(--text-secondary)' }}>Kelola data guru dan kartu RFID</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <button onClick={openImportModal} className="btn btn-outline">

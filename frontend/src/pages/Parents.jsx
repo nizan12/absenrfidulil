@@ -34,7 +34,7 @@ export default function Parents() {
     const [showFloatingBar, setShowFloatingBar] = useState(false);
     const [isClosingBar, setIsClosingBar] = useState(false);
 
-    useEffect(() => { fetchParents(); fetchStudents(); }, []);
+    useEffect(() => { fetchStudents(); }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {

@@ -22,6 +22,7 @@ import {
     Palette,
     UserCircle,
     Check,
+    Shield,
 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000';
@@ -32,44 +33,50 @@ const menuGroups = [
     {
         category: 'Utama',
         items: [
-            { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
+            { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['master', 'super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
         ],
     },
     {
         category: 'Manajemen Data',
         items: [
-            { path: '/students', icon: GraduationCap, label: 'Data Siswa', roles: ['super_admin', 'staff_admin', 'operator'] },
-            { path: '/teachers', icon: UserCog, label: 'Data Guru', roles: ['super_admin', 'staff_admin', 'operator'] },
-            { path: '/classes', icon: BookOpen, label: 'Manajemen Kelas', roles: ['super_admin', 'staff_admin', 'operator'] },
-            { path: '/categories', icon: FolderTree, label: 'Kategori', roles: ['super_admin', 'staff_admin'] },
-            { path: '/parents', icon: UserCircle, label: 'Orang Tua', roles: ['super_admin', 'staff_admin', 'operator'] },
+            { path: '/students', icon: GraduationCap, label: 'Data Siswa', roles: ['master', 'super_admin', 'staff_admin', 'operator'] },
+            { path: '/teachers', icon: UserCog, label: 'Data Guru', roles: ['master', 'super_admin', 'staff_admin', 'operator'] },
+            { path: '/classes', icon: BookOpen, label: 'Manajemen Kelas', roles: ['master', 'super_admin', 'staff_admin', 'operator'] },
+            { path: '/categories', icon: FolderTree, label: 'Kategori', roles: ['master', 'super_admin', 'staff_admin'] },
+            { path: '/parents', icon: UserCircle, label: 'Orang Tua', roles: ['master', 'super_admin', 'staff_admin', 'operator'] },
         ],
     },
     {
         category: 'Pengguna',
         items: [
-            { path: '/users', icon: Users, label: 'Data Admin', roles: ['super_admin'] },
+            { path: '/users', icon: Users, label: 'Data Admin', roles: ['master', 'super_admin'] },
         ],
     },
     {
         category: 'Perangkat',
         items: [
-            { path: '/devices', icon: Cpu, label: 'Manajemen Alat', roles: ['super_admin', 'staff_admin'] },
-            { path: '/locations', icon: MapPin, label: 'Lokasi', roles: ['super_admin', 'staff_admin'] },
+            { path: '/devices', icon: Cpu, label: 'Manajemen Alat', roles: ['master', 'super_admin', 'staff_admin'] },
+            { path: '/locations', icon: MapPin, label: 'Lokasi', roles: ['master', 'super_admin', 'staff_admin'] },
         ],
     },
     {
         category: 'Monitoring & Laporan',
         items: [
-            { path: '/live-monitor', icon: Eye, label: 'Live Monitor', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
-            { path: '/recap', icon: FileSpreadsheet, label: 'Rekapitulasi', roles: ['super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
+            { path: '/live-monitor', icon: Eye, label: 'Live Monitor', roles: ['master', 'super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
+            { path: '/recap', icon: FileSpreadsheet, label: 'Rekapitulasi', roles: ['master', 'super_admin', 'kepala_sekolah', 'staff_admin', 'guru_piket', 'operator'] },
         ],
     },
     {
         category: 'Sistem',
         items: [
-            { path: '/notifications', icon: Bell, label: 'Notifikasi WA', roles: ['super_admin', 'staff_admin'] },
-            { path: '/settings', icon: Settings, label: 'Pengaturan', roles: ['super_admin'] },
+            { path: '/notifications', icon: Bell, label: 'Notifikasi WA', roles: ['master', 'super_admin', 'staff_admin'] },
+            { path: '/settings', icon: Settings, label: 'Pengaturan', roles: ['master', 'super_admin'] },
+        ],
+    },
+    {
+        category: 'Master',
+        items: [
+            { path: '/master', icon: Shield, label: 'Master Panel', roles: ['master'] },
         ],
     },
 ];
@@ -80,6 +87,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     const [showStylePanel, setShowStylePanel] = useState(false);
     const [appSettings, setAppSettings] = useState({});
     const [settingsLoaded, setSettingsLoaded] = useState(false);
+    const [logoTimestamp] = useState(() => Date.now()); // Stable timestamp, only set once on mount
 
     // Filter menu groups based on user role - hide empty groups
     const filteredGroups = menuGroups
@@ -120,7 +128,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     const getLogoUrl = (path) => {
         if (!path) return null;
         if (path.startsWith('http')) return path;
-        return `${API_URL}/storage/${path}?t=${Date.now()}`;
+        return `${API_URL}/storage/${path}?t=${logoTimestamp}`;
     };
 
     return (

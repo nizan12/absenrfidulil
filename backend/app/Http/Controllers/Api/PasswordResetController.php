@@ -44,8 +44,8 @@ class PasswordResetController extends Controller
             'created_at' => Carbon::now(),
         ]);
 
-        // Build reset URL (use APP_URL since frontend is on same domain)
-        $frontendUrl = rtrim(config('app.url'), '/');
+        // Build reset URL — use FRONTEND_URL (not APP_URL which points to /api)
+        $frontendUrl = rtrim(env('FRONTEND_URL', config('app.url')), '/');
         $resetUrl = $frontendUrl . '/reset-password?token=' . $token . '&email=' . urlencode($request->email);
 
         // Get settings for logo

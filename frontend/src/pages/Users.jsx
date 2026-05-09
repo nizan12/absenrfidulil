@@ -46,7 +46,7 @@ export default function UsersPage() {
     const [showFloatingBar, setShowFloatingBar] = useState(false);
     const [isClosingBar, setIsClosingBar] = useState(false);
 
-    useEffect(() => { fetchUsers(); }, []);
+    // Debounce useEffect handles both initial load and search changes
 
     useEffect(() => {
         const timer = setTimeout(() => { fetchUsers(1); }, 300);

@@ -23,7 +23,7 @@ export default function ResetPassword() {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const response = await api.get('/public/settings');
+                const response = await api.get('/settings');
                 if (response.data.success) {
                     setSettings(response.data.data);
                 }

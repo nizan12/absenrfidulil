@@ -21,6 +21,7 @@ import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import MasterDashboard from './pages/MasterDashboard';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -79,6 +80,7 @@ function AppRoutes() {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/master" element={<MasterDashboard />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

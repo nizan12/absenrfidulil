@@ -66,9 +66,9 @@ export default function Landing() {
 
     const fetchSettings = async () => {
         try {
-            const response = await api.get('/public/settings');
-            if (response.data.success) {
-                setSettings(response.data.data || {});
+            const response = await publicService.getSettings();
+            if (response.success) {
+                setSettings(response.data || {});
             }
         } catch (error) {
             console.error('Error fetching settings:', error);

@@ -13,6 +13,11 @@ class UserController extends Controller
     {
         $query = User::query();
 
+        // Hide master accounts from non-master users
+        if (!auth()->user() || auth()->user()->role !== 'master') {
+            $query->where('role', '!=', 'master');
+        }
+
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -40,7 +45,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:super_admin,kepala_sekolah,staff_admin,guru_piket,operator',
+            'role' => 'required|in:super_admin,kepala_sekolah,staff_admin,guru_piket,operator', // master cannot be created via API
             'photo' => 'nullable|image|max:2048',
         ]);
 
@@ -74,11 +79,16 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        // Protect master account from non-master users
+        if ($user->role === 'master' && (!auth()->user() || auth()->user()->role !== 'master')) {
+            return response()->json(['success' => false, 'message' => 'Tidak dapat mengubah akun ini'], 403);
+        }
+
         $request->validate([
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8',
-            'role' => 'sometimes|in:super_admin,kepala_sekolah,staff_admin,guru_piket,operator',
+            'role' => 'sometimes|in:super_admin,kepala_sekolah,staff_admin,guru_piket,operator,master',
             'photo' => 'nullable|image|max:2048',
         ]);
 
@@ -103,6 +113,14 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        // Protect master account
+        if ($user->role === 'master') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun master tidak dapat dihapus',
+            ], 403);
+        }
+
         if ($user->id === auth()->id()) {
             return response()->json([
                 'success' => false,

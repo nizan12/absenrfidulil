@@ -109,6 +109,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reports/students/export', [\App\Http\Controllers\Api\ReportController::class, 'exportStudentAttendance']);
     Route::get('/reports/students/preview', [\App\Http\Controllers\Api\ReportController::class, 'previewStudentAttendance']);
     Route::get('/reports/teachers/export', [\App\Http\Controllers\Api\ReportController::class, 'exportTeacherAttendance']);
+
+    // Master Panel (master role only)
+    Route::prefix('master')->group(function () {
+        Route::get('/statistics', [\App\Http\Controllers\Api\MasterController::class, 'statistics']);
+        Route::get('/errors', [\App\Http\Controllers\Api\MasterController::class, 'getErrors']);
+        Route::post('/errors/clear', [\App\Http\Controllers\Api\MasterController::class, 'clearErrors']);
+        Route::post('/backup', [\App\Http\Controllers\Api\MasterController::class, 'createBackup']);
+        Route::get('/backups', [\App\Http\Controllers\Api\MasterController::class, 'listBackups']);
+        Route::get('/backups/{filename}', [\App\Http\Controllers\Api\MasterController::class, 'downloadBackup']);
+        Route::delete('/backups/{filename}', [\App\Http\Controllers\Api\MasterController::class, 'deleteBackup']);
+        Route::get('/backup-settings', [\App\Http\Controllers\Api\MasterController::class, 'getBackupSettings']);
+        Route::post('/backup-settings', [\App\Http\Controllers\Api\MasterController::class, 'updateBackupSettings']);
+    });
 });
 
 

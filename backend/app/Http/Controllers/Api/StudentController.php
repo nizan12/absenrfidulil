@@ -373,7 +373,7 @@ class StudentController extends Controller
                 'nis' => $data['nis'],
                 'name' => $data['name'],
                 'class_id' => $class->id,
-                'category_id' => $category?->id,
+                'category_id' => $category ? $category->id : null,
                 'is_active' => true,
             ]);
 

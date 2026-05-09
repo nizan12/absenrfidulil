@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Loader2, Fingerprint } from 'lucide-react';
-import api from '../services/api';
+import { publicService } from '../services/publicService';
 
 const API_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000';
 
@@ -20,9 +20,9 @@ export default function Login() {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const response = await api.get('/public/settings');
-                if (response.data.success) {
-                    setSettings(response.data.data || {});
+                const response = await publicService.getSettings();
+                if (response.success) {
+                    setSettings(response.data || {});
                 }
             } catch (err) {
                 console.error('Error fetching settings:', err);

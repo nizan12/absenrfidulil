@@ -30,7 +30,7 @@ export default function Categories() {
     const [showFloatingBar, setShowFloatingBar] = useState(false);
     const [isClosingBar, setIsClosingBar] = useState(false);
 
-    useEffect(() => { fetchCategories(); }, []);
+    // Debounce useEffect handles both initial load and perPage changes
 
     useEffect(() => {
         const timer = setTimeout(() => {
