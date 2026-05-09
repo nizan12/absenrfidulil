@@ -98,8 +98,16 @@ function App() {
             toastOptions={{
               duration: 4000,
               style: {
-                background: '#363636',
-                color: '#fff',
+                background: 'rgba(255, 255, 255, 0.72)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                color: '#1e293b',
+                border: '1px solid rgba(255, 255, 255, 0.5)',
+                borderRadius: '16px',
+                padding: '14px 18px',
+                boxShadow: '0 4px 24px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08)',
+                fontSize: '14px',
+                fontWeight: '500',
               },
               success: {
                 iconTheme: {
