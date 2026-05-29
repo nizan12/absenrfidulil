@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panduan Penggunaan - Sistem Absensi RFID SMAIT Ulil Albab</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Crimson+Pro:wght@600;700&display=swap');
+
+        :root {
+            --ink: #0f172a;
+            --ink-soft: #334155;
+            --ink-muted: #94a3b8;
+            --ink-faint: #cbd5e1;
+            --surface: #ffffff;
+            --surface-dim: #f8fafc;
+            --surface-accent: #f1f5f9;
+            --brand: #1e3a5f;
+            --brand-vivid: #2563eb;
+            --brand-light: #dbeafe;
+            --accent: #0f766e;
+            --accent-light: #ccfbf1;
+            --warn: #92400e;
+            --warn-light: #fef3c7;
+            --danger: #991b1b;
+            --danger-light: #fee2e2;
+            --success: #166534;
+            --success-light: #dcfce7;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            color: var(--ink);
+            line-height: 1.75;
+            background: #e2e8f0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .doc { max-width: 210mm; margin: 0 auto; background: white; }
+
+        @media screen {
+            .doc {
+                margin: 24px auto;
+                box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 20px 60px -15px rgba(0,0,0,0.15);
+                border-radius: 6px; overflow: hidden;
+            }
+        }
+
+        @media print {
+            body { background: white; }
+            .doc { box-shadow: none; border-radius: 0; margin: 0; }
+            .cover { min-height: 100vh; }
+            .pg { min-height: 297mm; page-break-after: always; }
+            .pg:last-child { page-break-after: auto; }
+            .fab { display: none !important; }
+        }
+        @page { size: A4; margin: 0; }
+
+        /* COVER */
+        .cover { min-height: 297mm; background: var(--accent); position: relative; display: flex; flex-direction: column; overflow: hidden; }
+        .cover::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(37,99,235,0.2) 0%, transparent 50%), linear-gradient(225deg, rgba(15,118,110,0.25) 0%, transparent 50%); }
+        .cover-geo { position: absolute; inset: 0; opacity: 0.04; background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, white 39px, white 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, white 39px, white 40px); }
+        .cover-ring { position: absolute; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 50%; }
+        .cover-ring.r1 { width: 500px; height: 500px; top: -120px; right: -100px; }
+        .cover-ring.r2 { width: 350px; height: 350px; bottom: -80px; left: -60px; }
+        .cover-ring.r3 { width: 200px; height: 200px; top: 40%; left: 10%; }
+        .cover-stripe { height: 5px; background: linear-gradient(90deg, #0f766e, #2563eb, #f59e0b); }
+        .cover-body { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 80px 60px; position: relative; z-index: 1; text-align: center; }
+        .cover-icon { width: 88px; height: 88px; border-radius: 24px; background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border: 1.5px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 48px; }
+        .cover-icon svg { width: 40px; height: 40px; stroke: white; fill: none; stroke-width: 1.5; }
+        .cover-label { display: inline-flex; align-items: center; gap: 8px; padding: 6px 20px; border-radius: 100px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); font-size: 10px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 28px; }
+        .cover h1 { font-family: 'Crimson Pro', serif; font-size: 58px; font-weight: 700; color: white; line-height: 1.1; margin-bottom: 8px; letter-spacing: -1px; }
+        .cover-sub { font-size: 18px; font-weight: 300; color: rgba(255,255,255,0.6); margin-bottom: 56px; }
+        .cover-meta { display: flex; gap: 12px; }
+        .cover-chip { padding: 12px 24px; border-radius: 14px; background: rgba(255,255,255,0.07); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); text-align: center; min-width: 110px; }
+        .cover-chip dt { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+        .cover-chip dd { font-size: 15px; font-weight: 700; color: white; }
+        .cover-foot { padding: 18px 60px; text-align: center; color: rgba(255,255,255,0.3); font-size: 10.5px; position: relative; z-index: 1; letter-spacing: 0.5px; }
+
+        /* PAGE */
+        .pg { min-height: 297mm; padding: 56px 56px 80px; page-break-after: always; position: relative; border-top: 1px solid var(--surface-accent); }
+        .pg:last-child { page-break-after: auto; }
+        .pg::before { content: ''; position: absolute; top: 0; left: 56px; right: 56px; height: 3px; background: linear-gradient(90deg, var(--accent), var(--brand-vivid), transparent); border-radius: 0 0 2px 2px; }
+        .pg-foot { position: absolute; bottom: 28px; left: 56px; right: 56px; display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; color: var(--ink-muted); border-top: 1px solid var(--surface-accent); padding-top: 12px; }
+        .pg-foot-brand { font-weight: 700; color: var(--accent); }
+
+        /* CHAPTER */
+        .ch { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 40px; }
+        .ch-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ch-icon svg { width: 24px; height: 24px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .ch-text { flex: 1; }
+        .ch-num { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+        .ch h2 { font-family: 'Crimson Pro', serif; font-size: 28px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+        .ch-desc { font-size: 13px; color: var(--ink-muted); margin-top: 4px; }
+        .ch-line { height: 1px; background: linear-gradient(90deg, var(--accent), transparent); margin-bottom: 36px; }
+
+        /* SECTION */
+        .sec { margin-bottom: 32px; }
+        .sec-title { font-size: 15px; font-weight: 700; color: var(--brand); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+        .sec-badge { width: 28px; height: 28px; border-radius: 8px; background: var(--brand); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+        .sec p { font-size: 13.5px; color: var(--ink-soft); }
+
+        /* STEPS */
+        .steps { display: flex; flex-direction: column; gap: 10px; }
+        .stp { display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px; background: var(--surface-dim); border: 1px solid var(--surface-accent); }
+        .stp-n { width: 34px; height: 34px; border-radius: 10px; background: var(--brand); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; }
+        .stp:nth-child(even) .stp-n { background: var(--accent); }
+        .stp-body h4 { font-size: 13.5px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+        .stp-body p { font-size: 12.5px; color: var(--ink-muted); line-height: 1.6; }
+
+        /* ALERTS */
+        .alrt { display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px; margin: 18px 0; border: 1px solid; }
+        .alrt-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .alrt-icon svg { width: 17px; height: 17px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .alrt h5 { font-size: 12.5px; font-weight: 700; margin-bottom: 3px; }
+        .alrt p { font-size: 12px; color: var(--ink-soft); line-height: 1.65; }
+        .alrt.info { background: #f0f5ff; border-color: #c7d9f5; }
+        .alrt.info .alrt-icon { background: #dbeafe; }
+        .alrt.info .alrt-icon svg { stroke: var(--brand-vivid); }
+        .alrt.info h5 { color: #1d4ed8; }
+        .alrt.warn { background: #fffbf0; border-color: #f5e1a4; }
+        .alrt.warn .alrt-icon { background: #fef3c7; }
+        .alrt.warn .alrt-icon svg { stroke: var(--warn); }
+        .alrt.warn h5 { color: var(--warn); }
+        .alrt.ok { background: #f0fdf4; border-color: #a7f3d0; }
+        .alrt.ok .alrt-icon { background: #dcfce7; }
+        .alrt.ok .alrt-icon svg { stroke: var(--success); }
+        .alrt.ok h5 { color: var(--success); }
+        .alrt.err { background: #fff5f5; border-color: #f5c6c6; }
+        .alrt.err .alrt-icon { background: #fee2e2; }
+        .alrt.err .alrt-icon svg { stroke: var(--danger); }
+        .alrt.err h5 { color: var(--danger); }
+
+        /* TABLES */
+        .tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12.5px; margin: 14px 0; border: 1px solid var(--surface-accent); border-radius: 10px; overflow: hidden; }
+        .tbl thead th { background: var(--brand); color: white; padding: 10px 14px; font-weight: 600; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tbl tbody td { padding: 9px 14px; border-bottom: 1px solid var(--surface-accent); color: var(--ink-soft); }
+        .tbl tbody tr:last-child td { border-bottom: none; }
+        .tbl tbody tr:nth-child(even) { background: var(--surface-dim); }
+
+        /* CHECKLIST */
+        .chk { list-style: none; }
+        .chk li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--surface-accent); }
+        .chk li:last-child { border-bottom: none; }
+        .chk-dot { width: 20px; height: 20px; border-radius: 6px; background: var(--success-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+        .chk-dot svg { width: 12px; height: 12px; stroke: var(--success); fill: none; stroke-width: 2.5; }
+
+        /* DIVIDER */
+        .dvd { height: 1px; background: linear-gradient(90deg, transparent, var(--surface-accent), var(--surface-accent), transparent); margin: 28px 0; }
+
+        /* TOC */
+        .toc { list-style: none; }
+        .toc li { display: flex; align-items: center; padding: 12px 16px; border-radius: 10px; margin-bottom: 4px; font-size: 13.5px; }
+        .toc li:nth-child(odd) { background: var(--surface-dim); }
+        .toc-n { width: 32px; height: 32px; border-radius: 9px; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; margin-right: 14px; flex-shrink: 0; }
+        .toc-t { font-weight: 600; color: var(--ink); }
+
+        code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 11.5px; background: var(--surface-accent); padding: 2px 6px; border-radius: 5px; color: var(--brand-vivid); }
+
+        .fab { position: fixed; bottom: 28px; right: 28px; background: var(--accent); color: white; border: none; width: 56px; height: 56px; border-radius: 16px; cursor: pointer; box-shadow: 0 8px 30px rgba(15,118,110,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; transition: transform 0.2s, box-shadow 0.2s; font-family: inherit; }
+        .fab:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(15,118,110,0.5); }
+        .fab svg { width: 22px; height: 22px; stroke: white; fill: none; stroke-width: 2; }
+    </style>
+</head>
+<body>
+
+<button class="fab" onclick="window.print()" title="Cetak / Simpan PDF">
+    <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+</button>
+
+<div class="doc">
+
+    <!-- COVER -->
+    <div class="cover">
+        <div class="cover-stripe"></div>
+        <div class="cover-geo"></div>
+        <div class="cover-ring r1"></div>
+        <div class="cover-ring r2"></div>
+        <div class="cover-ring r3"></div>
+        <div class="cover-body">
+            <div class="cover-icon">
+                <svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+            </div>
+            <div class="cover-label">Panduan Penggunaan</div>
+            <h1>User Manual</h1>
+            <p class="cover-sub">Sistem Absensi RFID &mdash; SMAIT Ulil Albab</p>
+            <div class="cover-meta">
+                <dl class="cover-chip"><dt>Dokumen</dt><dd>MAN/IT/001</dd></dl>
+                <dl class="cover-chip"><dt>Versi</dt><dd>1.0</dd></dl>
+            </div>
+        </div>
+        <div class="cover-foot">
+            SMAIT Ulil Albab &nbsp;&bull;&nbsp; Panduan Penggunaan Sistem Absensi RFID
+        </div>
+    </div>
+
+    <!-- DAFTAR ISI -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:var(--accent-light);">
+                <svg viewBox="0 0 24 24" stroke="var(--accent)"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+            </div>
+            <div class="ch-text">
+                <div class="ch-num">Navigasi</div>
+                <h2>Daftar Isi</h2>
+            </div>
+        </div>
+        <div class="ch-line"></div>
+
+        <ul class="toc">
+            <li><div class="toc-n">1</div><span class="toc-t">Panduan untuk Siswa</span></li>
+            <li><div class="toc-n">2</div><span class="toc-t">Panduan untuk Orang Tua</span></li>
+            <li><div class="toc-n">3</div><span class="toc-t">Panduan untuk Guru Piket</span></li>
+            <li><div class="toc-n">4</div><span class="toc-t">Panduan untuk Operator</span></li>
+            <li><div class="toc-n">5</div><span class="toc-t">Panduan untuk Staff Admin</span></li>
+            <li><div class="toc-n">6</div><span class="toc-t">Panduan untuk Kepala Sekolah</span></li>
+            <li><div class="toc-n">7</div><span class="toc-t">Panduan untuk Super Admin</span></li>
+            <li><div class="toc-n">8</div><span class="toc-t">Troubleshooting &amp; Tips</span></li>
+        </ul>
+
+        <div class="alrt ok" style="margin-top:28px;">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><h5>Akses Dashboard</h5><p>Buka <code>https://absenulilalbab.com</code> di browser untuk mengakses sistem.</p></div>
+        </div>
+
+        <div class="pg-foot">
+            <span class="pg-foot-brand">Panduan Penggunaan</span>
+            <span>SMAIT Ulil Albab &mdash; v1.0</span>
+        </div>
+    </div>
+
+    <!-- BAB 1: SISWA -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:var(--brand-light);">
+                <svg viewBox="0 0 24 24" stroke="var(--brand-vivid)"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 4 3 6 3s6-1 6-3v-5"/></svg>
+            </div>
+            <div class="ch-text">
+                <div class="ch-num">Bab 01</div>
+                <h2>Panduan untuk Siswa</h2>
+                <p class="ch-desc">Cara melakukan absensi menggunakan kartu RFID</p>
+            </div>
+        </div>
+        <div class="ch-line"></div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">A</span> Cara Absensi</h3>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Siapkan Kartu RFID</h4><p>Setiap siswa memiliki <strong>kartu RFID</strong> yang telah didaftarkan. Pastikan kartu selalu dibawa setiap hari.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Tempelkan Kartu ke Alat</h4><p>Tempelkan kartu ke perangkat pembaca RFID di gerbang sekolah dengan jarak <strong>maksimal 3 cm</strong>. Tunggu hingga terdengar <strong>bunyi beep</strong>.</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Cek Layar LCD</h4><p>Layar LCD akan menampilkan <strong>nama Anda</strong> beserta status: <strong>"SELAMAT DATANG"</strong> (masuk) atau <strong>"SAMPAI JUMPA"</strong> (pulang).</p></div></div>
+                <div class="stp"><div class="stp-n">4</div><div class="stp-body"><h4>Notifikasi Terkirim</h4><p>Orang tua/wali akan otomatis menerima <strong>notifikasi WhatsApp</strong> bahwa Anda telah masuk atau pulang sekolah.</p></div></div>
+            </div>
+        </div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">B</span> Aturan Tap</h3>
+            <table class="tbl">
+                <thead><tr><th>Tap ke-</th><th>Status</th><th>Keterangan</th></tr></thead>
+                <tbody>
+                    <tr><td>1 (pertama hari ini)</td><td><strong style="color:var(--success);">MASUK</strong></td><td>Saat tiba di sekolah</td></tr>
+                    <tr><td>2</td><td><strong style="color:var(--danger);">KELUAR</strong></td><td>Saat pulang sekolah</td></tr>
+                    <tr><td>3, 4, ...</td><td>Bergantian</td><td>Selalu bergantian MASUK / KELUAR</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="alrt warn">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+            <div><h5>Jangan Tap Terlalu Cepat</h5><p>Setiap tap memiliki <strong>jeda waktu</strong> (default 5 menit). Jika tap terlalu cepat, layar akan menampilkan <strong>"TUNGGU DULU"</strong> dan absensi tidak akan tercatat.</p></div>
+        </div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">C</span> Jika Kartu Bermasalah</h3>
+            <ul class="chk">
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span>Jika muncul <strong>"KARTU TIDAK TERDAFTAR"</strong> &mdash; lapor ke guru piket atau admin</span></li>
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span>Jika kartu tidak terbaca sama sekali &mdash; coba tempelkan ulang lebih dekat</span></li>
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span>Jika kartu hilang atau rusak &mdash; segera lapor ke Staff Admin untuk penggantian</span></li>
+            </ul>
+        </div>
+
+        <div class="pg-foot">
+            <span class="pg-foot-brand">Panduan Penggunaan</span>
+            <span>Halaman 1</span>
+        </div>
+    </div>
+
+    <!-- BAB 2: ORANG TUA -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:var(--warn-light);">
+                <svg viewBox="0 0 24 24" stroke="var(--warn)"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="ch-text">
+                <div class="ch-num">Bab 02</div>
+                <h2>Panduan untuk Orang Tua</h2>
+                <p class="ch-desc">Menerima notifikasi dan memantau kehadiran anak</p>
+            </div>
+        </div>
+        <div class="ch-line"></div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">A</span> Notifikasi WhatsApp Otomatis</h3>
+            <p style="margin-bottom:12px;">Setiap kali anak Anda melakukan tap di sekolah, Anda akan menerima <strong>notifikasi WhatsApp otomatis</strong> dengan format:</p>
+            <div class="alrt ok">
+                <div class="alrt-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                <div><h5>Contoh Notifikasi Masuk</h5><p>&#128205; <strong>Notifikasi Kehadiran</strong><br><br>Ananda <strong>Ahmad Fauzan</strong> telah <strong>MASUK</strong> sekolah pada:<br>&#128197; 15 Mei 2026<br>&#9200; 07:15 WIB<br>&#128205; Gerbang Utama<br><br><em>SMAIT Ulil Albab</em></p></div>
+            </div>
+        </div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">B</span> Cek Kehadiran via Website</h3>
+            <p style="margin-bottom:12px;">Anda juga dapat melihat riwayat kehadiran anak <strong>tanpa login</strong>:</p>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Website</h4><p>Akses <code>https://absenulilalbab.com</code> di browser HP atau komputer.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Cari Nama Anak</h4><p>Ketik <strong>nama anak</strong> di kotak pencarian pada halaman utama.</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Lihat Riwayat</h4><p>Klik nama anak dari daftar. Anda dapat melihat <strong>status kehadiran hari ini</strong> dan riwayat sebelumnya.</p></div></div>
+            </div>
+        </div>
+
+        <div class="alrt info">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+            <div><h5>Pastikan Nomor HP Benar</h5><p>Notifikasi dikirim ke nomor WhatsApp yang terdaftar di sistem. Jika tidak menerima notifikasi, hubungi pihak sekolah untuk memastikan <strong>nomor HP sudah benar</strong> dan <strong>opsi notifikasi aktif</strong>.</p></div>
+        </div>
+
+        <div class="pg-foot">
+            <span class="pg-foot-brand">Panduan Penggunaan</span>
+            <span>Halaman 2</span>
+        </div>
+    </div>
+
+
+    <!-- BAB 3: GURU PIKET -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:#fce7f3;"><svg viewBox="0 0 24 24" stroke="#9d174d"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <div class="ch-text"><div class="ch-num">Bab 03</div><h2>Panduan untuk Guru Piket</h2><p class="ch-desc">Monitoring kehadiran harian dan input manual</p></div>
+        </div>
+        <div class="ch-line"></div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">A</span> Login ke Dashboard</h3>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Website</h4><p>Akses <code>https://absenulilalbab.com</code> dan klik tombol <strong>Masuk</strong>.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Masukkan Kredensial</h4><p>Isi <strong>email</strong> dan <strong>password</strong> yang diberikan oleh admin, lalu klik <strong>Login</strong>.</p></div></div>
+            </div>
+        </div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">B</span> Menu yang Tersedia</h3>
+            <table class="tbl">
+                <thead><tr><th>Menu</th><th>Fungsi</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Dashboard</strong></td><td>Statistik kehadiran hari ini (jumlah hadir, belum hadir)</td></tr>
+                    <tr><td><strong>Live Monitor</strong></td><td>Pantau data tap secara real-time tanpa refresh</td></tr>
+                    <tr><td><strong>Rekapitulasi</strong></td><td>Lihat rekap kehadiran berdasarkan tanggal dan kelas</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">C</span> Input Manual (USB RFID Reader)</h3>
+            <p style="margin-bottom:12px;">Untuk siswa yang kartu RFID-nya bermasalah:</p>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Halaman Utama</h4><p>Di halaman landing (tanpa login), gunakan fitur <strong>Manual Tap</strong>.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Scan atau Ketik UID</h4><p>Gunakan <strong>USB RFID reader</strong> atau ketik UID manual.</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Tekan Enter</h4><p>Data akan langsung terkirim ke server dan tercatat sebagai absensi.</p></div></div>
+            </div>
+        </div>
+        <div class="pg-foot"><span class="pg-foot-brand">Panduan Penggunaan</span><span>Halaman 3</span></div>
+    </div>
+
+    <!-- BAB 4: OPERATOR -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:var(--accent-light);"><svg viewBox="0 0 24 24" stroke="var(--accent)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div class="ch-text"><div class="ch-num">Bab 04</div><h2>Panduan untuk Operator</h2><p class="ch-desc">Mengelola data dasar siswa, kelas, dan orang tua</p></div>
+        </div>
+        <div class="ch-line"></div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">A</span> Menu yang Tersedia</h3>
+            <table class="tbl">
+                <thead><tr><th>Menu</th><th>Fungsi</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Dashboard</strong></td><td>Statistik kehadiran</td></tr>
+                    <tr><td><strong>Data Siswa</strong></td><td>Tambah, edit, hapus data siswa</td></tr>
+                    <tr><td><strong>Data Guru</strong></td><td>Tambah, edit, hapus data guru</td></tr>
+                    <tr><td><strong>Manajemen Kelas</strong></td><td>Kelola daftar kelas</td></tr>
+                    <tr><td><strong>Orang Tua</strong></td><td>Kelola data orang tua/wali</td></tr>
+                    <tr><td><strong>Live Monitor</strong></td><td>Pantau kehadiran real-time</td></tr>
+                    <tr><td><strong>Rekapitulasi</strong></td><td>Rekap dan export data kehadiran</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">B</span> Menambah Siswa Baru</h3>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Menu Data Siswa</h4><p>Klik <strong>Data Siswa</strong> di sidebar.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Klik Tambah Siswa</h4><p>Klik tombol <strong>+ Tambah Siswa</strong> di pojok kanan atas.</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Isi Data</h4><p>Lengkapi: <strong>RFID UID</strong>, <strong>NIS</strong>, <strong>Nama</strong>, <strong>Kelas</strong>, <strong>Kategori</strong>, dan foto (opsional).</p></div></div>
+                <div class="stp"><div class="stp-n">4</div><div class="stp-body"><h4>Simpan</h4><p>Klik <strong>Simpan</strong>. Siswa siap melakukan tap absensi.</p></div></div>
+            </div>
+        </div>
+        <div class="alrt info">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+            <div><h5>Pendaftaran Kartu RFID</h5><p>Semua kartu RFID didaftarkan oleh <strong>administrator sistem</strong>. Perangkat di gerbang hanya digunakan untuk <strong>presensi</strong>, bukan untuk membaca nomor kartu.</p></div>
+        </div>
+        <div class="pg-foot"><span class="pg-foot-brand">Panduan Penggunaan</span><span>Halaman 4</span></div>
+    </div>
+
+    <!-- BAB 5: STAFF ADMIN -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:var(--success-light);"><svg viewBox="0 0 24 24" stroke="var(--success)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="ch-text"><div class="ch-num">Bab 05</div><h2>Panduan untuk Staff Admin</h2><p class="ch-desc">Mengelola data, perangkat, dan notifikasi</p></div>
+        </div>
+        <div class="ch-line"></div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">A</span> Menu yang Tersedia</h3>
+            <p style="margin-bottom:10px;">Staff Admin memiliki akses lebih luas dari Operator, mencakup seluruh menu berikut:</p>
+            <table class="tbl">
+                <thead><tr><th>Menu</th><th>Fungsi</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Dashboard</strong></td><td>Statistik kehadiran dan ringkasan harian</td></tr>
+                    <tr><td><strong>Data Siswa</strong></td><td>Kelola data siswa + import massal</td></tr>
+                    <tr><td><strong>Data Guru</strong></td><td>Kelola data guru + import massal</td></tr>
+                    <tr><td><strong>Manajemen Kelas</strong></td><td>Kelola daftar kelas</td></tr>
+                    <tr><td><strong>Kategori</strong></td><td>Kelola kategori siswa (Reguler, Full Day, Boarding)</td></tr>
+                    <tr><td><strong>Orang Tua</strong></td><td>Kelola data orang tua/wali siswa</td></tr>
+                    <tr><td><strong>Manajemen Alat</strong></td><td>Kelola perangkat ESP32</td></tr>
+                    <tr><td><strong>Lokasi</strong></td><td>Kelola lokasi absensi (gerbang, kelas)</td></tr>
+                    <tr><td><strong>Live Monitor</strong></td><td>Pantau kehadiran secara real-time</td></tr>
+                    <tr><td><strong>Rekapitulasi</strong></td><td>Rekap kehadiran lengkap + export Excel</td></tr>
+                    <tr><td><strong>Notifikasi WA</strong></td><td>Lihat log pengiriman notifikasi WhatsApp</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">B</span> Import Data Massal</h3>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Download Template</h4><p>Di halaman Data Siswa/Guru, klik <strong>Import</strong> lalu <strong>Download Template</strong>.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Isi Data di Excel</h4><p>Buka template, isi data sesuai kolom. <strong>Jangan ubah header.</strong></p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Upload dan Import</h4><p>Kembali ke halaman import, pilih file, lalu klik <strong>Import</strong>.</p></div></div>
+            </div>
+        </div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">C</span> Menambah Perangkat ESP32</h3>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Manajemen Alat</h4><p>Klik menu <strong>Manajemen Alat</strong> di sidebar.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Tambah Perangkat</h4><p>Isi: <strong>Nama</strong>, <strong>Kode</strong> (sama dengan <code>DEVICE_CODE</code> di ESP32), <strong>Lokasi</strong>, <strong>Tipe</strong> (gate/classroom).</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Simpan</h4><p>Klik <strong>Simpan</strong>. Perangkat langsung aktif.</p></div></div>
+            </div>
+        </div>
+        <div class="pg-foot"><span class="pg-foot-brand">Panduan Penggunaan</span><span>Halaman 5</span></div>
+    </div>
+
+    <!-- BAB 6: KEPALA SEKOLAH -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:var(--brand-light);"><svg viewBox="0 0 24 24" stroke="var(--brand-vivid)"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+            <div class="ch-text"><div class="ch-num">Bab 06</div><h2>Panduan untuk Kepala Sekolah</h2><p class="ch-desc">Monitoring dan rekapitulasi kehadiran</p></div>
+        </div>
+        <div class="ch-line"></div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">A</span> Menu yang Tersedia</h3>
+            <table class="tbl">
+                <thead><tr><th>Menu</th><th>Fungsi</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Dashboard</strong></td><td>Statistik kehadiran keseluruhan</td></tr>
+                    <tr><td><strong>Live Monitor</strong></td><td>Pantau kehadiran real-time</td></tr>
+                    <tr><td><strong>Rekapitulasi</strong></td><td>Rekap kehadiran lengkap + export</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">B</span> Melihat Rekapitulasi</h3>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Menu Rekapitulasi</h4><p>Klik <strong>Rekapitulasi</strong> di sidebar navigasi.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Pilih Rentang Tanggal</h4><p>Pilih tanggal <strong>dari</strong> dan <strong>sampai</strong> untuk periode yang ingin dilihat.</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Filter Kelas (Opsional)</h4><p>Pilih <strong>kelas</strong> tertentu untuk mempersempit data.</p></div></div>
+                <div class="stp"><div class="stp-n">4</div><div class="stp-body"><h4>Export ke Excel</h4><p>Klik tombol <strong>Export</strong> untuk mengunduh data dalam format Excel.</p></div></div>
+            </div>
+        </div>
+        <div class="alrt info">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+            <div><h5>Notifikasi Guru</h5><p>Kepala Sekolah juga akan menerima <strong>notifikasi WhatsApp</strong> saat guru tap di perangkat bertipe <em>classroom</em>.</p></div>
+        </div>
+        <div class="pg-foot"><span class="pg-foot-brand">Panduan Penggunaan</span><span>Halaman 6</span></div>
+    </div>
+
+    <!-- BAB 7: SUPER ADMIN -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:var(--danger-light);"><svg viewBox="0 0 24 24" stroke="var(--danger)"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <div class="ch-text"><div class="ch-num">Bab 07</div><h2>Panduan untuk Super Admin</h2><p class="ch-desc">Akses penuh ke seluruh fitur sistem</p></div>
+        </div>
+        <div class="ch-line"></div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">A</span> Fitur Eksklusif Super Admin</h3>
+            <table class="tbl">
+                <thead><tr><th>Menu Eksklusif</th><th>Fungsi</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Data Admin</strong></td><td>Membuat, mengedit, dan menghapus akun pengguna/admin</td></tr>
+                    <tr><td><strong>Pengaturan</strong></td><td>Konfigurasi sistem: info institusi, API Key, Fonnte Token, tap delay</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top:10px; font-size:12.5px; color:var(--ink-muted);">Super Admin juga memiliki akses ke semua menu yang dimiliki Staff Admin, Operator, dan Guru Piket.</p>
+        </div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">B</span> Menambah Admin/Pengguna</h3>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Data Admin</h4><p>Klik menu <strong>Data Admin</strong> di sidebar.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Klik Tambah</h4><p>Klik <strong>+ Tambah Admin</strong>. Isi: <strong>Nama</strong>, <strong>Email</strong>, <strong>Password</strong>, <strong>No Telepon</strong>.</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Pilih Role</h4><p>Pilih role: <strong>super_admin</strong>, <strong>kepala_sekolah</strong>, <strong>staff_admin</strong>, <strong>guru_piket</strong>, atau <strong>operator</strong>.</p></div></div>
+                <div class="stp"><div class="stp-n">4</div><div class="stp-body"><h4>Simpan</h4><p>Klik <strong>Simpan</strong>. Pengguna baru bisa langsung login.</p></div></div>
+            </div>
+        </div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">C</span> Pengaturan Sistem</h3>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Pengaturan</h4><p>Klik menu <strong>Pengaturan</strong> di sidebar.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Konfigurasi</h4><p>Atur: <strong>Nama Institusi</strong>, <strong>Logo</strong>, <strong>API Key ESP32</strong>, <strong>Fonnte Token</strong>, dan <strong>Tap Delay</strong> (jeda antar tap).</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Simpan Perubahan</h4><p>Klik <strong>Simpan</strong>. Perubahan langsung berlaku.</p></div></div>
+            </div>
+        </div>
+        <div class="alrt warn">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+            <div><h5>API Key Harus Sinkron</h5><p>Pastikan <strong>API Key</strong> di Pengaturan sama persis dengan <code>API_KEY</code> di kode ESP32. Jika berbeda, perangkat tidak bisa mengirim data tap.</p></div>
+        </div>
+        <div class="pg-foot"><span class="pg-foot-brand">Panduan Penggunaan</span><span>Halaman 7</span></div>
+    </div>
+
+    <!-- BAB 8: TROUBLESHOOTING -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:var(--warn-light);"><svg viewBox="0 0 24 24" stroke="var(--warn)"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+            <div class="ch-text"><div class="ch-num">Bab 08</div><h2>Troubleshooting &amp; Tips</h2><p class="ch-desc">Solusi masalah umum dan tips penggunaan</p></div>
+        </div>
+        <div class="ch-line"></div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">A</span> Masalah Umum &amp; Solusi</h3>
+            <table class="tbl">
+                <thead><tr><th style="width:40%;">Masalah</th><th>Solusi</th></tr></thead>
+                <tbody>
+                    <tr><td>Kartu RFID tidak terbaca</td><td>Tempelkan ulang lebih dekat (maks 3 cm). Pastikan kartu tidak rusak fisik.</td></tr>
+                    <tr><td>LCD menampilkan "KARTU TIDAK TERDAFTAR"</td><td>Kartu belum didaftarkan di sistem. Hubungi admin.</td></tr>
+                    <tr><td>LCD menampilkan "TUNGGU DULU"</td><td>Masih dalam jeda waktu (5 menit). Tunggu beberapa saat.</td></tr>
+                    <tr><td>LCD menampilkan "DEVICE ERROR"</td><td>Perangkat belum terdaftar/nonaktif di server. Hubungi admin.</td></tr>
+                    <tr><td>LCD menampilkan "WIFI FAILED"</td><td>Koneksi WiFi bermasalah. Restart perangkat ESP32.</td></tr>
+                    <tr><td>LCD menampilkan "RFID ERROR / CEK KABEL"</td><td>Modul RFID tidak terhubung. Periksa kabel dan restart ESP32.</td></tr>
+                    <tr><td>Tidak menerima notifikasi WA</td><td>Cek nomor HP di sistem. Pastikan WhatsApp aktif dan Fonnte Token valid.</td></tr>
+                    <tr><td>Website error / tidak bisa diakses</td><td>Coba refresh (Ctrl+F5). Jika masih error, hubungi admin.</td></tr>
+                    <tr><td>Lupa password</td><td>Hubungi Super Admin untuk reset password.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">B</span> Tips Penggunaan</h3>
+            <ul class="chk">
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span>Simpan kartu RFID di tempat yang aman, hindari kartu terlipat atau basah</span></li>
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span>Tap <strong>saat datang</strong> dan <strong>saat pulang</strong> setiap hari agar data kehadiran lengkap</span></li>
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span>Jangan meminjamkan kartu RFID ke orang lain</span></li>
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span>Orang tua: pastikan nomor WhatsApp yang terdaftar selalu aktif</span></li>
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span>Admin: lakukan backup data secara berkala</span></li>
+            </ul>
+        </div>
+
+        <div class="alrt ok" style="margin-top:24px;">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+            <div><h5>Butuh Bantuan?</h5><p>Hubungi tim IT sekolah atau Super Admin untuk bantuan lebih lanjut terkait sistem absensi RFID.</p></div>
+        </div>
+
+        <div class="pg-foot"><span class="pg-foot-brand">Panduan Penggunaan</span><span>Halaman 8</span></div>
+    </div>
+
+</div>
+
+</body>
+</html>

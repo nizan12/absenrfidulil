@@ -22,6 +22,7 @@ import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import MasterDashboard from './pages/MasterDashboard';
+import Holidays from './pages/Holidays';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -78,6 +79,7 @@ function AppRoutes() {
         <Route path="/live-monitor" element={<LiveMonitor />} />
         <Route path="/recap" element={<Recap />} />
         <Route path="/notifications" element={<Notifications />} />
+        <Route path="/holidays" element={<Holidays />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/master" element={<MasterDashboard />} />

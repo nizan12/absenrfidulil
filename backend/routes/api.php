@@ -90,6 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Attendance
     Route::get('/attendance/students', [AttendanceController::class, 'studentLogs']);
+    Route::get('/attendance/students/recap', [AttendanceController::class, 'studentRecap']);
     Route::get('/attendance/teachers', [AttendanceController::class, 'teacherLogs']);
     Route::get('/attendance/live', [AttendanceController::class, 'liveMonitor']);
 
@@ -97,6 +98,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/settings', [SettingController::class, 'index']);
     Route::post('/settings', [SettingController::class, 'update']);
     Route::post('/settings/logo', [SettingController::class, 'uploadLogo']);
+
+    // Holidays
+    Route::apiResource('holidays', \App\Http\Controllers\Api\HolidayController::class);
+    Route::post('/holidays/bulk', [\App\Http\Controllers\Api\HolidayController::class, 'bulkStore']);
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
@@ -109,6 +114,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reports/students/export', [\App\Http\Controllers\Api\ReportController::class, 'exportStudentAttendance']);
     Route::get('/reports/students/preview', [\App\Http\Controllers\Api\ReportController::class, 'previewStudentAttendance']);
     Route::get('/reports/teachers/export', [\App\Http\Controllers\Api\ReportController::class, 'exportTeacherAttendance']);
+    Route::get('/reports/recap/export', [\App\Http\Controllers\Api\ReportController::class, 'exportRecap']);
 
     // Master Panel (master role only)
     Route::prefix('master')->group(function () {

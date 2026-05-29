@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\Http;
 class FonnteService
 {
     protected $apiUrl = 'https://api.fonnte.com/send';
+
+    /**
+     * Random delay to mimic human behavior and avoid rate-limiting.
+     * @param int $minMs Minimum delay in milliseconds
+     * @param int $maxMs Maximum delay in milliseconds
+     */
+    protected function humanDelay($minMs = 2000, $maxMs = 5000)
+    {
+        $delay = rand($minMs, $maxMs);
+        usleep($delay * 1000); // usleep uses microseconds
+    }
     
     public function sendWhatsApp($phone, $message, $type = 'student')
     {
@@ -65,7 +76,7 @@ class FonnteService
         }
     }
 
-    public function sendStudentNotification($student, $tapType, $location, $tappedAt, $isBoarding = false)
+    public function sendStudentNotification($student, $tapType, $location, $tappedAt, $isBoarding = false, $lateStatus = 'on_time')
     {
         $parents = $student->parents()->where('receive_notification', true)->get();
         $institutionName = AppSetting::get('institution_name', 'Sekolah');
@@ -84,8 +95,17 @@ class FonnteService
             $message .= "Ananda *{$student->name}* telah *{$status}* pada:\n";
             $message .= "📅 " . $tappedAt->format('d F Y') . "\n";
             $message .= "⏰ " . $tappedAt->format('H:i') . " WIB\n";
-            $message .= "📍 {$location}\n\n";
-            $message .= "🏨 _Siswa Asrama - {$institutionName}_";
+            $message .= "📍 {$location}\n";
+
+            // Late status notification
+            if ($lateStatus === 'late') {
+                $lateTimeBoarding = AppSetting::get('late_time_boarding', '17:00');
+                $message .= "\n🚫 *TERLAMBAT* - Ananda kembali ke asrama melebihi batas jam masuk ({$lateTimeBoarding} WIB)\n";
+            } elseif ($lateStatus === 'tolerated') {
+                $message .= "\n⚠️ _Catatan: Masuk dalam batas toleransi keterlambatan_\n";
+            }
+
+            $message .= "\n🏨 _Siswa Asrama - {$institutionName}_";
         } else {
             // REGULAR STUDENT MESSAGE
             $status = $tapType === 'in' ? 'MASUK' : 'KELUAR';
@@ -94,12 +114,25 @@ class FonnteService
             $message .= "Ananda *{$student->name}* telah *{$status}* sekolah pada:\n";
             $message .= "📅 " . $tappedAt->format('d F Y') . "\n";
             $message .= "⏰ " . $tappedAt->format('H:i') . " WIB\n";
-            $message .= "📍 {$location}\n\n";
-            $message .= "_{$institutionName}_";
+            $message .= "📍 {$location}\n";
+
+            // Late status notification
+            if ($lateStatus === 'late') {
+                $lateTimeRegular = AppSetting::get('late_time_regular', '07:30');
+                $message .= "\n🚫 *TERLAMBAT* - Ananda datang melebihi batas jam masuk ({$lateTimeRegular} WIB)\n";
+            } elseif ($lateStatus === 'tolerated') {
+                $message .= "\n⚠️ _Catatan: Masuk dalam batas toleransi keterlambatan_\n";
+            }
+
+            $message .= "\n_{$institutionName}_";
         }
 
         $results = [];
-        foreach ($parents as $parent) {
+        foreach ($parents as $index => $parent) {
+            // Delay between messages to avoid rate-limiting (skip delay for first message)
+            if ($index > 0) {
+                $this->humanDelay(2000, 5000); // 2-5 second random delay
+            }
             $results[] = $this->sendWhatsApp($parent->phone, $message, 'student');
         }
 
@@ -120,7 +153,7 @@ class FonnteService
         $message = "📍 *Notifikasi Guru*\n\n";
         $message .= "Bapak/Ibu *{$teacher->name}* telah *{$status}* di:\n";
         $message .= "📅 " . $tappedAt->format('d F Y') . "\n";
-        $message .= "⏰ " . $tappedAt->format('H:i') . " WIB\n";
+        $message .= "⏰ " . $tappedAt->format('H:i') . "\n";
         $message .= "📍 {$location}\n\n";
         $message .= "_{$institutionName}_";
 
@@ -140,3 +173,4 @@ class FonnteService
         return $phone;
     }
 }
+

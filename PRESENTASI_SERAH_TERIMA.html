@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presentasi Serah Terima - Sistem Absensi RFID</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+.ico{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
+.ico-lg{width:36px;height:36px}
+.ico-cover{width:40px;height:40px}
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#0a0a1a;color:#fff;overflow:hidden;height:100vh}
+.deck{position:relative;height:100vh;width:100vw}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 80px;opacity:0;transition:opacity .5s;pointer-events:none;overflow:hidden}
+.slide.active{opacity:1;pointer-events:auto}
+
+/* Backgrounds */
+.bg-gradient{background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%)}
+.bg-dark{background:linear-gradient(135deg,#0a0a1a,#1a1a3e)}
+.bg-blue{background:linear-gradient(135deg,#0c1445,#1e3a6e)}
+.bg-teal{background:linear-gradient(135deg,#042f2e,#0f766e)}
+.bg-purple{background:linear-gradient(135deg,#1e1040,#4c1d95)}
+.bg-warm{background:linear-gradient(135deg,#1c1917,#78350f)}
+
+/* Decorative */
+.deco{position:absolute;border-radius:50%;opacity:.06;background:white}
+.d1{width:500px;height:500px;top:-150px;right:-100px}
+.d2{width:300px;height:300px;bottom:-80px;left:-60px}
+.d3{width:200px;height:200px;top:40%;left:5%;opacity:.03}
+.line-accent{width:80px;height:4px;border-radius:2px;background:linear-gradient(90deg,#3b82f6,#06b6d4);margin-bottom:24px}
+
+/* Typography */
+.tag{display:inline-block;padding:6px 18px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.2)}
+h1{font-size:56px;font-weight:800;line-height:1.1;letter-spacing:-1.5px;margin-bottom:16px}
+h2{font-size:42px;font-weight:800;line-height:1.15;letter-spacing:-1px;margin-bottom:12px}
+h3{font-size:28px;font-weight:700;margin-bottom:8px}
+.subtitle{font-size:20px;color:rgba(255,255,255,.5);font-weight:300;margin-bottom:32px}
+.desc{font-size:16px;color:rgba(255,255,255,.6);line-height:1.7;max-width:700px;text-align:center}
+
+/* Cards grid */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;width:100%;max-width:1100px;margin-top:32px}
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;backdrop-filter:blur(10px);transition:transform .2s}
+.card:hover{transform:translateY(-4px)}
+.card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
+.card h4{font-size:16px;font-weight:700;margin-bottom:6px}
+.card p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6}
+
+/* Flow */
+.flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:28px}
+.flow-node{padding:16px 24px;border-radius:12px;font-size:14px;font-weight:600;text-align:center;min-width:130px}
+.flow-arr{font-size:24px;color:rgba(255,255,255,.3)}
+
+/* Table */
+.tbl{border-collapse:collapse;font-size:13px;margin-top:20px;width:100%;max-width:900px}
+.tbl th{background:rgba(59,130,246,.2);padding:12px 16px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#93c5fd;border-bottom:1px solid rgba(255,255,255,.1)}
+.tbl td{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.7)}
+.tbl tr:hover td{background:rgba(255,255,255,.03)}
+.check{color:#34d399;font-weight:700;font-size:16px}
+.cross{color:rgba(255,255,255,.15);font-size:16px}
+
+/* List */
+.list{list-style:none;text-align:left;max-width:700px;margin-top:20px}
+.list li{display:flex;align-items:flex-start;gap:12px;padding:10px 0;font-size:15px;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.05)}
+.list li:last-child{border-bottom:none}
+.list .dot{width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-top:7px;flex-shrink:0}
+
+/* WA messages */
+.wa-msg{background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.15);border-radius:14px;padding:20px 24px;font-size:13px;line-height:1.8;max-width:420px;color:rgba(255,255,255,.8);text-align:left}
+.wa-msg strong{color:#25d366}
+.wa-pair{display:flex;gap:28px;margin-top:28px;flex-wrap:wrap;justify-content:center}
+
+/* Nav */
+.nav{position:fixed;bottom:28px;right:28px;display:flex;gap:8px;z-index:100}
+.nav button{width:48px;height:48px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:18px;cursor:pointer;backdrop-filter:blur(10px);transition:background .2s}
+.nav button:hover{background:rgba(255,255,255,.15)}
+.counter{position:fixed;bottom:34px;left:40px;font-size:12px;color:rgba(255,255,255,.3);letter-spacing:2px;z-index:100}
+.brand{position:fixed;top:28px;left:40px;font-size:11px;font-weight:600;color:rgba(255,255,255,.2);letter-spacing:2px;text-transform:uppercase;z-index:100}
+
+/* Cover special */
+.cover-logo{width:80px;height:80px;border-radius:20px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:32px}
+.cover-meta{display:flex;gap:12px;margin-top:36px}
+.cover-chip{padding:10px 22px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);text-align:center}
+.cover-chip dt{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:3px}
+.cover-chip dd{font-size:15px;font-weight:700;color:#93c5fd}
+
+.highlight{background:linear-gradient(90deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.slide-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;width:100%}
+</style>
+</head>
+<body>
+
+<div class="brand">SMAIT Ulil Albab</div>
+<div class="counter"><span id="cur">1</span> / <span id="tot">10</span></div>
+
+<div class="deck" id="deck">
+
+<!-- SLIDE 1: COVER -->
+<div class="slide bg-gradient active">
+<div class="deco d1"></div><div class="deco d2"></div><div class="deco d3"></div>
+<div class="slide-content">
+<div class="cover-logo"><i data-lucide="radio" class="ico ico-cover"></i></div>
+<div class="tag">Serah Terima Sistem</div>
+<h1>Sistem Absensi <span class="highlight">RFID</span></h1>
+<p class="subtitle">SMAIT Ulil Albab &mdash; Mei 2026</p>
+<div class="cover-meta">
+<dl class="cover-chip"><dt>Platform</dt><dd>Web App</dd></dl>
+<dl class="cover-chip"><dt>Hardware</dt><dd>ESP32 + RFID</dd></dl>
+<dl class="cover-chip"><dt>Notifikasi</dt><dd>WhatsApp</dd></dl>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 2: LATAR BELAKANG -->
+<div class="slide bg-dark">
+<div class="deco d1"></div><div class="deco d2"></div>
+<div class="slide-content">
+<div class="tag">Latar Belakang</div>
+<h2>Mengapa Sistem Ini <span class="highlight">Dibangun?</span></h2>
+<div class="cards" style="margin-top:36px">
+<div class="card"><div class="card-icon" style="background:rgba(239,68,68,.15);color:#f87171"><i data-lucide="clipboard-list" class="ico"></i></div><h4>Absensi Manual</h4><p>Pencatatan kehadiran masih menggunakan buku tulis, rawan kesalahan dan manipulasi data</p></div>
+<div class="card"><div class="card-icon" style="background:rgba(251,191,36,.15);color:#fbbf24"><i data-lucide="timer" class="ico"></i></div><h4>Tidak Real-Time</h4><p>Orang tua tidak tahu kapan anak tiba atau pulang dari sekolah secara langsung</p></div>
+<div class="card"><div class="card-icon" style="background:rgba(139,92,246,.15);color:#a78bfa"><i data-lucide="bar-chart-3" class="ico"></i></div><h4>Rekap Sulit</h4><p>Rekapitulasi kehadiran memakan waktu lama karena harus dihitung satu per satu secara manual</p></div>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 3: SOLUSI -->
+<div class="slide bg-blue">
+<div class="deco d1"></div><div class="deco d2"></div>
+<div class="slide-content">
+<div class="tag">Solusi</div>
+<h2>Sistem Absensi <span class="highlight">Digital</span></h2>
+<p class="desc">Solusi terintegrasi yang menggabungkan perangkat keras RFID dengan platform web modern dan notifikasi WhatsApp otomatis</p>
+<div class="flow">
+<div class="flow-node" style="background:#3b82f6;color:#fff"><i data-lucide="credit-card" class="ico" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px"></i>Tap Kartu</div>
+<span class="flow-arr">→</span>
+<div class="flow-node" style="background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.2)"><i data-lucide="wifi" class="ico" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px"></i>ESP32 Kirim</div>
+<span class="flow-arr">→</span>
+<div class="flow-node" style="background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.2)"><i data-lucide="server" class="ico" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px"></i>Server Proses</div>
+<span class="flow-arr">→</span>
+<div class="flow-node" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.2)"><i data-lucide="file-check" class="ico" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px"></i>Catat IN/OUT</div>
+<span class="flow-arr">→</span>
+<div class="flow-node" style="background:#0f766e;color:#fff"><i data-lucide="smartphone" class="ico" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px"></i>Kirim WA</div>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 4: KOMPONEN -->
+<div class="slide bg-dark">
+<div class="deco d1"></div><div class="deco d2"></div>
+<div class="slide-content">
+<div class="tag">Arsitektur</div>
+<h2>Komponen <span class="highlight">Sistem</span></h2>
+<div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+<div class="card"><div class="card-icon" style="background:rgba(59,130,246,.15);color:#60a5fa"><i data-lucide="credit-card" class="ico"></i></div><h4>Kartu RFID</h4><p>MIFARE 13.56 MHz, UID unik per siswa/guru</p></div>
+<div class="card"><div class="card-icon" style="background:rgba(16,185,129,.15);color:#34d399"><i data-lucide="cpu" class="ico"></i></div><h4>ESP32 + MFRC522</h4><p>Pembaca RFID + LCD + Buzzer di gerbang sekolah</p></div>
+<div class="card"><div class="card-icon" style="background:rgba(251,191,36,.15);color:#fbbf24"><i data-lucide="settings" class="ico"></i></div><h4>Backend Laravel</h4><p>API server, database MySQL, logika absensi</p></div>
+<div class="card"><div class="card-icon" style="background:rgba(139,92,246,.15);color:#a78bfa"><i data-lucide="monitor" class="ico"></i></div><h4>Frontend React</h4><p>Dashboard admin modern dan responsif</p></div>
+<div class="card"><div class="card-icon" style="background:rgba(37,211,102,.15);color:#25d366"><i data-lucide="message-circle" class="ico"></i></div><h4>WhatsApp API</h4><p>Notifikasi otomatis via Fonnte ke orang tua</p></div>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 5: FITUR UTAMA -->
+<div class="slide bg-teal">
+<div class="deco d1"></div><div class="deco d2"></div>
+<div class="slide-content">
+<div class="tag">Fitur</div>
+<h2>Fitur <span class="highlight">Utama</span></h2>
+<div class="cards" style="grid-template-columns:repeat(3,1fr);margin-top:28px">
+<div class="card"><h4><i data-lucide="layout-dashboard" class="ico" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px"></i>Dashboard</h4><p>Statistik kehadiran real-time</p></div>
+<div class="card"><h4><i data-lucide="eye" class="ico" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px"></i>Live Monitor</h4><p>Pantau tap siswa/guru secara langsung</p></div>
+<div class="card"><h4><i data-lucide="bell" class="ico" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px"></i>Notifikasi WA</h4><p>Otomatis ke orang tua saat tap</p></div>
+<div class="card"><h4><i data-lucide="file-spreadsheet" class="ico" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px"></i>Rekapitulasi</h4><p>Laporan kehadiran + export Excel</p></div>
+<div class="card"><h4><i data-lucide="upload" class="ico" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px"></i>Import Massal</h4><p>Bulk import data via template Excel</p></div>
+<div class="card"><h4><i data-lucide="building" class="ico" style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px"></i>Boarding Mode</h4><p>Notifikasi khusus siswa asrama</p></div>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 6: NOTIFIKASI WA -->
+<div class="slide bg-dark">
+<div class="deco d1"></div><div class="deco d2"></div>
+<div class="slide-content">
+<div class="tag">Notifikasi</div>
+<h2>WhatsApp <span class="highlight">Otomatis</span></h2>
+<p class="desc">Orang tua langsung menerima notifikasi saat anak tap kartu RFID</p>
+<div class="wa-pair">
+<div>
+<h3 style="font-size:14px;color:rgba(255,255,255,.4);margin-bottom:12px;text-align:center">Siswa Reguler</h3>
+<div class="wa-msg"><i data-lucide="map-pin" class="ico" style="width:14px;height:14px;display:inline;vertical-align:middle;color:#25d366"></i> <strong>Notifikasi Kehadiran</strong><br><br>Ananda <strong>Ahmad Fauzan</strong> telah <strong>MASUK</strong> sekolah pada:<br><i data-lucide="calendar" class="ico" style="width:14px;height:14px;display:inline;vertical-align:middle;color:#25d366"></i> 19 Mei 2026<br><i data-lucide="clock" class="ico" style="width:14px;height:14px;display:inline;vertical-align:middle;color:#25d366"></i> 07:15 WIB<br><i data-lucide="map-pin" class="ico" style="width:14px;height:14px;display:inline;vertical-align:middle;color:#25d366"></i> Gerbang Utama<br><br><em style="color:rgba(255,255,255,.4)">SMAIT Ulil Albab</em></div>
+</div>
+<div>
+<h3 style="font-size:14px;color:rgba(255,255,255,.4);margin-bottom:12px;text-align:center">Siswa Boarding</h3>
+<div class="wa-msg"><i data-lucide="school" class="ico" style="width:14px;height:14px;display:inline;vertical-align:middle;color:#25d366"></i> <strong>Notifikasi Siswa Boarding</strong><br><br>Ananda <strong>Ahmad Fauzan</strong> telah <strong>MASUK ke area sekolah</strong> pada:<br><i data-lucide="calendar" class="ico" style="width:14px;height:14px;display:inline;vertical-align:middle;color:#25d366"></i> 19 Mei 2026<br><i data-lucide="clock" class="ico" style="width:14px;height:14px;display:inline;vertical-align:middle;color:#25d366"></i> 07:15 WIB<br><i data-lucide="map-pin" class="ico" style="width:14px;height:14px;display:inline;vertical-align:middle;color:#25d366"></i> Gerbang Utama<br><br><i data-lucide="building" class="ico" style="width:14px;height:14px;display:inline;vertical-align:middle;color:#25d366"></i> <em style="color:rgba(255,255,255,.4)">Siswa Asrama - SMAIT Ulil Albab</em></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 7: HAK AKSES -->
+<div class="slide bg-purple">
+<div class="deco d1"></div><div class="deco d2"></div>
+<div class="slide-content">
+<div class="tag">Hak Akses</div>
+<h2>Peran <span class="highlight">Pengguna</span></h2>
+<table class="tbl">
+<thead><tr><th>Menu</th><th style="text-align:center">Super Admin</th><th style="text-align:center">Kepsek</th><th style="text-align:center">Staff Admin</th><th style="text-align:center">Guru Piket</th><th style="text-align:center">Operator</th></tr></thead>
+<tbody>
+<tr><td>Dashboard</td><td class="check" style="text-align:center">✓</td><td class="check" style="text-align:center">✓</td><td class="check" style="text-align:center">✓</td><td class="check" style="text-align:center">✓</td><td class="check" style="text-align:center">✓</td></tr>
+<tr><td>Data Siswa / Guru</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="check" style="text-align:center">✓</td></tr>
+<tr><td>Manajemen Kelas</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="check" style="text-align:center">✓</td></tr>
+<tr><td>Kategori</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="cross" style="text-align:center">✕</td></tr>
+<tr><td>Orang Tua</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="check" style="text-align:center">✓</td></tr>
+<tr><td>Live Monitor & Rekap</td><td class="check" style="text-align:center">✓</td><td class="check" style="text-align:center">✓</td><td class="check" style="text-align:center">✓</td><td class="check" style="text-align:center">✓</td><td class="check" style="text-align:center">✓</td></tr>
+<tr><td>Manajemen Alat & Lokasi</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="cross" style="text-align:center">✕</td></tr>
+<tr><td>Notifikasi WA</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="cross" style="text-align:center">✕</td></tr>
+<tr><td>Data Admin</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="cross" style="text-align:center">✕</td><td class="cross" style="text-align:center">✕</td><td class="cross" style="text-align:center">✕</td></tr>
+<tr><td>Pengaturan Sistem</td><td class="check" style="text-align:center">✓</td><td class="cross" style="text-align:center">✕</td><td class="cross" style="text-align:center">✕</td><td class="cross" style="text-align:center">✕</td><td class="cross" style="text-align:center">✕</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- SLIDE 8: PERANGKAT -->
+<div class="slide bg-warm">
+<div class="deco d1"></div><div class="deco d2"></div>
+<div class="slide-content">
+<div class="tag">Hardware</div>
+<h2>Perangkat <span class="highlight">ESP32</span></h2>
+<p class="desc">Perangkat plug-and-play — cukup nyalakan dan langsung siap menerima tap absensi</p>
+<div class="cards" style="grid-template-columns:repeat(3,1fr);margin-top:28px">
+<div class="card" style="text-align:center"><div style="margin-bottom:12px"><i data-lucide="power" class="ico ico-lg" style="color:#f87171"></i></div><h4>Power On</h4><p>Nyalakan ESP32, otomatis koneksi WiFi</p></div>
+<div class="card" style="text-align:center"><div style="margin-bottom:12px"><i data-lucide="wifi" class="ico ico-lg" style="color:#34d399"></i></div><h4>WiFi Terhubung</h4><p>LCD menampilkan status koneksi</p></div>
+<div class="card" style="text-align:center"><div style="margin-bottom:12px"><i data-lucide="scan-line" class="ico ico-lg" style="color:#60a5fa"></i></div><h4>Siap Absensi</h4><p>LCD: "TEMPELKAN KARTU RFID"</p></div>
+</div>
+<div class="cards" style="grid-template-columns:repeat(3,1fr);margin-top:12px">
+<div class="card"><h4>MFRC522</h4><p>Reader RFID 13.56 MHz via SPI</p></div>
+<div class="card"><h4>LCD I2C 16x2</h4><p>Display nama & status tap</p></div>
+<div class="card"><h4>Buzzer</h4><p>Indikator suara saat tap</p></div>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 9: DOKUMENTASI -->
+<div class="slide bg-blue">
+<div class="deco d1"></div><div class="deco d2"></div>
+<div class="slide-content">
+<div class="tag">Serah Terima</div>
+<h2>Dokumen yang <span class="highlight">Diserahkan</span></h2>
+<div class="cards" style="grid-template-columns:repeat(2,1fr);margin-top:28px;max-width:800px">
+<div class="card"><div class="card-icon" style="background:rgba(59,130,246,.15);color:#60a5fa"><i data-lucide="book-open" class="ico"></i></div><h4>SOP Sistem Absensi</h4><p>Standar operasional prosedur lengkap — 10 bab mencakup seluruh alur kerja sistem</p></div>
+<div class="card"><div class="card-icon" style="background:rgba(16,185,129,.15);color:#34d399"><i data-lucide="book-marked" class="ico"></i></div><h4>User Manual</h4><p>Panduan penggunaan per role — Siswa, Orang Tua, Guru Piket, Operator, Staff Admin, Super Admin</p></div>
+<div class="card"><div class="card-icon" style="background:rgba(251,191,36,.15);color:#fbbf24"><i data-lucide="code-2" class="ico"></i></div><h4>Source Code</h4><p>Kode sumber lengkap — Backend Laravel, Frontend React, Firmware ESP32 (Arduino)</p></div>
+<div class="card"><div class="card-icon" style="background:rgba(139,92,246,.15);color:#a78bfa"><i data-lucide="globe" class="ico"></i></div><h4>Akses Website</h4><p>Dashboard sudah online di <strong>absenulilalbab.com</strong> siap digunakan</p></div>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 10: PENUTUP -->
+<div class="slide bg-gradient">
+<div class="deco d1"></div><div class="deco d2"></div><div class="deco d3"></div>
+<div class="slide-content">
+<div class="cover-logo"><i data-lucide="graduation-cap" class="ico ico-cover"></i></div>
+<h1>Terima <span class="highlight">Kasih</span></h1>
+<p class="subtitle">Semoga sistem ini bermanfaat bagi SMAIT Ulil Albab</p>
+<div style="margin-top:40px;padding:24px 40px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)">
+<p style="font-size:14px;color:rgba(255,255,255,.5)"><i data-lucide="globe" class="ico" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px"></i><strong style="color:#93c5fd">absenulilalbab.com</strong></p>
+</div>
+<p style="margin-top:40px;font-size:13px;color:rgba(255,255,255,.25)">Sesi Tanya Jawab &amp; Demo</p>
+</div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+<button onclick="go(-1)">←</button>
+<button onclick="go(1)">→</button>
+</div>
+
+<script>
+let idx=0;
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+document.getElementById('tot').textContent=total;
+
+function go(d){
+  const prev=idx;
+  idx=Math.max(0,Math.min(total-1,idx+d));
+  if(prev===idx)return;
+  slides[prev].classList.remove('active');
+  slides[idx].classList.add('active');
+  document.getElementById('cur').textContent=idx+1;
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')go(1);
+  if(e.key==='ArrowLeft')go(-1);
+});
+
+// Touch support
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50)go(dx<0?1:-1);
+});
+lucide.createIcons();
+</script>
+
+</body>
+</html>

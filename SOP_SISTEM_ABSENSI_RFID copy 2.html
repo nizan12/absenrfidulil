@@ -551,10 +551,11 @@
             <div class="cover-meta">
                 <dl class="cover-chip"><dt>Nomor</dt><dd>SOP/IT/001</dd></dl>
                 <dl class="cover-chip"><dt>Revisi</dt><dd>01</dd></dl>
+                <dl class="cover-chip"><dt>Berlaku</dt><dd>28 Apr 2026</dd></dl>
             </div>
         </div>
         <div class="cover-foot">
-            SMAIT Ulil Albab &nbsp;&bull;&nbsp; Sistem Informasi Absensi Berbasis RFID
+            SMAIT Ulil Albab &nbsp;&bull;&nbsp; Sistem Informasi Absensi Berbasis RFID &nbsp;&bull;&nbsp; Tahun Ajaran 2025/2026
         </div>
     </div>
 
@@ -714,7 +715,7 @@
                 <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Login ke Dashboard</h4><p>Buka <code>absen.smaituab-idl.sch.id</code> dan login dengan akun admin.</p></div></div>
                 <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Buka Menu Data Siswa</h4><p>Klik menu <strong>Data Siswa</strong> di sidebar navigasi.</p></div></div>
                 <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Klik "Tambah Siswa"</h4><p>Klik tombol <strong>+ Tambah Siswa</strong> di pojok kanan atas.</p></div></div>
-                <div class="stp"><div class="stp-n">4</div><div class="stp-body"><h4>Isi Data Siswa</h4><p>Lengkapi: <strong>RFID UID</strong> (scan kartu menggunakan USB RFID Reader), <strong>NIS</strong>, <strong>Nama Lengkap</strong>, <strong>Kelas</strong>, dan <strong>Kategori</strong> (Reguler/Full Day/Boarding).</p></div></div>
+                <div class="stp"><div class="stp-n">4</div><div class="stp-body"><h4>Isi Data Siswa</h4><p>Lengkapi: <strong>RFID UID</strong> (scan kartu via Mode 1 ESP32), <strong>NIS</strong>, <strong>Nama Lengkap</strong>, <strong>Kelas</strong>, dan <strong>Kategori</strong> (Reguler/Full Day/Boarding).</p></div></div>
                 <div class="stp"><div class="stp-n">5</div><div class="stp-body"><h4>Simpan Data</h4><p>Klik <strong>Simpan</strong>. Siswa siap melakukan tap absensi.</p></div></div>
             </div>
         </div>
@@ -727,7 +728,7 @@
             <table class="tbl">
                 <thead><tr><th>Field</th><th>Keterangan</th><th>Wajib</th></tr></thead>
                 <tbody>
-                    <tr><td>RFID UID</td><td>Didapat dari scan kartu menggunakan USB RFID Reader</td><td>Ya (Wajib)</td></tr>
+                    <tr><td>RFID UID</td><td>Didapat dari scan kartu di ESP32 Mode 1</td><td>Ya (Wajib)</td></tr>
                     <tr><td>NIP</td><td>Nomor Induk Pegawai</td><td>Ya (Wajib)</td></tr>
                     <tr><td>Nama Guru</td><td>Nama lengkap beserta gelar</td><td>Ya (Wajib)</td></tr>
                     <tr><td>No Telepon</td><td>Format: 08xxx atau 628xxx</td><td>Opsional</td></tr>
@@ -962,20 +963,14 @@
 
         <div class="sec">
             <h3 class="sec-title"><span class="sec-badge">B</span> Mode Operasi</h3>
-            <p style="margin-bottom:12px;">ESP32 <strong>langsung masuk mode absensi</strong> saat dinyalakan. Perangkat akan otomatis menghubungkan WiFi dan menampilkan <em>"TEMPELKAN KARTU RFID"</em> pada LCD ketika siap menerima tap. Tidak ada mode lain &mdash; perangkat hanya berfungsi sebagai alat presensi.</p>
             <table class="tbl">
-                <thead><tr><th>Tahap</th><th>Proses</th><th>Keterangan</th></tr></thead>
+                <thead><tr><th>Mode</th><th>Perintah Serial</th><th>Fungsi</th></tr></thead>
                 <tbody>
-                    <tr><td><strong>1. Power On</strong></td><td>ESP32 dinyalakan</td><td>Perangkat boot dan mulai koneksi WiFi</td></tr>
-                    <tr><td><strong>2. Koneksi WiFi</strong></td><td>Otomatis terhubung</td><td>LCD menampilkan status koneksi WiFi</td></tr>
-                    <tr><td><strong>3. Siap Absensi</strong></td><td>LCD: "TEMPELKAN KARTU RFID"</td><td>Mode utama &mdash; siap menerima tap dan kirim data ke server</td></tr>
+                    <tr><td><strong>Mode 1</strong></td><td>Ketik <code>1</code> di Serial Monitor</td><td>Baca UID kartu saja (untuk registrasi)</td></tr>
+                    <tr><td><strong>Mode 2</strong></td><td>Ketik <code>2</code> di Serial Monitor</td><td>Mode absensi online (kirim ke server)</td></tr>
+                    <tr><td><strong>Menu</strong></td><td>Ketik <code>m</code> di Serial Monitor</td><td>Tampilkan menu utama</td></tr>
                 </tbody>
             </table>
-        </div>
-
-        <div class="alrt info">
-            <div class="alrt-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
-            <div><h5>Pendaftaran Kartu RFID</h5><p>Untuk mendaftarkan kartu baru, gunakan <strong>USB RFID Reader</strong> yang terhubung ke komputer. Scan kartu melalui halaman web sistem, lalu salin UID yang terbaca ke form pendaftaran siswa/guru. Perangkat ESP32 di gerbang <strong>hanya digunakan untuk presensi</strong>, bukan untuk membaca UID kartu.</p></div>
         </div>
 
         <div class="alrt warn">
@@ -1094,7 +1089,7 @@
                 <tbody>
                     <tr><td>Kartu tidak terbaca</td><td>Jarak terlalu jauh / kartu rusak</td><td>Dekatkan kartu (&lt;3cm). Jika tetap gagal, ganti kartu baru.</td></tr>
                     <tr><td>ESP32 "WiFi Terputus"</td><td>WiFi sekolah mati / password berubah</td><td>Cek router WiFi. Update SSID/password di kode ESP32.</td></tr>
-                    <tr><td>"Kartu tidak terdaftar"</td><td>UID belum diregistrasi di sistem</td><td>Daftarkan kartu melalui menu Siswa/Guru. Gunakan USB RFID Reader untuk membaca UID kartu.</td></tr>
+                    <tr><td>"Kartu tidak terdaftar"</td><td>UID belum diregistrasi di sistem</td><td>Daftarkan kartu melalui menu Siswa/Guru. Gunakan Mode 1 untuk baca UID.</td></tr>
                     <tr><td>WA tidak terkirim (wa_sent: false)</td><td>Orang tua belum diisi / nomor salah</td><td>Cek data orang tua di menu Parents. Pastikan nomor WA valid.</td></tr>
                     <tr><td>WA Pending di Fonnte</td><td>Device WhatsApp terputus</td><td>Buka fonnte.com, Reconnect, lalu scan ulang QR Code.</td></tr>
                     <tr><td>"Tunggu X menit lagi"</td><td>Tap terlalu cepat (cooldown)</td><td>Tunggu sesuai delay yang dikonfigurasi (default 5 menit).</td></tr>

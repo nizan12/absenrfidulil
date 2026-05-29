@@ -1,0 +1,897 @@
+<div class="pg<!DOCTYPE html>
+<html lang=" id">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lembar Serah Terima - Sistem Absensi RFID SMAIT Ulil Albab</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Crimson+Pro:wght@600;700&display=swap');
+
+            :root {
+                --ink: #0f172a;
+                --ink-soft: #334155;
+                --ink-muted: #94a3b8;
+                --ink-faint: #cbd5e1;
+                --surface: #ffffff;
+                --surface-dim: #f8fafc;
+                --surface-accent: #f1f5f9;
+                --brand: #1e3a5f;
+                --brand-vivid: #2563eb;
+                --brand-light: #dbeafe;
+                --accent: #0f766e;
+                --accent-light: #ccfbf1;
+                --warn: #92400e;
+                --warn-light: #fef3c7;
+                --success: #166534;
+                --success-light: #dcfce7;
+            }
+
+            *,
+            *::before,
+            *::after {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+                color: var(--ink);
+                line-height: 1.75;
+                background: #e2e8f0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .doc {
+                max-width: 210mm;
+                margin: 0 auto;
+                background: white;
+            }
+
+            @media screen {
+                .doc {
+                    margin: 24px auto;
+                    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 20px 60px -15px rgba(0, 0, 0, 0.15);
+                    border-radius: 6px;
+                    overflow: hidden;
+                }
+            }
+
+            @media print {
+                body {
+                    background: white;
+                }
+
+                .doc {
+                    box-shadow: none;
+                    border-radius: 0;
+                    margin: 0;
+                }
+
+                .pg {
+                    min-height: 297mm;
+                    page-break-after: always;
+                }
+
+                .pg:last-child {
+                    page-break-after: auto;
+                }
+
+                .fab {
+                    display: none !important;
+                }
+            }
+
+            @page {
+                size: A4;
+                margin: 0;
+            }
+
+            /* PAGE */
+            .pg {
+                min-height: 297mm;
+                padding: 48px 56px 70px;
+                page-break-after: always;
+                position: relative;
+            }
+
+            .pg:last-child {
+                page-break-after: auto;
+            }
+
+            /* HEADER */
+            .hdr {
+                text-align: center;
+                margin-bottom: 32px;
+                padding-bottom: 20px;
+                border-bottom: 3px solid var(--brand);
+                position: relative;
+            }
+
+            .hdr::after {
+                content: '';
+                position: absolute;
+                bottom: -3px;
+                left: 0;
+                width: 120px;
+                height: 3px;
+                background: var(--accent);
+            }
+
+            .hdr-inst {
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: var(--brand);
+                margin-bottom: 4px;
+            }
+
+            .hdr h1 {
+                font-family: 'Crimson Pro', serif;
+                font-size: 32px;
+                font-weight: 700;
+                color: var(--ink);
+                line-height: 1.2;
+                margin-bottom: 4px;
+            }
+
+            .hdr-sub {
+                font-size: 14px;
+                color: var(--ink-muted);
+                font-weight: 500;
+            }
+
+            /* DOC NUMBER */
+            .doc-num {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 28px;
+                padding: 14px 18px;
+                background: var(--surface-dim);
+                border-radius: 10px;
+                border: 1px solid var(--surface-accent);
+                font-size: 12.5px;
+                color: var(--ink-soft);
+            }
+
+            .doc-num strong {
+                color: var(--ink);
+            }
+
+            /* SECTION */
+            .sec {
+                margin-bottom: 28px;
+            }
+
+            .sec-title {
+                font-size: 14px;
+                font-weight: 700;
+                color: var(--brand);
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .sec-badge {
+                width: 26px;
+                height: 26px;
+                border-radius: 7px;
+                background: var(--brand);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                font-weight: 800;
+                flex-shrink: 0;
+            }
+
+            .sec p {
+                font-size: 13px;
+                color: var(--ink-soft);
+            }
+
+            /* INFO TABLE */
+            .info-tbl {
+                width: 100%;
+                font-size: 13px;
+                margin: 10px 0;
+            }
+
+            .info-tbl td {
+                padding: 7px 0;
+                vertical-align: top;
+                color: var(--ink-soft);
+            }
+
+            .info-tbl td:first-child {
+                width: 160px;
+                font-weight: 600;
+                color: var(--ink);
+            }
+
+            .info-tbl td:nth-child(2) {
+                width: 14px;
+                text-align: center;
+            }
+
+            .info-tbl tr {
+                border-bottom: 1px solid var(--surface-accent);
+            }
+
+            .info-tbl tr:last-child {
+                border-bottom: none;
+            }
+
+            /* TABLES */
+            .tbl {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                font-size: 12px;
+                margin: 12px 0;
+                border: 1px solid var(--surface-accent);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            .tbl thead th {
+                background: var(--brand);
+                color: white;
+                padding: 9px 14px;
+                font-weight: 600;
+                text-align: left;
+                font-size: 10.5px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .tbl tbody td {
+                padding: 8px 14px;
+                border-bottom: 1px solid var(--surface-accent);
+                color: var(--ink-soft);
+            }
+
+            .tbl tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .tbl tbody tr:nth-child(even) {
+                background: var(--surface-dim);
+            }
+
+            .tbl .ctr {
+                text-align: center;
+            }
+
+            /* SIGNATURE */
+            .sig-row {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 50px;
+                gap: 40px;
+            }
+
+            .sig-box {
+                flex: 1;
+                text-align: center;
+            }
+
+            .sig-label {
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--brand);
+                margin-bottom: 6px;
+            }
+
+            .sig-role {
+                font-size: 11px;
+                color: var(--ink-muted);
+                margin-bottom: 80px;
+            }
+
+            .sig-line {
+                border-bottom: 1.5px solid var(--ink);
+                margin: 0 20px 6px;
+            }
+
+            .sig-name {
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--ink);
+            }
+
+            .sig-title {
+                font-size: 10.5px;
+                color: var(--ink-muted);
+            }
+
+            /* DIVIDER */
+            .dvd {
+                height: 1px;
+                background: linear-gradient(90deg, transparent, var(--surface-accent), var(--surface-accent), transparent);
+                margin: 24px 0;
+            }
+
+            /* ALERT */
+            .alrt {
+                display: flex;
+                gap: 14px;
+                padding: 14px 16px;
+                border-radius: 10px;
+                margin: 16px 0;
+                border: 1px solid;
+                font-size: 12px;
+            }
+
+            .alrt-icon {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            .alrt-icon svg {
+                width: 15px;
+                height: 15px;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .alrt h5 {
+                font-size: 11.5px;
+                font-weight: 700;
+                margin-bottom: 2px;
+            }
+
+            .alrt p {
+                font-size: 11.5px;
+                color: var(--ink-soft);
+                line-height: 1.6;
+            }
+
+            .alrt.info {
+                background: #f0f5ff;
+                border-color: #c7d9f5;
+            }
+
+            .alrt.info .alrt-icon {
+                background: #dbeafe;
+            }
+
+            .alrt.info .alrt-icon svg {
+                stroke: var(--brand-vivid);
+            }
+
+            .alrt.info h5 {
+                color: #1d4ed8;
+            }
+
+            /* FOOTER */
+            .pg-foot {
+                position: absolute;
+                bottom: 24px;
+                left: 56px;
+                right: 56px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 9px;
+                color: var(--ink-muted);
+                border-top: 1px solid var(--surface-accent);
+                padding-top: 10px;
+            }
+
+            .pg-foot-brand {
+                font-weight: 700;
+                color: var(--brand);
+            }
+
+            /* CHECKLIST */
+            .chk-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 7px 0;
+                font-size: 12.5px;
+                color: var(--ink-soft);
+                border-bottom: 1px solid var(--surface-accent);
+            }
+
+            .chk-row:last-child {
+                border-bottom: none;
+            }
+
+            .chk-box {
+                width: 18px;
+                height: 18px;
+                border: 2px solid var(--ink-faint);
+                border-radius: 4px;
+                flex-shrink: 0;
+            }
+
+            code {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 11px;
+                background: var(--surface-accent);
+                padding: 2px 6px;
+                border-radius: 4px;
+                color: var(--brand-vivid);
+            }
+
+            .fab {
+                position: fixed;
+                bottom: 28px;
+                right: 28px;
+                background: var(--brand);
+                color: white;
+                border: none;
+                width: 56px;
+                height: 56px;
+                border-radius: 16px;
+                cursor: pointer;
+                box-shadow: 0 8px 30px rgba(30, 58, 95, 0.4);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 100;
+                transition: transform 0.2s, box-shadow 0.2s;
+                font-family: inherit;
+            }
+
+            .fab:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 14px 40px rgba(30, 58, 95, 0.5);
+            }
+
+            .fab svg {
+                width: 22px;
+                height: 22px;
+                stroke: white;
+                fill: none;
+                stroke-width: 2;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <button class="fab" onclick="window.print()" title="Cetak / Simpan PDF">
+            <svg viewBox="0 0 24 24">
+                <path d="M6 9V2h12v7" />
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                <rect x="6" y="14" width="12" height="8" />
+            </svg>
+        </button>
+
+        <div class="doc">
+
+            <!-- HALAMAN 1 -->
+            <div class="pg">
+                <div class="hdr">
+                    <div class="hdr-inst">SMAIT Ulil Albab</div>
+                    <h1>Berita Acara Serah Terima</h1>
+                    <p class="hdr-sub">Sistem Absensi RFID</p>
+                </div>
+
+                <div class="doc-num">
+                    <span>No. Dokumen: <strong>BAST/IT/001/V/2026</strong></span>
+                    <span>Tanggal: <strong>_____ / _____ / 2026</strong></span>
+                </div>
+
+                <div class="sec">
+                    <p style="margin-bottom:16px;">Pada hari ini, __________ tanggal __________ bulan __________ tahun
+                        2026,
+                        bertempat di SMAIT Ulil Albab, telah dilaksanakan serah terima pekerjaan <strong>Sistem Absensi
+                            RFID</strong> antara:</p>
+                </div>
+
+                <!-- PIHAK PERTAMA -->
+                <div class="sec">
+                    <h3 class="sec-title"><span class="sec-badge">1</span> Pihak Pertama (Pengembang)</h3>
+                    <table class="info-tbl">
+                        <tr>
+                            <td>Nama</td>
+                            <td>:</td>
+                            <td>___________________________________________________________________</td>
+                        </tr>
+                        <tr>
+                            <td>Jabatan</td>
+                            <td>:</td>
+                            <td>___________________________________________________________________</td>
+                        </tr>
+                        <tr>
+                            <td>Instansi / Lembaga</td>
+                            <td>:</td>
+                            <td>___________________________________________________________________</td>
+                        </tr>
+                        <tr>
+                            <td>Alamat</td>
+                            <td>:</td>
+                            <td>___________________________________________________________________</td>
+                        </tr>
+                    </table>
+                    <p style="margin-top:8px; font-size:12px; color:var(--ink-muted);">Selanjutnya disebut sebagai
+                        <strong>PIHAK PERTAMA</strong>
+                    </p>
+                </div>
+
+                <!-- PIHAK KEDUA -->
+                <div class="sec">
+                    <h3 class="sec-title"><span class="sec-badge">2</span> Pihak Kedua (Penerima)</h3>
+                    <table class="info-tbl">
+                        <tr>
+                            <td>Nama</td>
+                            <td>:</td>
+                            <td>___________________________________________________________________</td>
+                        </tr>
+                        <tr>
+                            <td>Jabatan</td>
+                            <td>:</td>
+                            <td>___________________________________________________________________</td>
+                        </tr>
+                        <tr>
+                            <td>Instansi</td>
+                            <td>:</td>
+                            <td>SMAIT Ulil Albab</td>
+                        </tr>
+                        <tr>
+                            <td>Alamat</td>
+                            <td>:</td>
+                            <td>___________________________________________________________________</td>
+                        </tr>
+                    </table>
+                    <p style="margin-top:8px; font-size:12px; color:var(--ink-muted);">Selanjutnya disebut sebagai
+                        <strong>PIHAK KEDUA</strong>
+                    </p>
+                </div>
+
+                <br><br><br><br><br><br><br><br><br><br><br><br>
+                <div class="dvd"></div>
+
+                <!-- DAFTAR ITEM -->
+                <div class="sec">
+                    <h3 class="sec-title"><span class="sec-badge">3</span> Daftar Item yang Diserahkan</h3>
+
+                    <p style="margin-bottom:8px; font-size:12px; font-weight:600; color:var(--ink);">A. Perangkat Keras
+                        (Hardware)</p>
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th style="width:5%;">No</th>
+                                <th>Nama Item</th>
+                                <th style="width:12%;">Jumlah</th>
+                                <th style="width:12%;">Kondisi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ctr">1</td>
+                                <td>ESP32 DevKit V1</td>
+                                <td class="ctr">_____ unit</td>
+                                <td class="ctr">Baik</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">2</td>
+                                <td>Modul MFRC522 RFID Reader</td>
+                                <td class="ctr">_____ unit</td>
+                                <td class="ctr">Baik</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">3</td>
+                                <td>LCD I2C 16x2</td>
+                                <td class="ctr">_____ unit</td>
+                                <td class="ctr">Baik</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">4</td>
+                                <td>Buzzer</td>
+                                <td class="ctr">_____ unit</td>
+                                <td class="ctr">Baik</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">5</td>
+                                <td>Kabel jumper &amp; breadboard/PCB</td>
+                                <td class="ctr">_____ set</td>
+                                <td class="ctr">Baik</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">6</td>
+                                <td>Adaptor / Power Supply</td>
+                                <td class="ctr">_____ unit</td>
+                                <td class="ctr">Baik</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">7</td>
+                                <td>Kartu RFID (MIFARE 13.56 MHz)</td>
+                                <td class="ctr">_____ buah</td>
+                                <td class="ctr">Baik</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">8</td>
+                                <td>Casing / Box perangkat</td>
+                                <td class="ctr">_____ unit</td>
+                                <td class="ctr">Baik</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pg-foot">
+                    <span class="pg-foot-brand">BAST Sistem Absensi RFID</span>
+                    <span>Halaman 1 dari 3</span>
+                </div>
+            </div>
+            <br>
+            <!-- HALAMAN 2 -->
+            <div class="pg">
+                <div class="sec">
+                    <p style="margin-bottom:8px; font-size:12px; font-weight:600; color:var(--ink);">B. Perangkat Lunak
+                        (Software) &amp; Akses</p>
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th style="width:5%;">No</th>
+                                <th>Nama Item</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ctr">1</td>
+                                <td>Aplikasi Web Dashboard</td>
+                                <td>Akses: <code>https://absenulilalbab.com</code></td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">2</td>
+                                <td>Backend API (Laravel)</td>
+                                <td>Server hosting aktif</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">3</td>
+                                <td>Source Code ESP32</td>
+                                <td>File <code>.ino</code> dalam flash drive / repositori</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">4</td>
+                                <td>Akun Super Admin</td>
+                                <td>Email &amp; password diberikan terpisah</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">5</td>
+                                <td>Integrasi WhatsApp (Fonnte)</td>
+                                <td>Token API sudah dikonfigurasi</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="sec">
+                    <p style="margin-bottom:8px; font-size:12px; font-weight:600; color:var(--ink);">C. Dokumen
+                        Pendukung
+                    </p>
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th style="width:5%;">No</th>
+                                <th>Nama Dokumen</th>
+                                <th style="width:12%;">Format</th>
+                                <th style="width:12%;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ctr">1</td>
+                                <td>SOP Sistem Absensi RFID</td>
+                                <td class="ctr">HTML/PDF</td>
+                                <td class="ctr">&#10003;</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">2</td>
+                                <td>Panduan Penggunaan (User Manual)</td>
+                                <td class="ctr">HTML/PDF</td>
+                                <td class="ctr">&#10003;</td>
+                            </tr>
+                            <tr>
+                                <td class="ctr">3</td>
+                                <td>Berita Acara Serah Terima (dokumen ini)</td>
+                                <td class="ctr">HTML/PDF</td>
+                                <td class="ctr">&#10003;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="dvd"></div>
+
+                <!-- DETAIL SISTEM -->
+                <div class="sec">
+                    <h3 class="sec-title"><span class="sec-badge">4</span> Detail Sistem</h3>
+                    <table class="info-tbl">
+                        <tr>
+                            <td>Nama Sistem</td>
+                            <td>:</td>
+                            <td>Sistem Absensi RFID SMAIT Ulil Albab</td>
+                        </tr>
+                        <tr>
+                            <td>URL Dashboard</td>
+                            <td>:</td>
+                            <td><code>https://absenulilalbab.com</code></td>
+                        </tr>
+                        <tr>
+                            <td>URL API</td>
+                            <td>:</td>
+                            <td><code>https://absenulilalbab.com/api</code></td>
+                        </tr>
+                        <tr>
+                            <td>Framework Backend</td>
+                            <td>:</td>
+                            <td>Laravel (PHP)</td>
+                        </tr>
+                        <tr>
+                            <td>Framework Frontend</td>
+                            <td>:</td>
+                            <td>React.js (Vite)</td>
+                        </tr>
+                        <tr>
+                            <td>Mikrokontroler</td>
+                            <td>:</td>
+                            <td>ESP32 + MFRC522 + LCD I2C + Buzzer</td>
+                        </tr>
+                        <tr>
+                            <td>Notifikasi</td>
+                            <td>:</td>
+                            <td>WhatsApp via Fonnte API</td>
+                        </tr>
+                    </table>
+                </div>
+
+
+                <br><br><br><br><br><br><br><br><br><br><br>
+                <div class="dvd"></div>
+
+                <!-- FITUR -->
+                <div class="sec">
+                    <h3 class="sec-title"><span class="sec-badge">5</span> Fitur Utama Sistem</h3>
+                    <div style="columns: 2; column-gap: 24px; font-size: 12.5px; color: var(--ink-soft);">
+                        <div class="chk-row">
+                            <div class="chk-box" style="background:var(--success-light); border-color:var(--success);">
+                            </div><span>Absensi tap kartu RFID otomatis</span>
+                        </div>
+                        <div class="chk-row">
+                            <div class="chk-box" style="background:var(--success-light); border-color:var(--success);">
+                            </div><span>Logika IN/OUT bergantian</span>
+                        </div>
+                        <div class="chk-row">
+                            <div class="chk-box" style="background:var(--success-light); border-color:var(--success);">
+                            </div><span>Notifikasi WhatsApp otomatis</span>
+                        </div>
+                        <div class="chk-row">
+                            <div class="chk-box" style="background:var(--success-light); border-color:var(--success);">
+                            </div><span>Dashboard monitoring real-time</span>
+                        </div>
+                        <div class="chk-row">
+                            <div class="chk-box" style="background:var(--success-light); border-color:var(--success);">
+                            </div><span>Rekapitulasi &amp; export Excel</span>
+                        </div>
+                        <div class="chk-row">
+                            <div class="chk-box" style="background:var(--success-light); border-color:var(--success);">
+                            </div><span>Import data massal via Excel</span>
+                        </div>
+                        <div class="chk-row">
+                            <div class="chk-box" style="background:var(--success-light); border-color:var(--success);">
+                            </div><span>Hak akses berbasis role (RBAC)</span>
+                        </div>
+                        <div class="chk-row">
+                            <div class="chk-box" style="background:var(--success-light); border-color:var(--success);">
+                            </div><span>Manual tap via USB RFID reader</span>
+                        </div>
+                        <div class="chk-row">
+                            <div class="chk-box" style="background:var(--success-light); border-color:var(--success);">
+                            </div><span>LCD &amp; buzzer feedback di alat</span>
+                        </div>
+                        <div class="chk-row">
+                            <div class="chk-box" style="background:var(--success-light); border-color:var(--success);">
+                            </div><span>Tap delay konfigurasi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pg-foot">
+                    <span class="pg-foot-brand">BAST Sistem Absensi RFID</span>
+                    <span>Halaman 2 dari 3</span>
+                </div>
+            </div>
+
+            <!-- HALAMAN 3 -->
+            <div class="pg">
+
+                <!-- KETENTUAN -->
+                <div class="sec">
+                    <h3 class="sec-title"><span class="sec-badge">6</span> Ketentuan</h3>
+                    <div style="font-size: 12.5px; color: var(--ink-soft); line-height: 1.8;">
+                        <p style="margin-bottom:8px;">1. PIHAK PERTAMA menyerahkan seluruh item sebagaimana tercantum
+                            pada
+                            <strong>Bagian 3</strong> dalam keadaan baik dan berfungsi.
+                        </p>
+                        <p style="margin-bottom:8px;">2. PIHAK KEDUA telah menerima, memeriksa, dan menyetujui bahwa
+                            seluruh
+                            item yang diserahkan sesuai dengan daftar dan dalam kondisi baik.</p>
+                        <p style="margin-bottom:8px;">3. Dengan ditandatanganinya berita acara ini, maka tanggung jawab
+                            atas
+                            pemeliharaan dan pengoperasian sistem beralih kepada <strong>PIHAK KEDUA</strong>.</p>
+                        <p style="margin-bottom:8px;">4. PIHAK PERTAMA tetap dapat dihubungi untuk konsultasi teknis
+                            sesuai
+                            kesepakatan yang berlaku.</p>
+                    </div>
+                </div>
+
+                <div class="dvd"></div>
+
+                <!-- CATATAN -->
+                <div class="sec">
+                    <h3 class="sec-title"><span class="sec-badge">7</span> Catatan Tambahan</h3>
+                    <div
+                        style="min-height: 100px; border: 1.5px dashed var(--ink-faint); border-radius: 10px; padding: 14px 18px; font-size: 12px; color: var(--ink-muted);">
+
+                    </div>
+                </div>
+
+                <div class="dvd"></div>
+
+                <p style="font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px;">Demikian berita acara serah
+                    terima
+                    ini dibuat dengan sebenarnya dalam rangkap 2 (dua), masing-masing mempunyai kekuatan hukum yang
+                    sama.
+                </p>
+
+                <!-- TANDA TANGAN -->
+                <div class="sig-row">
+                    <div class="sig-box">
+                        <div class="sig-label">PIHAK PERTAMA</div>
+                        <div class="sig-role">Pengembang</div>
+                        <div class="sig-line"></div>
+                        <div class="sig-name">(_________________________)</div>
+                        <div class="sig-title">Nama Lengkap</div>
+                    </div>
+                    <div class="sig-box">
+                        <div class="sig-label">PIHAK KEDUA</div>
+                        <div class="sig-role">Penerima</div>
+                        <div class="sig-line"></div>
+                        <div class="sig-name">(_________________________)</div>
+                        <div class="sig-title">Nama Lengkap</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 60px;"></div>
+
+                <!-- MENGETAHUI -->
+                <div style="text-align: center;">
+                    <div class="sig-label">MENGETAHUI</div>
+                    <div class="sig-role">Kepala Sekolah SMAIT Ulil Albab</div>
+                    <div style="height: 10px;"></div>
+                    <div class="sig-line" style="max-width: 280px; margin: 0 auto 6px;"></div>
+                    <div class="sig-name">(_________________________)</div>
+                    <div class="sig-title">NIP. _________________________</div>
+                </div>
+
+                <div class="pg-foot">
+                    <span class="pg-foot-brand">BAST Sistem Absensi RFID</span>
+                    <span>Halaman 3 dari 3</span>
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>

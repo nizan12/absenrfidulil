@@ -14,6 +14,7 @@ class AttendanceLog extends Model
         'esp_device_id',
         'recorded_by',
         'tap_type',
+        'late_status',
         'tapped_at',
         'wa_sent',
     ];

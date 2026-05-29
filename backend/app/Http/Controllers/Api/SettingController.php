@@ -16,6 +16,10 @@ class SettingController extends Controller
         'fonnte_api_token',
         'esp_api_key',
         'default_tap_delay',
+        'late_time_regular',
+        'late_time_boarding',
+        'late_tolerance_minutes',
+        'school_off_days',
     ];
 
     public function index()

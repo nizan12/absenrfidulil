@@ -39,7 +39,26 @@ class TapController extends Controller
             $request->rfid_uid
         );
 
-        $statusCode = $result['success'] ? 200 : 400;
+        $statusCode = 200;
+
+        if (!$result['success']) {
+        
+            switch ($result['code'] ?? '') {
+        
+                case 'STUDENT_NOT_FOUND':
+                case 'TEACHER_NOT_FOUND':
+                    $statusCode = 404;
+                    break;
+        
+                case 'TAP_TOO_SOON':
+                    $statusCode = 429;
+                    break;
+        
+                default:
+                    $statusCode = 400;
+                    break;
+            }
+        }
         
         return response()->json($result, $statusCode);
     }
@@ -67,7 +86,26 @@ class TapController extends Controller
             $request->rfid_uid
         );
 
-        $statusCode = $result['success'] ? 200 : 400;
+        $statusCode = 200;
+
+        if (!$result['success']) {
+        
+            switch ($result['code'] ?? '') {
+        
+                case 'STUDENT_NOT_FOUND':
+                case 'TEACHER_NOT_FOUND':
+                    $statusCode = 404;
+                    break;
+        
+                case 'TAP_TOO_SOON':
+                    $statusCode = 429;
+                    break;
+        
+                default:
+                    $statusCode = 400;
+                    break;
+            }
+        }
         
         return response()->json($result, $statusCode);
     }
@@ -105,7 +143,26 @@ class TapController extends Controller
             );
         }
 
-        $statusCode = $result['success'] ? 200 : 400;
+       $statusCode = 200;
+
+        if (!$result['success']) {
+        
+            switch ($result['code'] ?? '') {
+        
+                case 'STUDENT_NOT_FOUND':
+                case 'TEACHER_NOT_FOUND':
+                    $statusCode = 404;
+                    break;
+        
+                case 'TAP_TOO_SOON':
+                    $statusCode = 429;
+                    break;
+        
+                default:
+                    $statusCode = 400;
+                    break;
+            }
+        }
         
         return response()->json($result, $statusCode);
     }
@@ -148,7 +205,26 @@ class TapController extends Controller
             );
         }
 
-        $statusCode = $result['success'] ? 200 : 400;
+        $statusCode = 200;
+
+        if (!$result['success']) {
+        
+            switch ($result['code'] ?? '') {
+        
+                case 'STUDENT_NOT_FOUND':
+                case 'TEACHER_NOT_FOUND':
+                    $statusCode = 404;
+                    break;
+        
+                case 'TAP_TOO_SOON':
+                    $statusCode = 429;
+                    break;
+        
+                default:
+                    $statusCode = 400;
+                    break;
+            }
+        }
         
         return response()->json($result, $statusCode);
     }
@@ -192,7 +268,26 @@ class TapController extends Controller
             );
         }
 
-        $statusCode = $result['success'] ? 200 : 400;
+        $statusCode = 200;
+
+        if (!$result['success']) {
+        
+            switch ($result['code'] ?? '') {
+        
+                case 'STUDENT_NOT_FOUND':
+                case 'TEACHER_NOT_FOUND':
+                    $statusCode = 404;
+                    break;
+        
+                case 'TAP_TOO_SOON':
+                    $statusCode = 429;
+                    break;
+        
+                default:
+                    $statusCode = 400;
+                    break;
+            }
+        }
         
         return response()->json($result, $statusCode);
     }

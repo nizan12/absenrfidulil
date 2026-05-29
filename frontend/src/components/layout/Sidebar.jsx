@@ -23,6 +23,7 @@ import {
     UserCircle,
     Check,
     Shield,
+    CalendarOff,
 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000';
@@ -70,6 +71,7 @@ const menuGroups = [
         category: 'Sistem',
         items: [
             { path: '/notifications', icon: Bell, label: 'Notifikasi WA', roles: ['master', 'super_admin', 'staff_admin'] },
+            { path: '/holidays', icon: CalendarOff, label: 'Kalender Libur', roles: ['master', 'super_admin'] },
             { path: '/settings', icon: Settings, label: 'Pengaturan', roles: ['master', 'super_admin'] },
         ],
     },

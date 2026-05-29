@@ -131,6 +131,11 @@ export const attendanceService = {
     return response.data;
   },
 
+  getStudentRecap: async (params = {}) => {
+    const response = await api.get('/attendance/students/recap', { params });
+    return response.data;
+  },
+
   manualTap: async (rfid_uid, device_id, force_tap_type = null) => {
     const data = { rfid_uid, device_id };
     if (force_tap_type) {
@@ -170,6 +175,18 @@ export const notificationService = {
 
   getStatistics: async () => {
     const response = await api.get('/notifications/statistics');
+    return response.data;
+  },
+};
+
+export const holidayService = {
+  ...createCrudService('holidays'),
+  getByMonth: async (month, year) => {
+    const response = await api.get('/holidays', { params: { month, year } });
+    return response.data;
+  },
+  bulkStore: async (holidays) => {
+    const response = await api.post('/holidays/bulk', { holidays });
     return response.data;
   },
 };

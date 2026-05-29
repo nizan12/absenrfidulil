@@ -107,6 +107,7 @@ export default function MainLayout() {
                                         <User size={16} />
                                         <span>Profil Saya</span>
                                     </button>
+                                    {['master', 'super_admin'].includes(user?.role) && (
                                     <button
                                         onClick={() => {
                                             setDropdownOpen(false);
@@ -118,6 +119,7 @@ export default function MainLayout() {
                                         <Settings size={16} />
                                         <span>Pengaturan</span>
                                     </button>
+                                    )}
                                 </div>
 
                                 {/* Logout */}
