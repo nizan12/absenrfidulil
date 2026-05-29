@@ -15,7 +15,7 @@ class PublicController extends Controller
     // Get public settings (logo, institution name)
     public function getSettings()
     {
-        $settings = AppSetting::whereIn('key', ['institution_name', 'institution_logo', 'institution_address'])
+        $settings = AppSetting::whereIn('key', ['institution_name', 'institution_logo', 'institution_address', 'public_manual_tap_enabled'])
             ->pluck('value', 'key');
 
         return response()->json([

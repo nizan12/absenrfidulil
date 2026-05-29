@@ -246,7 +246,8 @@ export default function Landing() {
 
                             {/* Mobile: Buttons on right */}
                             <div className="flex items-center gap-2 sm:hidden">
-                                {/* Mode Toggle Button */}
+                                {/* Mode Toggle Button - only show if public manual tap is enabled */}
+                                {settings.public_manual_tap_enabled === '1' && (
                                 <button
                                     onClick={() => setInputMode(inputMode === 'live' ? 'manual' : 'live')}
                                     className={`p-2.5 rounded-xl transition-all ${inputMode === 'manual'
@@ -256,6 +257,7 @@ export default function Landing() {
                                 >
                                     {inputMode === 'manual' ? <Keyboard size={18} /> : <Scan size={18} />}
                                 </button>
+                                )}
                                 {/* Login Button */}
                                 <Link
                                     to="/login"
@@ -325,7 +327,8 @@ export default function Landing() {
                         {/* Desktop: Buttons on right */}
                         <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
 
-                            {/* Mode Toggle Button */}
+                            {/* Mode Toggle Button - only show if public manual tap is enabled */}
+                            {settings.public_manual_tap_enabled === '1' && (
                             <button
                                 onClick={() => setInputMode(inputMode === 'live' ? 'manual' : 'live')}
                                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all flex-shrink-0 ${inputMode === 'manual'
@@ -345,6 +348,7 @@ export default function Landing() {
                                     </>
                                 )}
                             </button>
+                            )}
 
                             {/* Login Button */}
                             <Link
@@ -469,8 +473,8 @@ export default function Landing() {
                 ) : (
                     /* Live Feed View */
                     <div className="space-y-6">
-                        {/* Manual Input Card - Only show in manual mode */}
-                        {inputMode === 'manual' && (
+                        {/* Manual Input Card - Only show in manual mode AND if enabled */}
+                        {inputMode === 'manual' && settings.public_manual_tap_enabled === '1' && (
                             <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-6 shadow-sm">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">

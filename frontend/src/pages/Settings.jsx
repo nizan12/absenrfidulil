@@ -250,11 +250,11 @@ export default function Settings() {
                     </div>
                 </div>
 
-                {/* Keamanan API */}
+                {/* Keamanan Tap Manual */}
                 <div className="card p-6">
-                    <h2 className="font-semibold text-lg flex items-center gap-2 mb-2" style={{ color: 'var(--text-primary)' }}><Shield size={20} />Keamanan API Publik</h2>
+                    <h2 className="font-semibold text-lg flex items-center gap-2 mb-2" style={{ color: 'var(--text-primary)' }}><Shield size={20} />Keamanan Tap Manual</h2>
                     <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>
-                        Kontrol akses endpoint publik yang berpotensi disalahgunakan
+                        Izinkan atau blokir fitur tap kartu RFID dari halaman publik (tanpa login)
                     </p>
                     <div className="space-y-4">
                         {/* Public Manual Tap Toggle */}
@@ -265,9 +265,9 @@ export default function Settings() {
                                         {settings.public_manual_tap_enabled === '1' ? <ShieldOff size={20} style={{ color: '#10b981' }} /> : <Shield size={20} style={{ color: '#ef4444' }} />}
                                     </div>
                                     <div>
-                                        <p className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>Tap Manual Publik (USB Reader)</p>
+                                        <p className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>Tap Manual dari Halaman Publik</p>
                                         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                                            Endpoint <code className="px-1 py-0.5 rounded text-xs" style={{ background: 'var(--bg-page)' }}>/api/public/tap/manual</code>
+                                            Untuk pembaca kartu USB di halaman depan (tanpa login)
                                         </p>
                                     </div>
                                 </div>
@@ -294,12 +294,12 @@ export default function Settings() {
                                 {settings.public_manual_tap_enabled === '1' ? (
                                     <span className="flex items-center gap-1.5">
                                         <AlertTriangle size={12} style={{ color: '#f59e0b' }} />
-                                        <strong>Aktif</strong> — Siapapun bisa mengirim tap melalui endpoint ini. Pastikan hanya digunakan di jaringan lokal.
+                                        <strong>Aktif</strong> — Siapapun bisa tap kartu dari halaman depan tanpa login. Pastikan hanya digunakan di komputer sekolah.
                                     </span>
                                 ) : (
                                     <span className="flex items-center gap-1.5">
                                         <Shield size={12} style={{ color: '#10b981' }} />
-                                        <strong>Nonaktif</strong> — Endpoint diblokir. Tidak ada yang bisa mengirim tap manual dari publik.
+                                        <strong>Nonaktif</strong> — Fitur tap manual dari halaman publik dimatikan. Tap hanya bisa dilakukan dari dashboard admin.
                                     </span>
                                 )}
                             </div>
