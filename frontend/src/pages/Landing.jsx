@@ -122,6 +122,10 @@ export default function Landing() {
                 setShowSuggestions(true);
             }
         } catch (error) {
+            if (error.response?.status === 429) {
+                setSuggestions([]);
+                setShowSuggestions(false);
+            }
             console.error('Error searching:', error);
         }
     };

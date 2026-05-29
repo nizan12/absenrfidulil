@@ -168,9 +168,14 @@ class TapService
         // =====================================================
         // LATE STATUS CHECK
         // =====================================================
+        // Non-Boarding: hanya cek keterlambatan di tap IN PERTAMA hari ini
+        // Boarding: cek setiap tap IN (karena aturan jam kembali ke asrama)
+        // =====================================================
         $lateStatus = 'on_time';
 
-        if ($tapType === 'in') {
+        $isFirstInToday = ($todayTapCount === 0 && $tapType === 'in');
+
+        if ($tapType === 'in' && ($isBoarding || $isFirstInToday)) {
             // Get settings
             $lateTimeRegular = \App\Models\AppSetting::get('late_time_regular', '07:30');
             $lateTimeBoarding = \App\Models\AppSetting::get('late_time_boarding', '17:00');

@@ -59,5 +59,27 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(300)->by(optional($request->user())->id ?: $request->ip());
         });
+
+        // Strict rate limit for public search endpoint to prevent scraping
+        RateLimiter::for('public-search', function (Request $request) {
+            return Limit::perMinute(10)->by($request->ip())->response(function () {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terlalu banyak permintaan. Coba lagi nanti.',
+                    'code' => 'RATE_LIMIT_EXCEEDED'
+                ], 429);
+            });
+        });
+
+        // Rate limit for public manual tap endpoint (120/min = ~2/sec, enough for rush hour)
+        RateLimiter::for('public-tap', function (Request $request) {
+            return Limit::perMinute(120)->by($request->ip())->response(function () {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terlalu banyak permintaan tap. Coba lagi nanti.',
+                    'code' => 'RATE_LIMIT_EXCEEDED'
+                ], 429);
+            });
+        });
     }
 }

@@ -31,10 +31,16 @@ Route::post('/tap/teacher', [TapController::class, 'teacherTap']);
 
 // Public routes - Landing page
 Route::get('/public/settings', [\App\Http\Controllers\Api\PublicController::class, 'getSettings']);
-Route::get('/public/search', [\App\Http\Controllers\Api\PublicController::class, 'searchStudents']);
-Route::get('/public/student/{studentId}', [\App\Http\Controllers\Api\PublicController::class, 'getStudentLog']);
 Route::get('/public/live', [\App\Http\Controllers\Api\PublicController::class, 'getLiveFeed']);
-Route::post('/public/tap/manual', [TapController::class, 'publicManualTap']);
+Route::get('/public/student/{studentId}', [\App\Http\Controllers\Api\PublicController::class, 'getStudentLog']);
+
+// Rate-limited public routes
+Route::middleware('throttle:public-search')->group(function () {
+    Route::get('/public/search', [\App\Http\Controllers\Api\PublicController::class, 'searchStudents']);
+});
+Route::middleware('throttle:public-tap')->group(function () {
+    Route::post('/public/tap/manual', [TapController::class, 'publicManualTap']);
+});
 
 // Password Reset routes
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);

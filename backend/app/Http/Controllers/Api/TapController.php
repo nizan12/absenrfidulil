@@ -232,6 +232,16 @@ class TapController extends Controller
     // Public manual tap - for USB RFID readers (no authentication)
     public function publicManualTap(Request $request)
     {
+        // Check if public manual tap is enabled in settings
+        $isEnabled = AppSetting::get('public_manual_tap_enabled', '0');
+        if ($isEnabled !== '1') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Fitur tap manual publik dinonaktifkan oleh administrator',
+                'code' => 'PUBLIC_TAP_DISABLED'
+            ], 403);
+        }
+
         $request->validate([
             'rfid_uid' => 'required|string',
         ]);

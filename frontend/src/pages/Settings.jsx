@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { settingService } from '../services/dataService';
 import { Skeleton } from '../components/ui/Skeleton';
-import { Settings as SettingsIcon, Save, Loader2, Bell, Clock, Building, Key, RefreshCw, Eye, EyeOff, ImageIcon, Upload, AlertTriangle, Calendar, Check, Ban } from 'lucide-react';
+import { Settings as SettingsIcon, Save, Loader2, Bell, Clock, Building, Key, RefreshCw, Eye, EyeOff, ImageIcon, Upload, AlertTriangle, Calendar, Check, Ban, Shield, ShieldOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Settings() {
@@ -246,6 +246,63 @@ export default function Settings() {
                                 </button>
                             </div>
                             <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Klik tombol Generate untuk membuat API Key baru. Salin kunci ini ke ESP32 Anda.</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Keamanan API */}
+                <div className="card p-6">
+                    <h2 className="font-semibold text-lg flex items-center gap-2 mb-2" style={{ color: 'var(--text-primary)' }}><Shield size={20} />Keamanan API Publik</h2>
+                    <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>
+                        Kontrol akses endpoint publik yang berpotensi disalahgunakan
+                    </p>
+                    <div className="space-y-4">
+                        {/* Public Manual Tap Toggle */}
+                        <div className="p-4 rounded-xl border" style={{ borderColor: settings.public_manual_tap_enabled === '1' ? '#10b981' : '#ef4444', background: settings.public_manual_tap_enabled === '1' ? 'color-mix(in srgb, #10b981 8%, transparent)' : 'color-mix(in srgb, #ef4444 8%, transparent)' }}>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: settings.public_manual_tap_enabled === '1' ? 'color-mix(in srgb, #10b981 20%, transparent)' : 'color-mix(in srgb, #ef4444 20%, transparent)' }}>
+                                        {settings.public_manual_tap_enabled === '1' ? <ShieldOff size={20} style={{ color: '#10b981' }} /> : <Shield size={20} style={{ color: '#ef4444' }} />}
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>Tap Manual Publik (USB Reader)</p>
+                                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                                            Endpoint <code className="px-1 py-0.5 rounded text-xs" style={{ background: 'var(--bg-page)' }}>/api/public/tap/manual</code>
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={async () => {
+                                        const newValue = settings.public_manual_tap_enabled === '1' ? '0' : '1';
+                                        updateSetting('public_manual_tap_enabled', newValue);
+                                        try {
+                                            await settingService.update({ public_manual_tap_enabled: newValue });
+                                            toast.success(newValue === '1' ? 'Tap manual publik diaktifkan' : 'Tap manual publik dinonaktifkan');
+                                        } catch (e) {
+                                            toast.error('Gagal mengubah pengaturan');
+                                            updateSetting('public_manual_tap_enabled', settings.public_manual_tap_enabled);
+                                        }
+                                    }}
+                                    className="relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none"
+                                    style={{ background: settings.public_manual_tap_enabled === '1' ? '#10b981' : '#94a3b8' }}
+                                >
+                                    <span className="inline-block h-5 w-5 transform rounded-full bg-white transition-transform shadow-md" style={{ transform: settings.public_manual_tap_enabled === '1' ? 'translateX(24px)' : 'translateX(4px)' }} />
+                                </button>
+                            </div>
+                            <div className="mt-3 p-2.5 rounded-lg text-xs" style={{ background: 'color-mix(in srgb, var(--bg-card) 70%, transparent)', color: 'var(--text-secondary)' }}>
+                                {settings.public_manual_tap_enabled === '1' ? (
+                                    <span className="flex items-center gap-1.5">
+                                        <AlertTriangle size={12} style={{ color: '#f59e0b' }} />
+                                        <strong>Aktif</strong> — Siapapun bisa mengirim tap melalui endpoint ini. Pastikan hanya digunakan di jaringan lokal.
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center gap-1.5">
+                                        <Shield size={12} style={{ color: '#10b981' }} />
+                                        <strong>Nonaktif</strong> — Endpoint diblokir. Tidak ada yang bisa mengirim tap manual dari publik.
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

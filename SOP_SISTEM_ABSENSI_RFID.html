@@ -550,7 +550,7 @@
             <p class="cover-sub">Sistem Absensi RFID &mdash; SMAIT Ulil Albab</p>
             <div class="cover-meta">
                 <dl class="cover-chip"><dt>Nomor</dt><dd>SOP/IT/001</dd></dl>
-                <dl class="cover-chip"><dt>Revisi</dt><dd>01</dd></dl>
+                <dl class="cover-chip"><dt>Revisi</dt><dd>02</dd></dl>
             </div>
         </div>
         <div class="cover-foot">
@@ -577,16 +577,18 @@
             <li><div class="toc-n">3</div><span class="toc-t">SOP Registrasi Data (Siswa, Guru, Orang Tua)</span></li>
             <li><div class="toc-n">4</div><span class="toc-t">SOP Import Data Massal (Excel)</span></li>
             <li><div class="toc-n">5</div><span class="toc-t">SOP Proses Absensi Harian (Tap RFID)</span></li>
-            <li><div class="toc-n">6</div><span class="toc-t">SOP Monitoring &amp; Rekapitulasi</span></li>
-            <li><div class="toc-n">7</div><span class="toc-t">SOP Konfigurasi Perangkat ESP32</span></li>
-            <li><div class="toc-n">8</div><span class="toc-t">SOP Notifikasi WhatsApp (Fonnte)</span></li>
-            <li><div class="toc-n">9</div><span class="toc-t">Hak Akses &amp; Peran Pengguna</span></li>
-            <li><div class="toc-n">10</div><span class="toc-t">Troubleshooting &amp; FAQ</span></li>
+            <li><div class="toc-n">6</div><span class="toc-t">SOP Aturan Keterlambatan</span></li>
+            <li><div class="toc-n">7</div><span class="toc-t">SOP Kalender Hari Libur</span></li>
+            <li><div class="toc-n">8</div><span class="toc-t">SOP Monitoring &amp; Rekapitulasi</span></li>
+            <li><div class="toc-n">9</div><span class="toc-t">SOP Konfigurasi Perangkat ESP32</span></li>
+            <li><div class="toc-n">10</div><span class="toc-t">SOP Notifikasi WhatsApp (Fonnte)</span></li>
+            <li><div class="toc-n">11</div><span class="toc-t">Hak Akses &amp; Peran Pengguna</span></li>
+            <li><div class="toc-n">12</div><span class="toc-t">Troubleshooting &amp; FAQ</span></li>
         </ul>
 
         <div class="pg-foot">
             <span class="pg-foot-brand">SOP Absensi RFID</span>
-            <span>SMAIT Ulil Albab &mdash; Rev. 01</span>
+            <span>SMAIT Ulil Albab &mdash; Rev. 02</span>
         </div>
     </div>
 
@@ -868,14 +870,153 @@
         </div>
     </div>
 
-    <!-- ==================== BAB 6 ==================== -->
+    <!-- ==================== BAB 6: ATURAN KETERLAMBATAN ==================== -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:var(--warn-light);">
+                <svg viewBox="0 0 24 24" stroke="var(--warn)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="ch-text">
+                <div class="ch-num">Bab 06</div>
+                <h2>SOP Aturan Keterlambatan</h2>
+                <p class="ch-desc">Konfigurasi dan mekanisme deteksi keterlambatan siswa</p>
+            </div>
+        </div>
+        <div class="ch-line"></div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">A</span> Deskripsi Fitur</h3>
+            <p>Sistem absensi RFID kini dilengkapi fitur <strong>deteksi keterlambatan otomatis</strong>. Setiap kali siswa melakukan tap MASUK, sistem akan membandingkan waktu tap dengan batas jam masuk yang telah dikonfigurasi, lalu menandai status keterlambatan pada record absensi.</p>
+        </div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">B</span> Kategori Status Keterlambatan</h3>
+            <table class="tbl">
+                <thead><tr><th>Status</th><th>Kode</th><th>Keterangan</th></tr></thead>
+                <tbody>
+                    <tr><td><strong style="color:var(--success);">Tepat Waktu</strong></td><td><code>on_time</code></td><td>Siswa tap sebelum atau tepat pada batas jam masuk</td></tr>
+                    <tr><td><strong style="color:var(--warn);">Toleransi</strong></td><td><code>tolerated</code></td><td>Siswa tap setelah batas jam masuk, tetapi masih dalam jeda toleransi</td></tr>
+                    <tr><td><strong style="color:var(--danger);">Terlambat</strong></td><td><code>late</code></td><td>Siswa tap melebihi batas jam masuk + toleransi</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">C</span> Konfigurasi Batas Waktu</h3>
+            <p style="margin-bottom:10px;">Pengaturan berikut dikonfigurasi oleh <strong>Super Admin</strong> melalui menu <strong>Pengaturan</strong>:</p>
+            <table class="tbl">
+                <thead><tr><th>Pengaturan</th><th>Default</th><th>Keterangan</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Batas Jam Masuk Non-Boarding</strong></td><td><code>07:30</code></td><td>Untuk siswa kategori Reguler / Full Day</td></tr>
+                    <tr><td><strong>Batas Jam Kembali Boarding</strong></td><td><code>17:00</code></td><td>Untuk siswa kategori Boarding / Asrama</td></tr>
+                    <tr><td><strong>Toleransi Keterlambatan</strong></td><td><code>15 menit</code></td><td>Jeda setelah batas waktu sebelum dianggap benar-benar terlambat</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="alrt info">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+            <div><h5>Contoh Perhitungan</h5><p>Jika batas masuk <strong>07:30</strong> dengan toleransi <strong>15 menit</strong>:<br>&ndash; Tap &le; 07:30 = <strong style="color:var(--success);">Tepat Waktu</strong><br>&ndash; Tap 07:31 &ndash; 07:45 = <strong style="color:var(--warn);">Toleransi</strong><br>&ndash; Tap &gt; 07:45 = <strong style="color:var(--danger);">Terlambat</strong></p></div>
+        </div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">D</span> Dampak pada Sistem</h3>
+            <ul class="chk">
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span><strong>LCD ESP32</strong>: Menampilkan "TERLAMBAT!" atau "HAMPIR TERLAMBAT" saat siswa tap masuk di luar batas waktu</span></li>
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span><strong>Notifikasi WhatsApp</strong>: Pesan ke orang tua menyertakan informasi keterlambatan beserta batas jam masuk</span></li>
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span><strong>Rekapitulasi</strong>: Data rekap kehadiran mencakup statistik jumlah <em>tepat waktu, toleransi,</em> dan <em>terlambat</em></span></li>
+                <li><span class="chk-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span><strong>Database</strong>: Field <code>late_status</code> tersimpan otomatis di setiap record absensi masuk</span></li>
+            </ul>
+        </div>
+
+        <div class="alrt warn">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+            <div><h5>Aturan Pengecekan Tap MASUK</h5><p>Untuk siswa <strong>Non-Boarding</strong>: deteksi keterlambatan <strong>hanya dihitung pada tap MASUK pertama hari itu</strong>. Jika siswa keluar lalu masuk kembali (tap ke-3, ke-5, dst.), tap tersebut <strong>tidak dicek keterlambatan</strong>. Untuk siswa <strong>Boarding</strong>: setiap tap MASUK tetap diperiksa karena aturan terkait jam kembali ke asrama.</p></div>
+        </div>
+
+        <div class="pg-foot">
+            <span class="pg-foot-brand">SOP Absensi RFID</span>
+            <span>Halaman 6</span>
+        </div>
+    </div>
+
+    <!-- ==================== BAB 7: KALENDER HARI LIBUR ==================== -->
+    <div class="pg">
+        <div class="ch">
+            <div class="ch-icon" style="background:var(--danger-light);">
+                <svg viewBox="0 0 24 24" stroke="var(--danger)"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14l2 2 4-4"/></svg>
+            </div>
+            <div class="ch-text">
+                <div class="ch-num">Bab 07</div>
+                <h2>SOP Kalender Hari Libur</h2>
+                <p class="ch-desc">Pengelolaan hari libur sekolah dan libur nasional</p>
+            </div>
+        </div>
+        <div class="ch-line"></div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">A</span> Deskripsi Fitur</h3>
+            <p>Menu <strong>Kalender Libur</strong> memungkinkan Super Admin untuk mengelola hari-hari libur sekolah. Hari libur yang terdaftar akan <strong>dikecualikan dari perhitungan rekap kehadiran</strong>, sehingga siswa tidak dianggap absen pada hari tersebut.</p>
+        </div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">B</span> Menambah Hari Libur (Satuan)</h3>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Kalender Libur</h4><p>Klik menu <strong>Kalender Libur</strong> di sidebar (kategori Sistem).</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Klik Tambah Libur</h4><p>Klik tombol <strong>+ Tambah Libur</strong>, atau klik langsung pada tanggal di kalender.</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Isi Data</h4><p>Lengkapi: <strong>Tanggal</strong>, <strong>Nama Hari Libur</strong>, dan <strong>Keterangan</strong> (opsional).</p></div></div>
+                <div class="stp"><div class="stp-n">4</div><div class="stp-body"><h4>Simpan</h4><p>Klik <strong>Simpan</strong>. Tanggal akan ditandai merah di kalender.</p></div></div>
+            </div>
+        </div>
+
+        <div class="dvd"></div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">C</span> Menambah Libur Range Tanggal</h3>
+            <p style="margin-bottom:10px;">Untuk menambahkan libur dalam rentang tanggal (misal: Libur Semester):</p>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Klik "Tambah Range"</h4><p>Klik tombol <strong>Tambah Range</strong> di header halaman Kalender Libur.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Pilih Rentang Tanggal</h4><p>Isi <strong>Dari Tanggal</strong> dan <strong>Sampai Tanggal</strong>. Sistem menampilkan jumlah hari yang akan ditambahkan.</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Simpan Range</h4><p>Klik <strong>Simpan Range</strong>. Seluruh tanggal dalam rentang akan otomatis ditambahkan. Tanggal yang sudah ada akan dilewati.</p></div></div>
+            </div>
+        </div>
+
+        <div class="dvd"></div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">D</span> Import Libur Nasional</h3>
+            <p style="margin-bottom:10px;">Sistem dapat mengambil data libur nasional dan cuti bersama secara otomatis dari API publik:</p>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Klik "Import Nasional"</h4><p>Klik tombol <strong>Import Nasional</strong>. Sistem mengambil data dari <code>libur.deno.dev</code>.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Pilih Hari Libur</h4><p>Centang hari libur yang ingin diimport. Gunakan <strong>Pilih Semua</strong> untuk memilih seluruhnya.</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Klik Import</h4><p>Klik <strong>Import</strong>. Data yang sudah ada akan otomatis dilewati (tidak duplikat).</p></div></div>
+            </div>
+        </div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">E</span> Hari Libur Mingguan</h3>
+            <p>Selain hari libur khusus, Super Admin juga dapat mengatur <strong>hari libur mingguan</strong> di menu <strong>Pengaturan</strong>. Hari yang ditandai sebagai libur mingguan (default: Minggu dan Sabtu) akan <strong>tidak dihitung</strong> sebagai hari sekolah dalam rekap kehadiran.</p>
+        </div>
+
+        <div class="alrt info">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+            <div><h5>Akses Menu</h5><p>Menu Kalender Libur hanya dapat diakses oleh <strong>Super Admin</strong>. Hari libur berlaku global untuk seluruh siswa dan guru.</p></div>
+        </div>
+
+        <div class="pg-foot">
+            <span class="pg-foot-brand">SOP Absensi RFID</span>
+            <span>Halaman 7</span>
+        </div>
+    </div>
+
+    <!-- ==================== BAB 8 ==================== -->
     <div class="pg">
         <div class="ch">
             <div class="ch-icon" style="background:#ede9fe;">
                 <svg viewBox="0 0 24 24" stroke="#6d28d9"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </div>
             <div class="ch-text">
-                <div class="ch-num">Bab 06</div>
+                <div class="ch-num">Bab 08</div>
                 <h2>SOP Monitoring &amp; Rekapitulasi</h2>
                 <p class="ch-desc">Pemantauan kehadiran real-time dan laporan</p>
             </div>
@@ -905,18 +1046,18 @@
 
         <div class="pg-foot">
             <span class="pg-foot-brand">SOP Absensi RFID</span>
-            <span>Halaman 6</span>
+            <span>Halaman 8</span>
         </div>
     </div>
 
-    <!-- ==================== BAB 7 ==================== -->
+    <!-- ==================== BAB 9 ==================== -->
     <div class="pg">
         <div class="ch">
             <div class="ch-icon" style="background:var(--warn-light);">
                 <svg viewBox="0 0 24 24" stroke="var(--warn)"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>
             </div>
             <div class="ch-text">
-                <div class="ch-num">Bab 07</div>
+                <div class="ch-num">Bab 09</div>
                 <h2>SOP Konfigurasi Perangkat ESP32</h2>
                 <p class="ch-desc">Setup dan troubleshooting perangkat keras</p>
             </div>
@@ -985,18 +1126,18 @@
 
         <div class="pg-foot">
             <span class="pg-foot-brand">SOP Absensi RFID</span>
-            <span>Halaman 7</span>
+            <span>Halaman 9</span>
         </div>
     </div>
 
-    <!-- ==================== BAB 8 ==================== -->
+    <!-- ==================== BAB 10 ==================== -->
     <div class="pg">
         <div class="ch">
             <div class="ch-icon" style="background:var(--success-light);">
                 <svg viewBox="0 0 24 24" stroke="var(--success)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             </div>
             <div class="ch-text">
-                <div class="ch-num">Bab 08</div>
+                <div class="ch-num">Bab 10</div>
                 <h2>SOP Notifikasi WhatsApp</h2>
                 <p class="ch-desc">Konfigurasi dan monitoring notifikasi Fonnte</p>
             </div>
@@ -1020,18 +1161,18 @@
 
         <div class="pg-foot">
             <span class="pg-foot-brand">SOP Absensi RFID</span>
-            <span>Halaman 8</span>
+            <span>Halaman 10</span>
         </div>
     </div>
 
-    <!-- ==================== BAB 9 ==================== -->
+    <!-- ==================== BAB 11 ==================== -->
     <div class="pg">
         <div class="ch">
             <div class="ch-icon" style="background:#fce7f3;">
                 <svg viewBox="0 0 24 24" stroke="#9d174d"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
             <div class="ch-text">
-                <div class="ch-num">Bab 09</div>
+                <div class="ch-num">Bab 11</div>
                 <h2>Hak Akses &amp; Peran Pengguna</h2>
                 <p class="ch-desc">Matriks otoritas setiap role dalam sistem</p>
             </div>
@@ -1063,6 +1204,7 @@
                     <tr><td>Live Monitor</td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td></tr>
                     <tr><td>Rekapitulasi</td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td></tr>
                     <tr><td>Notifikasi WA</td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td></tr>
+                    <tr><td>Kalender Libur</td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td></tr>
                     <tr><td>Pengaturan</td><td style="text-align:center;"><span class="perm perm-y"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td><td style="text-align:center;"><span class="perm perm-n"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></span></td></tr>
                 </tbody>
             </table>
@@ -1070,18 +1212,18 @@
 
         <div class="pg-foot">
             <span class="pg-foot-brand">SOP Absensi RFID</span>
-            <span>Halaman 9</span>
+            <span>Halaman 11</span>
         </div>
     </div>
 
-    <!-- ==================== BAB 10 ==================== -->
+    <!-- ==================== BAB 12 ==================== -->
     <div class="pg">
         <div class="ch">
             <div class="ch-icon" style="background:var(--danger-light);">
                 <svg viewBox="0 0 24 24" stroke="var(--danger)"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
             </div>
             <div class="ch-text">
-                <div class="ch-num">Bab 10</div>
+                <div class="ch-num">Bab 12</div>
                 <h2>Troubleshooting &amp; FAQ</h2>
                 <p class="ch-desc">Solusi masalah umum yang sering terjadi</p>
             </div>
@@ -1106,7 +1248,7 @@
 
         <div class="pg-foot">
             <span class="pg-foot-brand">SOP Absensi RFID</span>
-            <span>Halaman 10</span>
+            <span>Halaman 12</span>
         </div>
     </div>
 

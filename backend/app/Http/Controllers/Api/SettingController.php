@@ -20,6 +20,8 @@ class SettingController extends Controller
         'late_time_boarding',
         'late_tolerance_minutes',
         'school_off_days',
+        'public_manual_tap_enabled',
+        'default_usb_reader_device_id',
     ];
 
     public function index()

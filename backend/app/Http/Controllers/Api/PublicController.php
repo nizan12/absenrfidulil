@@ -147,7 +147,6 @@ class PublicController extends Controller
                 'photo' => $student->photo,
                 'parents' => $student->parents->map(fn($p) => [
                     'name' => $p->name,
-                    'phone' => $p->phone,
                     'relationship' => $p->relationship,
                 ]),
             ],

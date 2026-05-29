@@ -189,7 +189,7 @@
             <p class="cover-sub">Sistem Absensi RFID &mdash; SMAIT Ulil Albab</p>
             <div class="cover-meta">
                 <dl class="cover-chip"><dt>Dokumen</dt><dd>MAN/IT/001</dd></dl>
-                <dl class="cover-chip"><dt>Versi</dt><dd>1.0</dd></dl>
+                <dl class="cover-chip"><dt>Versi</dt><dd>2.0</dd></dl>
             </div>
         </div>
         <div class="cover-foot">
@@ -228,7 +228,7 @@
 
         <div class="pg-foot">
             <span class="pg-foot-brand">Panduan Penggunaan</span>
-            <span>SMAIT Ulil Albab &mdash; v1.0</span>
+            <span>SMAIT Ulil Albab &mdash; v2.0</span>
         </div>
     </div>
 
@@ -501,7 +501,8 @@
                 <thead><tr><th>Menu Eksklusif</th><th>Fungsi</th></tr></thead>
                 <tbody>
                     <tr><td><strong>Data Admin</strong></td><td>Membuat, mengedit, dan menghapus akun pengguna/admin</td></tr>
-                    <tr><td><strong>Pengaturan</strong></td><td>Konfigurasi sistem: info institusi, API Key, Fonnte Token, tap delay</td></tr>
+                    <tr><td><strong>Kalender Libur</strong></td><td>Kelola hari libur sekolah, import libur nasional, atur libur range tanggal</td></tr>
+                    <tr><td><strong>Pengaturan</strong></td><td>Konfigurasi sistem: info institusi, API Key, Fonnte Token, tap delay, aturan keterlambatan, hari libur mingguan</td></tr>
                 </tbody>
             </table>
             <p style="margin-top:10px; font-size:12.5px; color:var(--ink-muted);">Super Admin juga memiliki akses ke semua menu yang dimiliki Staff Admin, Operator, dan Guru Piket.</p>
@@ -519,10 +520,54 @@
             <h3 class="sec-title"><span class="sec-badge">C</span> Pengaturan Sistem</h3>
             <div class="steps">
                 <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Pengaturan</h4><p>Klik menu <strong>Pengaturan</strong> di sidebar.</p></div></div>
-                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Konfigurasi</h4><p>Atur: <strong>Nama Institusi</strong>, <strong>Logo</strong>, <strong>API Key ESP32</strong>, <strong>Fonnte Token</strong>, dan <strong>Tap Delay</strong> (jeda antar tap).</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Konfigurasi</h4><p>Atur: <strong>Nama Institusi</strong>, <strong>Logo</strong>, <strong>API Key ESP32</strong>, <strong>Fonnte Token</strong>, <strong>Tap Delay</strong>, <strong>Aturan Keterlambatan</strong>, dan <strong>Hari Libur Mingguan</strong>.</p></div></div>
                 <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Simpan Perubahan</h4><p>Klik <strong>Simpan</strong>. Perubahan langsung berlaku.</p></div></div>
             </div>
         </div>
+
+        <div class="dvd"></div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">D</span> Aturan Keterlambatan</h3>
+            <p style="margin-bottom:12px;">Fitur baru untuk mendeteksi keterlambatan siswa secara otomatis:</p>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Pengaturan</h4><p>Klik <strong>Pengaturan</strong> di sidebar. Scroll ke bagian <strong>Aturan Keterlambatan</strong>.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Atur Batas Waktu</h4><p>Konfigurasi: <strong>Batas Jam Masuk Non-Boarding</strong> (default 07:30), <strong>Batas Jam Kembali Boarding</strong> (default 17:00), dan <strong>Toleransi Keterlambatan</strong> (default 15 menit).</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Simpan</h4><p>Klik <strong>Simpan</strong>. Sistem otomatis menandai status: <strong style="color:#10b981;">Tepat Waktu</strong>, <strong style="color:#f59e0b;">Toleransi</strong>, atau <strong style="color:#ef4444;">Terlambat</strong> saat siswa tap masuk.</p></div></div>
+            </div>
+            <div class="alrt info" style="margin-top:14px;">
+                <div class="alrt-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+                <div><h5>Dampak Keterlambatan</h5><p>LCD ESP32 akan menampilkan <strong>"TERLAMBAT!"</strong> atau <strong>"HAMPIR TERLAMBAT"</strong>. Notifikasi WhatsApp ke orang tua juga menyertakan info keterlambatan.<br><br><strong>Catatan:</strong> Untuk siswa Non-Boarding, pengecekan keterlambatan <strong>hanya pada tap MASUK pertama</strong> hari itu. Jika siswa keluar lalu masuk kembali, tap tersebut tidak dicek keterlambatan.</p></div>
+            </div>
+        </div>
+
+        <div class="dvd"></div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">E</span> Kelola Kalender Libur</h3>
+            <p style="margin-bottom:12px;">Menu <strong>Kalender Libur</strong> untuk mengelola hari libur sekolah:</p>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Kalender Libur</h4><p>Klik <strong>Kalender Libur</strong> di sidebar (kategori Sistem).</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Tambah Libur</h4><p>Gunakan <strong>+ Tambah Libur</strong> (satuan), <strong>Tambah Range</strong> (rentang tanggal), atau <strong>Import Nasional</strong> (dari API libur nasional).</p></div></div>
+                <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Kelola Kalender</h4><p>Lihat kalender bulanan dengan hari libur ditandai merah. Hapus hari libur dengan klik ikon hapus di daftar samping.</p></div></div>
+            </div>
+        </div>
+
+        <div class="dvd"></div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">F</span> Hari Libur Mingguan</h3>
+            <p style="margin-bottom:12px;">Mengatur hari-hari yang bukan hari sekolah:</p>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Pengaturan</h4><p>Scroll ke bagian <strong>Hari Libur Mingguan</strong> di halaman Pengaturan.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Toggle Hari</h4><p>Klik tombol hari untuk toggle status: <strong style="color:#10b981;">Hari Sekolah</strong> (hijau) atau <strong style="color:#ef4444;">Libur</strong> (merah). Default libur: Minggu dan Sabtu.</p></div></div>
+            </div>
+            <div class="alrt info" style="margin-top:14px;">
+                <div class="alrt-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
+                <div><h5>Pengaruh pada Rekap</h5><p>Hari yang ditandai libur mingguan dan hari libur kalender akan <strong>dikecualikan</strong> dari perhitungan rekap kehadiran.</p></div>
+            </div>
+        </div>
+
         <div class="alrt warn">
             <div class="alrt-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
             <div><h5>API Key Harus Sinkron</h5><p>Pastikan <strong>API Key</strong> di Pengaturan sama persis dengan <code>API_KEY</code> di kode ESP32. Jika berbeda, perangkat tidak bisa mengirim data tap.</p></div>
@@ -545,6 +590,8 @@
                     <tr><td>Kartu RFID tidak terbaca</td><td>Tempelkan ulang lebih dekat (maks 3 cm). Pastikan kartu tidak rusak fisik.</td></tr>
                     <tr><td>LCD menampilkan "KARTU TIDAK TERDAFTAR"</td><td>Kartu belum didaftarkan di sistem. Hubungi admin.</td></tr>
                     <tr><td>LCD menampilkan "TUNGGU DULU"</td><td>Masih dalam jeda waktu (5 menit). Tunggu beberapa saat.</td></tr>
+                    <tr><td>LCD menampilkan "TERLAMBAT!"</td><td>Siswa tap masuk melebihi batas jam + toleransi. Atur batas waktu di menu Pengaturan.</td></tr>
+                    <tr><td>LCD menampilkan "HAMPIR TERLAMBAT"</td><td>Siswa tap masuk dalam batas toleransi. Masih tercatat sebagai kehadiran.</td></tr>
                     <tr><td>LCD menampilkan "DEVICE ERROR"</td><td>Perangkat belum terdaftar/nonaktif di server. Hubungi admin.</td></tr>
                     <tr><td>LCD menampilkan "WIFI FAILED"</td><td>Koneksi WiFi bermasalah. Restart perangkat ESP32.</td></tr>
                     <tr><td>LCD menampilkan "RFID ERROR / CEK KABEL"</td><td>Modul RFID tidak terhubung. Periksa kabel dan restart ESP32.</td></tr>
