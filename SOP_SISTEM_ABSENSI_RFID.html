@@ -550,7 +550,7 @@
             <p class="cover-sub">Sistem Absensi RFID &mdash; SMAIT Ulil Albab</p>
             <div class="cover-meta">
                 <dl class="cover-chip"><dt>Nomor</dt><dd>SOP/IT/001</dd></dl>
-                <dl class="cover-chip"><dt>Revisi</dt><dd>02</dd></dl>
+                <dl class="cover-chip"><dt>Revisi</dt><dd>03</dd></dl>
             </div>
         </div>
         <div class="cover-foot">
@@ -864,6 +864,11 @@
             <div><h5>Siswa Boarding / Asrama</h5><p>Siswa dengan kategori <strong>Boarding</strong> atau <strong>Asrama</strong> mendapat format notifikasi khusus dengan label <strong>Siswa Asrama</strong>. Dashboard juga mendukung <strong>Manual Tap</strong> dengan opsi paksa IN/OUT.</p></div>
         </div>
 
+        <div class="alrt warn">
+            <div class="alrt-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div><h5>Keamanan Tap Manual Publik</h5><p>Fitur tap manual dari halaman publik (tanpa login) <strong>harus diaktifkan terlebih dahulu</strong> oleh Super Admin melalui menu <strong>Pengaturan &rarr; Keamanan Tap Manual</strong>. Jika fitur ini nonaktif, tombol "Input RFID" tidak akan muncul di halaman publik dan semua permintaan tap manual akan ditolak oleh sistem.</p></div>
+        </div>
+
         <div class="pg-foot">
             <span class="pg-foot-brand">SOP Absensi RFID</span>
             <span>Halaman 5</span>
@@ -987,7 +992,7 @@
             <h3 class="sec-title"><span class="sec-badge">D</span> Import Libur Nasional</h3>
             <p style="margin-bottom:10px;">Sistem dapat mengambil data libur nasional dan cuti bersama secara otomatis dari API publik:</p>
             <div class="steps">
-                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Klik "Import Nasional"</h4><p>Klik tombol <strong>Import Nasional</strong>. Sistem mengambil data dari <code>libur.deno.dev</code>.</p></div></div>
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Klik "Import Nasional"</h4><p>Klik tombol <strong>Import Nasional</strong>. Sistem mengambil data dari <code>libur.absenulilalbab.com</code>.</p></div></div>
                 <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Pilih Hari Libur</h4><p>Centang hari libur yang ingin diimport. Gunakan <strong>Pilih Semua</strong> untuk memilih seluruhnya.</p></div></div>
                 <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Klik Import</h4><p>Klik <strong>Import</strong>. Data yang sudah ada akan otomatis dilewati (tidak duplikat).</p></div></div>
             </div>

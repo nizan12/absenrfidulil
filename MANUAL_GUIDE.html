@@ -189,7 +189,7 @@
             <p class="cover-sub">Sistem Absensi RFID &mdash; SMAIT Ulil Albab</p>
             <div class="cover-meta">
                 <dl class="cover-chip"><dt>Dokumen</dt><dd>MAN/IT/001</dd></dl>
-                <dl class="cover-chip"><dt>Versi</dt><dd>2.0</dd></dl>
+                <dl class="cover-chip"><dt>Versi</dt><dd>2.1</dd></dl>
             </div>
         </div>
         <div class="cover-foot">
@@ -228,7 +228,7 @@
 
         <div class="pg-foot">
             <span class="pg-foot-brand">Panduan Penggunaan</span>
-            <span>SMAIT Ulil Albab &mdash; v2.0</span>
+            <span>SMAIT Ulil Albab &mdash; v2.1</span>
         </div>
     </div>
 
@@ -365,6 +365,10 @@
                 <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Halaman Utama</h4><p>Di halaman landing (tanpa login), gunakan fitur <strong>Manual Tap</strong>.</p></div></div>
                 <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Scan atau Ketik UID</h4><p>Gunakan <strong>USB RFID reader</strong> atau ketik UID manual.</p></div></div>
                 <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Tekan Enter</h4><p>Data akan langsung terkirim ke server dan tercatat sebagai absensi.</p></div></div>
+            </div>
+            <div class="alrt warn">
+                <div class="alrt-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <div><h5>Fitur Harus Diaktifkan</h5><p>Fitur tap manual dari halaman publik <strong>harus diaktifkan terlebih dahulu</strong> oleh Super Admin di menu <strong>Pengaturan &rarr; Keamanan Tap Manual</strong>. Jika fitur nonaktif, tombol "Input RFID" tidak muncul di halaman publik.</p></div>
             </div>
         </div>
         <div class="pg-foot"><span class="pg-foot-brand">Panduan Penggunaan</span><span>Halaman 3</span></div>
@@ -520,7 +524,7 @@
             <h3 class="sec-title"><span class="sec-badge">C</span> Pengaturan Sistem</h3>
             <div class="steps">
                 <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Pengaturan</h4><p>Klik menu <strong>Pengaturan</strong> di sidebar.</p></div></div>
-                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Konfigurasi</h4><p>Atur: <strong>Nama Institusi</strong>, <strong>Logo</strong>, <strong>API Key ESP32</strong>, <strong>Fonnte Token</strong>, <strong>Tap Delay</strong>, <strong>Aturan Keterlambatan</strong>, dan <strong>Hari Libur Mingguan</strong>.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Konfigurasi</h4><p>Atur: <strong>Nama Institusi</strong>, <strong>Logo</strong>, <strong>API Key ESP32</strong>, <strong>Fonnte Token</strong>, <strong>Tap Delay</strong>, <strong>Aturan Keterlambatan</strong>, <strong>Hari Libur Mingguan</strong>, dan <strong>Keamanan Tap Manual</strong>.</p></div></div>
                 <div class="stp"><div class="stp-n">3</div><div class="stp-body"><h4>Simpan Perubahan</h4><p>Klik <strong>Simpan</strong>. Perubahan langsung berlaku.</p></div></div>
             </div>
         </div>
@@ -565,6 +569,21 @@
             <div class="alrt info" style="margin-top:14px;">
                 <div class="alrt-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
                 <div><h5>Pengaruh pada Rekap</h5><p>Hari yang ditandai libur mingguan dan hari libur kalender akan <strong>dikecualikan</strong> dari perhitungan rekap kehadiran.</p></div>
+            </div>
+        </div>
+
+        <div class="dvd"></div>
+
+        <div class="sec">
+            <h3 class="sec-title"><span class="sec-badge">G</span> Keamanan Tap Manual</h3>
+            <p style="margin-bottom:12px;">Mengaktifkan atau menonaktifkan fitur tap kartu RFID dari halaman publik (tanpa login):</p>
+            <div class="steps">
+                <div class="stp"><div class="stp-n">1</div><div class="stp-body"><h4>Buka Pengaturan</h4><p>Klik <strong>Pengaturan</strong> di sidebar. Scroll ke bagian <strong>Keamanan Tap Manual</strong>.</p></div></div>
+                <div class="stp"><div class="stp-n">2</div><div class="stp-body"><h4>Toggle Fitur</h4><p>Klik tombol toggle untuk <strong>mengaktifkan</strong> atau <strong>menonaktifkan</strong> fitur tap manual dari halaman publik. Perubahan langsung tersimpan.</p></div></div>
+            </div>
+            <div class="alrt warn" style="margin-top:14px;">
+                <div class="alrt-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+                <div><h5>Peringatan Keamanan</h5><p>Jika fitur ini <strong>diaktifkan</strong>, siapapun bisa mengirim tap kartu dari halaman publik tanpa login. Pastikan hanya digunakan di <strong>komputer sekolah</strong> yang terjaga. Jika tidak digunakan, <strong>sebaiknya nonaktifkan</strong> untuk keamanan.</p></div>
             </div>
         </div>
 

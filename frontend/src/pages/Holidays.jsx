@@ -147,9 +147,10 @@ export default function Holidays() {
     const fetchNationalHolidays = async () => {
         setImportLoading(true);
         try {
-            const res = await fetch('https://libur.deno.dev/api');
-            const data = await res.json();
-            setNationalHolidays(data || []);
+            const res = await fetch(`https://libur.absenulilalbab.com/api/holidays?year=${currentYear}`);
+            const json = await res.json();
+            const data = json.data || [];
+            setNationalHolidays(data);
             // Select all by default
             setSelectedImports(data.map((_, i) => i));
         } catch (error) {
@@ -607,7 +608,7 @@ export default function Holidays() {
                 <div className="p-6">
                     <div className="flex items-center gap-2 mb-4 p-3 rounded-lg text-sm" style={{ background: 'color-mix(in srgb, var(--accent-color) 8%, transparent)', color: 'var(--text-secondary)' }}>
                         <Globe size={16} className="flex-shrink-0" />
-                        <span>Data dari <strong>libur.deno.dev</strong> — Hari libur nasional & cuti bersama tahun {currentYear}</span>
+                        <span>Data dari <strong>libur.absenulilalbab.com</strong> — Hari libur nasional & cuti bersama tahun {currentYear}</span>
                     </div>
 
                     {importLoading ? (
