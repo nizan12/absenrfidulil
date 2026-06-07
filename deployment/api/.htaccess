@@ -19,3 +19,14 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# ── Security Headers (fallback untuk API) ──
+<IfModule mod_headers.c>
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://absenulilalbab.com https://libur.absenulilalbab.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header set X-Frame-Options "DENY"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Cross-Origin-Resource-Policy "same-origin"
+</IfModule>
+
